@@ -1,2 +1,2 @@
-# MapboxDemo
-Testing out mapbox
+# Discovr
+A personalized UBC companion app.
