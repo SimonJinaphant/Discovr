@@ -20,6 +20,7 @@ If you're able to see a map at this point then nothing went wrong (surprisingly)
 
 ### Fixing error with Gradle
 If you ran into problem with gradle try the following fix:
+
 1. For Windows click on`File -> Settings`, for Mac click `Android Studio -> Preferences`
 2. In the search dialog on the top left corner type in `Android SDK`
 3. Near the bottom you should see `Launch Standalone SDK Manager`, click on it and it should open a new window.
