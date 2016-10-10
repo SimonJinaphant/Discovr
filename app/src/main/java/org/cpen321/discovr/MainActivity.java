@@ -44,10 +44,11 @@ public class MainActivity extends AppCompatActivity {
         }
 
         try {
+            // Only this method throws an exception for invalid token
             MapboxAccountManager.validateAccessToken(getString(R.string.mapbox_key));
 
-            // Must be give API key BEFORE calling setContentView() on any view containing mapview
-            // This should save you 3+ hours of debugging why your API key isn't working...
+            // Must present API key BEFORE calling setContentView() on any view containing MapView
+            // This should save you 3+ hours of debugging why your valid API key isn't working...
             MapboxAccountManager.start(this, getString(R.string.mapbox_key));
 
         } catch (InvalidAccessTokenException e) {
@@ -133,7 +134,6 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    // Add the mapView lifecycle to the activity's lifecycle methods
     @Override
     public void onResume() {
         super.onResume();
