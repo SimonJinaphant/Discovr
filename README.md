@@ -15,6 +15,7 @@ Before continuing make sure you have Android Studio installed and set up.
    - If nothing happens, try making sure your phone is unlocked and press the play button again.
 
 If you're able to see a map at this point then nothing went wrong (surprisingly).
+
 1. Click on the pink `i` button on the bottom right corner and select "Find me food!". You should see an animation taking you to Tim Hortons. 
 2. Once you see a red pin marker click on it!
 
