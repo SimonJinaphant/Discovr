@@ -64,37 +64,6 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Are you hungry?", Snackbar.LENGTH_LONG)
-                        .setAction("Find me food!", new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                mapView.getMapAsync(new OnMapReadyCallback() {
-                                    @Override
-                                    public void onMapReady(MapboxMap mapboxMap) {
-                                        MarkerViewOptions timHortons = new MarkerViewOptions()
-                                                .position(new LatLng(49.260131, -123.248534))
-                                                .title("Forestry Tim Hortons")
-                                                .snippet("Where the line-up never gets short :(");
-
-                                        CameraPosition cameraPosition = new CameraPosition.Builder()
-                                                .target(timHortons.getPosition())
-                                                .bearing(270)
-                                                .tilt(50)
-                                                .zoom(17)
-                                                .build();
-
-                                        mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 5000, null);
-                                        mapboxMap.addMarker(timHortons);
-                                    }
-
-                                });
-                            }
-                        }).show();
-            }
-        });
 
         mapView = (MapView) findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
@@ -118,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Generate a polygon outline of the all the engineering buildings.
-     * @param map Map to draw polygon on.
+     * @param map Map to draw upon.
      */
     void outlineEngineeringLocations(MapboxMap map){
         ArrayList<LatLng> points = new ArrayList<>();
@@ -137,11 +106,40 @@ public class MainActivity extends AppCompatActivity {
 
         map.addPolygon(new PolygonOptions()
                 .addAll(points)
-                .alpha(0.25f)
+                .alpha(0.35f)
                 .strokeColor(Color.parseColor("#000000"))
                 .fillColor(Color.parseColor("#3bb2d0"))
         );
 
+        CameraPosition cameraPosition = new CameraPosition.Builder()
+                .target(new LatLng(49.262330, -123.248738))
+                .bearing(0)
+                .tilt(50)
+                .zoom(16)
+                .build();
+
+        map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 5000, null);
+    }
+
+    /**
+     * Add a custom pin to the Tim Hortons at Forestry.
+     * @param map Map to draw upon.
+     */
+    void locateTimHortons(MapboxMap map){
+        MarkerViewOptions timHortons = new MarkerViewOptions()
+                .position(new LatLng(49.260131, -123.248534))
+                .title("Forestry Tim Hortons")
+                .snippet("Where the line-up never gets short :(");
+
+        CameraPosition cameraPosition = new CameraPosition.Builder()
+                .target(timHortons.getPosition())
+                .bearing(270)
+                .tilt(50)
+                .zoom(17)
+                .build();
+
+        map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 5000, null);
+        map.addMarker(timHortons);
     }
 
     @Override
@@ -163,6 +161,14 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onMapReady(MapboxMap mapboxMap) {
                         outlineEngineeringLocations(mapboxMap);
+                    }
+                });
+                break;
+            case R.id.locate_action:
+                mapView.getMapAsync(new OnMapReadyCallback() {
+                    @Override
+                    public void onMapReady(MapboxMap mapboxMap) {
+                        locateTimHortons(mapboxMap);
                     }
                 });
                 break;
