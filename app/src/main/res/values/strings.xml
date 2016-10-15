@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Discovr</string>
-    <string name="action_settings">Settings</string>
+    <string name="draw_polygon">Show polygon overlay</string>
+    <string name="locate_tim_hortons">Locate Tim Hortons</string>
     <string name="mapbox_key">pk.eyJ1Ijoic3ltb25qaW4iLCJhIjoiY2l1M2tzNHY2MGtwYzJ6cnd5eGFxZThvdSJ9.-cEuW_cz49IylF-WpRlX8g</string>
 
 </resources>

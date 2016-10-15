@@ -3,8 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="org.cpen321.discovr.MainActivity">
     <item
-        android:id="@+id/action_settings"
+        android:id="@+id/polygon_action"
         android:orderInCategory="100"
-        android:title="Not implemented yet"
+        android:title="@string/draw_polygon"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/locate_action"
+        android:orderInCategory="100"
+        android:title="@string/locate_tim_hortons"
         app:showAsAction="never" />
 </menu>
