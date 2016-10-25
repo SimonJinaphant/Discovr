@@ -1,4 +1,6 @@
 package org.cpen321.discovr;
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 
 
@@ -19,7 +21,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-
 import com.mapbox.mapboxsdk.MapboxAccountManager;
 import com.mapbox.mapboxsdk.annotations.MarkerViewOptions;
 import com.mapbox.mapboxsdk.annotations.PolygonOptions;
@@ -33,13 +34,12 @@ import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.MapboxMapOptions;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.mapboxsdk.maps.SupportMapFragment;
-
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-
+    //Made these global as per tutorial, can be made local (?)
     NavigationView navigationView = null;
     Toolbar toolbar = null;
     SupportMapFragment mapFragment;
@@ -259,6 +259,7 @@ public class MainActivity extends AppCompatActivity
                 break;
         }*/
 
+        int id = item.getItemId();
         return super.onOptionsItemSelected(item);
     }
 
@@ -273,6 +274,7 @@ public class MainActivity extends AppCompatActivity
                     getSupportFragmentManager().beginTransaction();
             fragmentTransaction.replace(R.id.fragment_container, mapFragment);
             fragmentTransaction.commit();
+
         } else if (id == R.id.events_subscribed) {
 
             EventsSubscribedFragment fragment = new EventsSubscribedFragment();
