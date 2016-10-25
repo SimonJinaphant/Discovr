@@ -1,10 +1,14 @@
 package org.cpen321.discovr;
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 
 
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -15,18 +19,103 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.mapbox.mapboxsdk.MapboxAccountManager;
+import com.mapbox.mapboxsdk.camera.CameraPosition;
+import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
+import com.mapbox.mapboxsdk.constants.Style;
+import com.mapbox.mapboxsdk.exceptions.InvalidAccessTokenException;
+import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapView;
+import com.mapbox.mapboxsdk.maps.MapboxMap;
+import com.mapbox.mapboxsdk.maps.MapboxMapOptions;
+import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
+import com.mapbox.mapboxsdk.maps.SupportMapFragment;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    //Made these global as per tutorial, can be made local (?)
     NavigationView navigationView = null;
     Toolbar toolbar = null;
+    SupportMapFragment mapFragment;
+
+    private static final int REQUEST_ALL_MAPBOX_PERMISSIONS = 3211;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // TODO: Refactor permission code
+        String[] permissions = {
+                Manifest.permission.ACCESS_FINE_LOCATION,
+        };
+
+        for (int i = 0; i < permissions.length; i++) {
+            int hasFineLocation = ActivityCompat.checkSelfPermission(this, permissions[i]);
+            if (hasFineLocation != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{permissions[i]}, REQUEST_ALL_MAPBOX_PERMISSIONS);
+            }
+        }
+
+        //Initialize mapbox variables
+        try {
+
+            // Only this method throws an exception for invalid token
+            MapboxAccountManager.validateAccessToken(getString(R.string.mapbox_key));
+
+            // Must present API key BEFORE calling setContentView() on any view containing MapView
+            // This should save you 3+ hours of debugging why your valid API key isn't working...
+            MapboxAccountManager.start(this, getString(R.string.access_token));
+        } catch (InvalidAccessTokenException e) {
+            System.err.println("Invalid access token: " + e);
+        }
+
+
+
+        if (savedInstanceState == null) {
+
+            // Create fragment
+            final FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+
+            LatLng patagonia = new LatLng(49.262330, -123.248738);
+
+            // Build mapboxMap
+            MapboxMapOptions options = new MapboxMapOptions();
+            options.styleUrl(Style.MAPBOX_STREETS);
+            options.camera(new CameraPosition.Builder()
+                    .target(patagonia)
+                    .zoom(9)
+                    .build());
+
+            // Create map fragment
+            mapFragment = SupportMapFragment.newInstance(options);
+
+            // Add map fragment to parent container
+            transaction.add(R.id.fragment_container, mapFragment, "com.mapbox.map");
+            transaction.commit();
+        } else {
+            mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentByTag("com.mapbox.map");
+        }
+
+
+
+        mapFragment.getMapAsync(new OnMapReadyCallback() {
+            @Override
+            public void onMapReady(MapboxMap mapboxMap) {
+                CameraPosition cameraPosition = new CameraPosition.Builder()
+                        .target(mapboxMap.getCameraPosition().target)
+                        .bearing(mapboxMap.getCameraPosition().bearing)
+                        .tilt(50)
+                        .zoom(16)
+                        .build();
+
+                mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 5000, null);
+            }
+        });
+
+
+        /*
 
         //Set the fragment initially
         MapViewFragment fragment = new MapViewFragment();
@@ -34,6 +123,11 @@ public class MainActivity extends AppCompatActivity
                 getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.fragment_container, fragment);
         fragmentTransaction.commit();
+           */
+
+        // Add map fragment to parent container
+
+
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -50,7 +144,7 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.app_name, R.string.app_name);
-        drawer.setDrawerListener(toggle);
+        drawer.addDrawerListener(toggle);
         toggle.syncState();
 
         navigationView = (NavigationView) findViewById(R.id.nav_view);
@@ -67,12 +161,14 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    /*
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.drawer_view, menu);
         return true;
     }
+    */
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -80,12 +176,6 @@ public class MainActivity extends AppCompatActivity
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -96,11 +186,11 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.map_view) {
-            MapViewFragment fragment = new MapViewFragment();
             android.support.v4.app.FragmentTransaction fragmentTransaction =
                     getSupportFragmentManager().beginTransaction();
-            fragmentTransaction.replace(R.id.fragment_container, fragment);
+            fragmentTransaction.replace(R.id.fragment_container, mapFragment);
             fragmentTransaction.commit();
+
         } else if (id == R.id.events_subscribed) {
 
             EventsSubscribedFragment fragment = new EventsSubscribedFragment();
