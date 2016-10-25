@@ -27,3 +27,4 @@ If you ran into problem with gradle try the following fix:
 4. Under Tools select `Android SDK Build-tools` with the version `24.0.3` and make sure everything else is unselected unless you want to install some more stuff.
 5. Click `Install (n) Package(s)`
 6. Restart Android studio  
+

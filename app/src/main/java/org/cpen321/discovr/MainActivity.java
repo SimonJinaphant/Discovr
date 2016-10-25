@@ -1,8 +1,10 @@
 package org.cpen321.discovr;
-
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.os.Bundle;
+
+
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -92,13 +94,13 @@ public class MainActivity extends AppCompatActivity
 
             // Create map fragment
             mapFragment = SupportMapFragment.newInstance(options);
+
             // Add map fragment to parent container
             transaction.add(R.id.fragment_container, mapFragment, "com.mapbox.map");
             transaction.commit();
         } else {
             mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentByTag("com.mapbox.map");
         }
-
 
 
         mapFragment.getMapAsync(new OnMapReadyCallback() {
@@ -126,7 +128,6 @@ public class MainActivity extends AppCompatActivity
         fragmentTransaction.commit();
            */
 
-        // Add map fragment to parent container
 
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -159,6 +160,7 @@ public class MainActivity extends AppCompatActivity
         } else {
             super.onBackPressed();
         }
+
 
     }
 
@@ -219,7 +221,6 @@ public class MainActivity extends AppCompatActivity
         map.addMarker(timHortons);
     }
 
-
     /*
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -255,7 +256,6 @@ public class MainActivity extends AppCompatActivity
                 });
                 break;
         }*/
-
         int id = item.getItemId();
         return super.onOptionsItemSelected(item);
     }
