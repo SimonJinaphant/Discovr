@@ -1,8 +1,4 @@
 package org.cpen321.discovr;
-import android.Manifest;
-import android.content.pm.PackageManager;
-import android.os.Bundle;
-
 
 import android.Manifest;
 import android.content.pm.PackageManager;
@@ -96,7 +92,6 @@ public class MainActivity extends AppCompatActivity
 
             // Create map fragment
             mapFragment = SupportMapFragment.newInstance(options);
-
             // Add map fragment to parent container
             transaction.add(R.id.fragment_container, mapFragment, "com.mapbox.map");
             transaction.commit();
@@ -134,7 +129,6 @@ public class MainActivity extends AppCompatActivity
         // Add map fragment to parent container
 
 
-
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -165,6 +159,7 @@ public class MainActivity extends AppCompatActivity
         } else {
             super.onBackPressed();
         }
+
     }
 
     /**
@@ -224,6 +219,7 @@ public class MainActivity extends AppCompatActivity
         map.addMarker(timHortons);
     }
 
+
     /*
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -238,6 +234,7 @@ public class MainActivity extends AppCompatActivity
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
+
 
         /*
         switch(item.getItemId()){
