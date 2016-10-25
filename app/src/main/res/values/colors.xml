@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="backgroundColor">#5E607F</color>
-    <color name="primaryTextColor">#FDFDFD</color>
-    <color name="bgHighlightColor">#2F3040</color>
-    <color name="colorPrimaryDark">#303F9F</color>
+
+
+    <color name="colorPrimary">#5E607F</color>
+    <color name="colorPrimaryDark">#2F3040</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="primaryTextColor">#FDFDFD</color>
 
     <!-- Button Colours -->
-    <color name="button_normal">@color/backgroundColor</color>
-    <color name="button_focused">@color/bgHighlightColor</color>
-    <color name="button_pressed">@color/bgHighlightColor</color>
+    <color name="button_normal">@color/colorPrimary</color>
+    <color name="button_focused">@color/colorPrimaryDark</color>
+    <color name="button_pressed">@color/colorPrimaryDark</color>
 
 
 </resources>
