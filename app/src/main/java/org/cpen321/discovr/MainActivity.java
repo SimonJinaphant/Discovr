@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity
 
             // Must present API key BEFORE calling setContentView() on any view containing MapView
             // This should save you 3+ hours of debugging why your valid API key isn't working...
-            MapboxAccountManager.start(this, getString(R.string.access_token));
+            MapboxAccountManager.start(this, getString(R.string.mapbox_key));
         } catch (InvalidAccessTokenException e) {
             System.err.println("Invalid access token: " + e);
         }
