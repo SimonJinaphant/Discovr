@@ -1,41 +1,56 @@
 package org.cpen321.discovr;
-
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
+
+
+import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentTransaction;
+import android.view.View;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-
 import com.mapbox.mapboxsdk.MapboxAccountManager;
 import com.mapbox.mapboxsdk.annotations.MarkerViewOptions;
 import com.mapbox.mapboxsdk.annotations.PolygonOptions;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
+import com.mapbox.mapboxsdk.constants.Style;
 import com.mapbox.mapboxsdk.exceptions.InvalidAccessTokenException;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
+import com.mapbox.mapboxsdk.maps.MapboxMapOptions;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
-
+import com.mapbox.mapboxsdk.maps.SupportMapFragment;
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity
+        implements NavigationView.OnNavigationItemSelectedListener {
 
-    private MapView mapView;
+    //Made these global as per tutorial, can be made local (?)
+    NavigationView navigationView = null;
+    Toolbar toolbar = null;
+    SupportMapFragment mapFragment;
+
     private static final int REQUEST_ALL_MAPBOX_PERMISSIONS = 3211;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 
-        // TODO: Refactor permissions code
+        // TODO: Refactor permission code
         String[] permissions = {
                 Manifest.permission.ACCESS_FINE_LOCATION,
         };
@@ -47,29 +62,48 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
+        //Initialize mapbox variables
         try {
+
             // Only this method throws an exception for invalid token
             MapboxAccountManager.validateAccessToken(getString(R.string.mapbox_key));
 
             // Must present API key BEFORE calling setContentView() on any view containing MapView
             // This should save you 3+ hours of debugging why your valid API key isn't working...
             MapboxAccountManager.start(this, getString(R.string.mapbox_key));
-
         } catch (InvalidAccessTokenException e) {
             System.err.println("Invalid access token: " + e);
         }
 
-        setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 
-        mapView = (MapView) findViewById(R.id.mapView);
-        mapView.onCreate(savedInstanceState);
+        if (savedInstanceState == null) {
 
-        // Load up zoom-in animation for the central UBC Vancouver campus
-        mapView.getMapAsync(new OnMapReadyCallback() {
+            // Create fragment
+            final FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+
+            LatLng patagonia = new LatLng(49.262330, -123.248738);
+
+            // Build mapboxMap
+            MapboxMapOptions options = new MapboxMapOptions();
+            options.styleUrl(Style.MAPBOX_STREETS);
+            options.camera(new CameraPosition.Builder()
+                    .target(patagonia)
+                    .zoom(9)
+                    .build());
+
+            // Create map fragment
+            mapFragment = SupportMapFragment.newInstance(options);
+
+            // Add map fragment to parent container
+            transaction.add(R.id.fragment_container, mapFragment, "com.mapbox.map");
+            transaction.commit();
+        } else {
+            mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentByTag("com.mapbox.map");
+        }
+
+
+        mapFragment.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(MapboxMap mapboxMap) {
                 CameraPosition cameraPosition = new CameraPosition.Builder()
@@ -81,8 +115,53 @@ public class MainActivity extends AppCompatActivity {
 
                 mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 5000, null);
             }
-
         });
+
+
+        /*
+
+        //Set the fragment initially
+        MapViewFragment fragment = new MapViewFragment();
+        android.support.v4.app.FragmentTransaction fragmentTransaction =
+                getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.fragment_container, fragment);
+        fragmentTransaction.commit();
+           */
+
+
+
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
+        });
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.app_name, R.string.app_name);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+    }
+
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+
+
     }
 
     /**
@@ -142,12 +221,14 @@ public class MainActivity extends AppCompatActivity {
         map.addMarker(timHortons);
     }
 
+    /*
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.drawer_view, menu);
         return true;
     }
+    */
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -155,9 +236,11 @@ public class MainActivity extends AppCompatActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
 
+
+        /*
         switch(item.getItemId()){
             case R.id.polygon_action:
-                mapView.getMapAsync(new OnMapReadyCallback() {
+                mapFragment.getMapAsync(new OnMapReadyCallback() {
                     @Override
                     public void onMapReady(MapboxMap mapboxMap) {
                         outlineEngineeringLocations(mapboxMap);
@@ -165,45 +248,48 @@ public class MainActivity extends AppCompatActivity {
                 });
                 break;
             case R.id.locate_action:
-                mapView.getMapAsync(new OnMapReadyCallback() {
+                mapFragment.getMapAsync(new OnMapReadyCallback() {
                     @Override
                     public void onMapReady(MapboxMap mapboxMap) {
                         locateTimHortons(mapboxMap);
                     }
                 });
                 break;
-        }
-
+        }*/
+        int id = item.getItemId();
         return super.onOptionsItemSelected(item);
     }
 
+    @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public void onResume() {
-        super.onResume();
-        mapView.onResume();
-    }
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        mapView.onPause();
-    }
+        if (id == R.id.map_view) {
+            android.support.v4.app.FragmentTransaction fragmentTransaction =
+                    getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.fragment_container, mapFragment);
+            fragmentTransaction.commit();
 
-    @Override
-    public void onLowMemory() {
-        super.onLowMemory();
-        mapView.onLowMemory();
-    }
+        } else if (id == R.id.events_subscribed) {
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        mapView.onDestroy();
-    }
+            EventsSubscribedFragment fragment = new EventsSubscribedFragment();
+            android.support.v4.app.FragmentTransaction fragmentTransaction =
+                    getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.fragment_container, fragment);
+            fragmentTransaction.commit();
 
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        mapView.onSaveInstanceState(outState);
+        } else if (id == R.id.events_nearby) {
+
+        } else if (id == R.id.events_all) {
+
+        } else if (id == R.id.events_create) {
+
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
     }
 }
