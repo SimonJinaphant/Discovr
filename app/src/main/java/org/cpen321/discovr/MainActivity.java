@@ -251,6 +251,10 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Prints the tag of all fragments in this list
+     * @param fraglist the list containing the fragments
+     */
     public void printFragmentNames(List<Fragment> fraglist){
         ListIterator<Fragment> list_it = fraglist.listIterator();
         while (list_it.hasNext()){
