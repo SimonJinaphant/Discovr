@@ -1,15 +1,16 @@
 package org.cpen321.discovr;
+
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
-
-
-import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -17,7 +18,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
 import com.mapbox.mapboxsdk.MapboxAccountManager;
 import com.mapbox.mapboxsdk.annotations.MarkerViewOptions;
@@ -27,12 +27,13 @@ import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.constants.Style;
 import com.mapbox.mapboxsdk.exceptions.InvalidAccessTokenException;
 import com.mapbox.mapboxsdk.geometry.LatLng;
-import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.MapboxMapOptions;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.mapboxsdk.maps.SupportMapFragment;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.ListIterator;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -41,6 +42,9 @@ public class MainActivity extends AppCompatActivity
     NavigationView navigationView = null;
     Toolbar toolbar = null;
     SupportMapFragment mapFragment;
+    EventsSubscribedFragment evSubFragment;
+    EventCreateFragment evCreateFragment;
+
 
     private static final int REQUEST_ALL_MAPBOX_PERMISSIONS = 3211;
 
@@ -116,19 +120,6 @@ public class MainActivity extends AppCompatActivity
                 mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 5000, null);
             }
         });
-
-
-        /*
-
-        //Set the fragment initially
-        MapViewFragment fragment = new MapViewFragment();
-        android.support.v4.app.FragmentTransaction fragmentTransaction =
-                getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.fragment_container, fragment);
-        fragmentTransaction.commit();
-           */
-
-
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -260,6 +251,18 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Prints the tag of all fragments in this list
+     * @param fraglist the list containing the fragments
+     */
+    public void printFragmentNames(List<Fragment> fraglist){
+        ListIterator<Fragment> list_it = fraglist.listIterator();
+        while (list_it.hasNext()){
+            Fragment curr_frag = list_it.next();
+            Log.d("event_frag_list", curr_frag.getTag());
+        }
+    }
+
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -267,25 +270,67 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.map_view) {
-            android.support.v4.app.FragmentTransaction fragmentTransaction =
-                    getSupportFragmentManager().beginTransaction();
-            fragmentTransaction.replace(R.id.fragment_container, mapFragment);
-            fragmentTransaction.commit();
+            FragmentManager fm = getSupportFragmentManager();
+            android.support.v4.app.FragmentTransaction ft =
+                    fm.beginTransaction();
+            List<Fragment> all_frag = fm.getFragments();
+            printFragmentNames(all_frag);
+            ListIterator<Fragment> iter = all_frag.listIterator();
+            while (iter.hasNext()){
+                ft.hide(iter.next());
+            }
+            ft.show(mapFragment);
+            ft.addToBackStack(null);
+            ft.commit();
 
         } else if (id == R.id.events_subscribed) {
+            FragmentManager fm = getSupportFragmentManager();
+            FragmentTransaction ft = fm.beginTransaction();
+            if (evSubFragment == null){
+                Log.d("events_sub", "fragment null creating fragment");
+                evSubFragment = new EventsSubscribedFragment();
+                ft.add(R.id.fragment_container, evSubFragment, getResources().getString(R.string.events_sub_tag));
+                Log.d("events_sub", "adding the fragment");
+            } else {
+                Log.d("events_sub", "fragment existed already");
+            }
+            List<Fragment> all_frag = fm.getFragments();
+            printFragmentNames(all_frag);
+            ListIterator<Fragment> iter = all_frag.listIterator();
+            while (iter.hasNext()){
+                ft.hide(iter.next());
+            }
+            ft.show(evSubFragment);
+            ft.addToBackStack(null);
+            ft.commit();
+            Log.d("events_sub", "commited the fragment");
 
-            EventsSubscribedFragment fragment = new EventsSubscribedFragment();
-            android.support.v4.app.FragmentTransaction fragmentTransaction =
-                    getSupportFragmentManager().beginTransaction();
-            fragmentTransaction.replace(R.id.fragment_container, fragment);
-            fragmentTransaction.commit();
 
         } else if (id == R.id.events_nearby) {
 
         } else if (id == R.id.events_all) {
 
         } else if (id == R.id.events_create) {
-
+            FragmentManager fm = getSupportFragmentManager();
+            FragmentTransaction ft = fm.beginTransaction();
+            if (evCreateFragment == null){
+                Log.d("events_create", "fragment null creating fragment");
+                evCreateFragment = new EventCreateFragment();
+                ft.add(R.id.fragment_container, evCreateFragment, getResources().getString(R.string.events_create_tag));
+                Log.d("events_create", "adding the fragment");
+            } else {
+                Log.d("events_create", "fragment existed already");
+            }
+            List<Fragment> all_frag = fm.getFragments();
+            printFragmentNames(all_frag);
+            ListIterator<Fragment> iter = all_frag.listIterator();
+            while (iter.hasNext()){
+                ft.hide(iter.next());
+            }
+            ft.show(evCreateFragment);
+            ft.addToBackStack(null);
+            ft.commit();
+            Log.d("events_create", "commited the fragment");
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
