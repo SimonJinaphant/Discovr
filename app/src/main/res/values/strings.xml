@@ -11,6 +11,13 @@
     <string name="events_create">Create an Event</string>
 
     <!-- Elements prefixed by 'fw' are framework and should be finalized/replaced -->
-    <string name="fw_events_sub_1"><font size="20">Math 101 Tutoring</font> &#10; <font size="10">Today, 5:30 - 9:00 pm in EDC 301</font></string>
+    <string name="fw_events_sub_1"><font size="20">Math 101 Tutoring</font> \n <font size="10">Today, 5:30 - 9:00 pm in EDC 301</font></string>
+
+
+    <string name="create_event_name_hint">Event name</string>
+
+    <!-- Fragment tag -->
+    <string name="events_sub_tag">Events Subscribed Fragment</string>
+    <string name="events_create_tag">Events Create Fragment</string>
 
 </resources>
