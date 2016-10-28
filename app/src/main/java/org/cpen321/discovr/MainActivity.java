@@ -143,16 +143,30 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
     }
 
+
+    /**
+     * Overriden to handle drawer opening and closing as well as handling
+     * navigation item selection on backpress
+     */
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            FragmentManager manager = getSupportFragmentManager();
+            if (manager.getBackStackEntryCount() > 0){
+                super.onBackPressed();
+                Fragment currentFragment = manager.findFragmentById(R.id.fragment_container);
+                if (currentFragment instanceof SupportMapFragment){
+                    navigationView.getMenu().getItem(0).setChecked(true);
+                } else if (currentFragment instanceof EventsSubscribedFragment){
+                    navigationView.getMenu().getItem(2).setChecked(true);
+                } else if (currentFragment instanceof EventCreateFragment) {
+                    navigationView.getMenu().getItem(4).setChecked(true);
+                }
+            }
         }
-
-
     }
 
     /**
@@ -253,15 +267,35 @@ public class MainActivity extends AppCompatActivity
 
     /**
      * Prints the tag of all fragments in this list
+     * List might contain null elements
      * @param fraglist the list containing the fragments
      */
     public void printFragmentNames(List<Fragment> fraglist){
         ListIterator<Fragment> list_it = fraglist.listIterator();
         while (list_it.hasNext()){
             Fragment curr_frag = list_it.next();
-            Log.d("event_frag_list", curr_frag.getTag());
+            if (curr_frag != null) {
+                String tag = curr_frag.getTag();
+                if (tag != null)
+                    Log.d("event_frag_list", tag);
+                else
+                    Log.d("event_frag_list", "null tag of frag: " + curr_frag.toString());
+            }
         }
     }
+
+    private void fragmentDisplayManager(List<Fragment> fragList, Fragment shownFragment, FragmentTransaction ft){
+        ListIterator<Fragment> li = fragList.listIterator();
+        while (li.hasNext()){
+            Fragment currFrag = li.next();
+            if ((currFrag != null) && (!currFrag.equals(shownFragment))){
+                ft.hide(currFrag);
+            }
+        }
+        ft.show(shownFragment);
+        ft.addToBackStack(null);
+    }
+
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -275,12 +309,7 @@ public class MainActivity extends AppCompatActivity
                     fm.beginTransaction();
             List<Fragment> all_frag = fm.getFragments();
             printFragmentNames(all_frag);
-            ListIterator<Fragment> iter = all_frag.listIterator();
-            while (iter.hasNext()){
-                ft.hide(iter.next());
-            }
-            ft.show(mapFragment);
-            ft.addToBackStack(null);
+            fragmentDisplayManager(all_frag, mapFragment, ft);
             ft.commit();
 
         } else if (id == R.id.events_subscribed) {
@@ -296,16 +325,9 @@ public class MainActivity extends AppCompatActivity
             }
             List<Fragment> all_frag = fm.getFragments();
             printFragmentNames(all_frag);
-            ListIterator<Fragment> iter = all_frag.listIterator();
-            while (iter.hasNext()){
-                ft.hide(iter.next());
-            }
-            ft.show(evSubFragment);
-            ft.addToBackStack(null);
+            fragmentDisplayManager(all_frag, evSubFragment, ft);
             ft.commit();
             Log.d("events_sub", "commited the fragment");
-
-
         } else if (id == R.id.events_nearby) {
 
         } else if (id == R.id.events_all) {
@@ -323,12 +345,7 @@ public class MainActivity extends AppCompatActivity
             }
             List<Fragment> all_frag = fm.getFragments();
             printFragmentNames(all_frag);
-            ListIterator<Fragment> iter = all_frag.listIterator();
-            while (iter.hasNext()){
-                ft.hide(iter.next());
-            }
-            ft.show(evCreateFragment);
-            ft.addToBackStack(null);
+            fragmentDisplayManager(all_frag, evCreateFragment, ft);
             ft.commit();
             Log.d("events_create", "commited the fragment");
         }
