@@ -42,8 +42,6 @@ public class MainActivity extends AppCompatActivity
     NavigationView navigationView = null;
     Toolbar toolbar = null;
     SupportMapFragment mapFragment;
-    EventsSubscribedFragment evSubFragment;
-    EventCreateFragment evCreateFragment;
 
 
     private static final int REQUEST_ALL_MAPBOX_PERMISSIONS = 3211;
@@ -229,8 +227,6 @@ public class MainActivity extends AppCompatActivity
         map.addMarker(timHortons);
     }
 
-    }
-
     /**
      * Prints the tag of all fragments in this list
      * List might contain null elements
@@ -270,31 +266,31 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.map_view) {
             FragmentManager fm = getSupportFragmentManager();
-            android.support.v4.app.FragmentTransaction ft =
-                    fm.beginTransaction();
+            FragmentTransaction ft = fm.beginTransaction();
             List<Fragment> all_frag = fm.getFragments();
-            printFragmentNames(all_frag);
-            fragmentDisplayManager(all_frag, mapFragment, ft);
-            ft.addToBackStack(null);
+            ListIterator<Fragment> li = all_frag.listIterator();
+            while (li.hasNext()){
+                Fragment currFrag = li.next();
+                if ((currFrag != null) && (!currFrag.equals(mapFragment))){
+                    ft.remove(currFrag);
+                }
+            }
+            //ft.addToBackStack(null);
             ft.commit();
 
         } else if (id == R.id.events_subscribed) {
             FragmentManager fm = getSupportFragmentManager();
             FragmentTransaction ft = fm.beginTransaction();
-            if (evSubFragment == null){
-                Log.d("events_sub", "fragment null creating fragment");
-                evSubFragment = new EventsSubscribedFragment();
-                ft.add(R.id.fragment_container, evSubFragment, getResources().getString(R.string.events_sub_tag));
-                Log.d("events_sub", "adding the fragment");
-            } else {
-                Log.d("events_sub", "fragment existed already");
-            }
             List<Fragment> all_frag = fm.getFragments();
-            printFragmentNames(all_frag);
-            fragmentDisplayManager(all_frag, evSubFragment, ft);
-            ft.addToBackStack(null);
+            ListIterator<Fragment> li = all_frag.listIterator();
+            while (li.hasNext()){
+                Fragment currFrag = li.next();
+                if ((currFrag != null) && (!currFrag.equals(mapFragment))){
+                    ft.remove(currFrag);
+                }
+            }
+            ft.add(R.id.fragment_container, new EventsSubscribedFragment(), getResources().getString(R.string.events_sub_tag));
             ft.commit();
-            Log.d("events_sub", "commited the fragment");
         } else if (id == R.id.events_nearby) {
 
         } else if (id == R.id.events_all) {
@@ -302,20 +298,16 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.events_create) {
             FragmentManager fm = getSupportFragmentManager();
             FragmentTransaction ft = fm.beginTransaction();
-            if (evCreateFragment == null){
-                Log.d("events_create", "fragment null creating fragment");
-                evCreateFragment = new EventCreateFragment();
-                ft.add(R.id.fragment_container, evCreateFragment, getResources().getString(R.string.events_create_tag));
-                Log.d("events_create", "adding the fragment");
-            } else {
-                Log.d("events_create", "fragment existed already");
-            }
             List<Fragment> all_frag = fm.getFragments();
-            printFragmentNames(all_frag);
-            fragmentDisplayManager(all_frag, evCreateFragment, ft);
-            ft.addToBackStack(null);
+            ListIterator<Fragment> li = all_frag.listIterator();
+            while (li.hasNext()){
+                Fragment currFrag = li.next();
+                if ((currFrag != null) && (!currFrag.equals(mapFragment))){
+                    ft.remove(currFrag);
+                }
+            }
+            ft.add(R.id.fragment_container, new EventCreateFragment(), getResources().getString(R.string.events_create_tag));
             ft.commit();
-            Log.d("events_create", "commited the fragment");
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
