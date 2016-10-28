@@ -156,7 +156,6 @@ public class MainActivity extends AppCompatActivity
         } else {
             FragmentManager manager = getSupportFragmentManager();
             if (manager.getBackStackEntryCount() > 0){
-                super.onBackPressed();
                 Fragment currentFragment = manager.findFragmentById(R.id.fragment_container);
                 if (currentFragment instanceof SupportMapFragment){
                     navigationView.getMenu().getItem(0).setChecked(true);
@@ -165,7 +164,11 @@ public class MainActivity extends AppCompatActivity
                 } else if (currentFragment instanceof EventCreateFragment) {
                     navigationView.getMenu().getItem(4).setChecked(true);
                 }
+                manager.popBackStack();
+            } else {
+                super.onBackPressed();
             }
+
         }
     }
 
@@ -226,43 +229,6 @@ public class MainActivity extends AppCompatActivity
         map.addMarker(timHortons);
     }
 
-    /*
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.drawer_view, menu);
-        return true;
-    }
-    */
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-
-
-        /*
-        switch(item.getItemId()){
-            case R.id.polygon_action:
-                mapFragment.getMapAsync(new OnMapReadyCallback() {
-                    @Override
-                    public void onMapReady(MapboxMap mapboxMap) {
-                        outlineEngineeringLocations(mapboxMap);
-                    }
-                });
-                break;
-            case R.id.locate_action:
-                mapFragment.getMapAsync(new OnMapReadyCallback() {
-                    @Override
-                    public void onMapReady(MapboxMap mapboxMap) {
-                        locateTimHortons(mapboxMap);
-                    }
-                });
-                break;
-        }*/
-        int id = item.getItemId();
-        return super.onOptionsItemSelected(item);
     }
 
     /**
@@ -293,7 +259,6 @@ public class MainActivity extends AppCompatActivity
             }
         }
         ft.show(shownFragment);
-        ft.addToBackStack(null);
     }
 
 
@@ -310,6 +275,7 @@ public class MainActivity extends AppCompatActivity
             List<Fragment> all_frag = fm.getFragments();
             printFragmentNames(all_frag);
             fragmentDisplayManager(all_frag, mapFragment, ft);
+            ft.addToBackStack(null);
             ft.commit();
 
         } else if (id == R.id.events_subscribed) {
@@ -326,6 +292,7 @@ public class MainActivity extends AppCompatActivity
             List<Fragment> all_frag = fm.getFragments();
             printFragmentNames(all_frag);
             fragmentDisplayManager(all_frag, evSubFragment, ft);
+            ft.addToBackStack(null);
             ft.commit();
             Log.d("events_sub", "commited the fragment");
         } else if (id == R.id.events_nearby) {
@@ -346,6 +313,7 @@ public class MainActivity extends AppCompatActivity
             List<Fragment> all_frag = fm.getFragments();
             printFragmentNames(all_frag);
             fragmentDisplayManager(all_frag, evCreateFragment, ft);
+            ft.addToBackStack(null);
             ft.commit();
             Log.d("events_create", "commited the fragment");
         }
