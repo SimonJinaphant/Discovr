@@ -11,6 +11,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
+import android.view.Menu;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -124,6 +125,7 @@ public class MainActivity extends AppCompatActivity
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -141,6 +143,7 @@ public class MainActivity extends AppCompatActivity
 
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
     }
 
     @Override
@@ -151,8 +154,6 @@ public class MainActivity extends AppCompatActivity
         } else {
             super.onBackPressed();
         }
-
-
     }
 
     /**
@@ -304,7 +305,7 @@ public class MainActivity extends AppCompatActivity
             ft.addToBackStack(null);
             ft.commit();
             Log.d("events_sub", "commited the fragment");
-
+            getSupportActionBar().setTitle(getResources().getString(R.string.events_subscribed));
 
         } else if (id == R.id.events_nearby) {
 
@@ -331,6 +332,7 @@ public class MainActivity extends AppCompatActivity
             ft.addToBackStack(null);
             ft.commit();
             Log.d("events_create", "commited the fragment");
+            getSupportActionBar().setTitle(getResources().getString((R.string.events_create)));
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
