@@ -3,6 +3,7 @@ package org.cpen321.discovr;
 import android.Manifest;
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -53,7 +54,7 @@ public class MainActivity extends AppCompatActivity
 
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {// Get the SearchView and set the searchable configuration
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -146,10 +147,10 @@ public class MainActivity extends AppCompatActivity
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        //Search handler to exist on onCreate
+        handleIntent(getIntent());
+
     }
-
-    @Override
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
@@ -159,9 +160,44 @@ public class MainActivity extends AppCompatActivity
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         searchView.setIconifiedByDefault(false);
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-        // Get the SearchView and set the searchable configuration
+        searchView.setOnQueryTextListener(
+                new SearchView.OnQueryTextListener() {
+                    @Override
+                    public boolean onQueryTextChange(String newText){
+                        Log.d("search", "Text changed to: " + newText);
+                        //Try and perform autocomplete
+                        return true;
+                    }
 
+                    @Override
+                    public boolean onQueryTextSubmit(String query){
+                        Log.d("search", "Text submitted: " + query);
+                        //Make map go to location
+                        return true;
+                    }
+                });
         return true;
+    }
+
+    /*
+        We might not need onNewIntent or handleIntent if we can handle
+        the map search within the onQueryTexListener class on the
+        onCreateOptionsMenu() method. If we decide to go down that path delete
+        the onNewIntent() and handleIntent() methods below as well as the call
+        to handleIntent() within the method onCreate()
+     */
+    @Override
+    protected void onNewIntent(Intent intent){
+        setIntent(intent);
+        handleIntent(intent);
+    }
+
+    private void handleIntent(Intent intent){
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())){
+            String query = intent.getStringExtra(SearchManager.QUERY);
+            Log.d("search", "Search intent with: " + query);
+            //Do something with query such as searching for it in database
+        }
     }
 
     /**
