@@ -152,6 +152,11 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    /**
+     * Overriden to create a search bar on the top toolbar
+     * @param menu
+     * @return
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
         getMenuInflater().inflate(R.menu.toolbar_menu, menu);
@@ -245,7 +250,6 @@ public class MainActivity extends AppCompatActivity
                     ft.remove(currFrag);
                 }
             }
-            //ft.addToBackStack(null);
             getSupportActionBar().setTitle(getResources().getString(R.string.app_name));
             ft.commit();
 
