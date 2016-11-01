@@ -1,6 +1,8 @@
 package org.cpen321.discovr;
 
 import android.Manifest;
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -10,6 +12,8 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
@@ -144,6 +148,21 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    @Override
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu){
+        getMenuInflater().inflate(R.menu.toolbar_menu, menu);
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        searchView.setIconifiedByDefault(false);
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        // Get the SearchView and set the searchable configuration
+
+        return true;
+    }
 
     /**
      * Overriden to handle drawer opening and closing as well as handling
@@ -172,93 +191,6 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    /**
-     * Generate a polygon outline of the all the engineering buildings.
-     * @param map Map to draw upon.
-     */
-    void outlineEngineeringLocations(MapboxMap map){
-        ArrayList<LatLng> points = new ArrayList<>();
-        points.add(new LatLng(49.262667, -123.250605));
-        points.add(new LatLng(49.262828, -123.250047));
-        points.add(new LatLng(49.262520, -123.249789));
-        points.add(new LatLng(49.262975, -123.248416));
-        points.add(new LatLng(49.262530, -123.248067));
-        points.add(new LatLng(49.262855, -123.246844));
-        points.add(new LatLng(49.262383, -123.246490));
-        points.add(new LatLng(49.262064, -123.247418));
-        points.add(new LatLng(49.262288, -123.247628));
-        points.add(new LatLng(49.261851, -123.248910));
-        points.add(new LatLng(49.261690, -123.248808));
-        points.add(new LatLng(49.261420, -123.249580));
-
-        map.addPolygon(new PolygonOptions()
-                .addAll(points)
-                .alpha(0.35f)
-                .strokeColor(Color.parseColor("#000000"))
-                .fillColor(Color.parseColor("#3bb2d0"))
-        );
-
-        CameraPosition cameraPosition = new CameraPosition.Builder()
-                .target(new LatLng(49.262330, -123.248738))
-                .bearing(0)
-                .tilt(50)
-                .zoom(16)
-                .build();
-
-        map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 5000, null);
-    }
-
-    /**
-     * Add a custom pin to the Tim Hortons at Forestry.
-     * @param map Map to draw upon.
-     */
-    void locateTimHortons(MapboxMap map){
-        MarkerViewOptions timHortons = new MarkerViewOptions()
-                .position(new LatLng(49.260131, -123.248534))
-                .title("Forestry Tim Hortons")
-                .snippet("Where the line-up never gets short :(");
-
-        CameraPosition cameraPosition = new CameraPosition.Builder()
-                .target(timHortons.getPosition())
-                .bearing(270)
-                .tilt(50)
-                .zoom(17)
-                .build();
-
-        map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 5000, null);
-        map.addMarker(timHortons);
-    }
-
-    /**
-     * Prints the tag of all fragments in this list
-     * List might contain null elements
-     * @param fraglist the list containing the fragments
-     */
-    public void printFragmentNames(List<Fragment> fraglist){
-        ListIterator<Fragment> list_it = fraglist.listIterator();
-        while (list_it.hasNext()){
-            Fragment curr_frag = list_it.next();
-            if (curr_frag != null) {
-                String tag = curr_frag.getTag();
-                if (tag != null)
-                    Log.d("event_frag_list", tag);
-                else
-                    Log.d("event_frag_list", "null tag of frag: " + curr_frag.toString());
-            }
-        }
-    }
-
-    private void fragmentDisplayManager(List<Fragment> fragList, Fragment shownFragment, FragmentTransaction ft){
-        ListIterator<Fragment> li = fragList.listIterator();
-        while (li.hasNext()){
-            Fragment currFrag = li.next();
-            if ((currFrag != null) && (!currFrag.equals(shownFragment))){
-                ft.hide(currFrag);
-            }
-        }
-        ft.show(shownFragment);
-    }
-
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -278,6 +210,7 @@ public class MainActivity extends AppCompatActivity
                 }
             }
             //ft.addToBackStack(null);
+            getSupportActionBar().setTitle(getResources().getString(R.string.app_name));
             ft.commit();
 
         } else if (id == R.id.events_subscribed) {
