@@ -1,6 +1,9 @@
 package org.cpen321.discovr;
 
 import android.Manifest;
+import android.app.SearchManager;
+import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -10,7 +13,10 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
+import android.view.Menu;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -48,7 +54,7 @@ public class MainActivity extends AppCompatActivity
 
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {// Get the SearchView and set the searchable configuration
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -122,6 +128,7 @@ public class MainActivity extends AppCompatActivity
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -139,8 +146,64 @@ public class MainActivity extends AppCompatActivity
 
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        //Search handler to exist on onCreate
+        handleIntent(getIntent());
+
     }
 
+    /**
+     * Overriden to create a search bar on the top toolbar
+     * @param menu
+     * @return
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu){
+        getMenuInflater().inflate(R.menu.toolbar_menu, menu);
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        searchView.setIconifiedByDefault(false);
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        searchView.setOnQueryTextListener(
+                new SearchView.OnQueryTextListener() {
+                    @Override
+                    public boolean onQueryTextChange(String newText){
+                        Log.d("search", "Text changed to: " + newText);
+                        //Try and perform autocomplete
+                        return true;
+                    }
+
+                    @Override
+                    public boolean onQueryTextSubmit(String query){
+                        Log.d("search", "Text submitted: " + query);
+                        //Make map go to location
+                        return true;
+                    }
+                });
+        return true;
+    }
+
+    /*
+        We might not need onNewIntent or handleIntent if we can handle
+        the map search within the onQueryTexListener class on the
+        onCreateOptionsMenu() method. If we decide to go down that path delete
+        the onNewIntent() and handleIntent() methods below as well as the call
+        to handleIntent() within the method onCreate()
+     */
+    @Override
+    protected void onNewIntent(Intent intent){
+        setIntent(intent);
+        handleIntent(intent);
+    }
+
+    private void handleIntent(Intent intent){
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())){
+            String query = intent.getStringExtra(SearchManager.QUERY);
+            Log.d("search", "Search intent with: " + query);
+            //Do something with query such as searching for it in database
+        }
+    }
 
     /**
      * Overriden to handle drawer opening and closing as well as handling
@@ -166,95 +229,7 @@ public class MainActivity extends AppCompatActivity
             } else {
                 super.onBackPressed();
             }
-
         }
-    }
-
-    /**
-     * Generate a polygon outline of the all the engineering buildings.
-     * @param map Map to draw upon.
-     */
-    void outlineEngineeringLocations(MapboxMap map){
-        ArrayList<LatLng> points = new ArrayList<>();
-        points.add(new LatLng(49.262667, -123.250605));
-        points.add(new LatLng(49.262828, -123.250047));
-        points.add(new LatLng(49.262520, -123.249789));
-        points.add(new LatLng(49.262975, -123.248416));
-        points.add(new LatLng(49.262530, -123.248067));
-        points.add(new LatLng(49.262855, -123.246844));
-        points.add(new LatLng(49.262383, -123.246490));
-        points.add(new LatLng(49.262064, -123.247418));
-        points.add(new LatLng(49.262288, -123.247628));
-        points.add(new LatLng(49.261851, -123.248910));
-        points.add(new LatLng(49.261690, -123.248808));
-        points.add(new LatLng(49.261420, -123.249580));
-
-        map.addPolygon(new PolygonOptions()
-                .addAll(points)
-                .alpha(0.35f)
-                .strokeColor(Color.parseColor("#000000"))
-                .fillColor(Color.parseColor("#3bb2d0"))
-        );
-
-        CameraPosition cameraPosition = new CameraPosition.Builder()
-                .target(new LatLng(49.262330, -123.248738))
-                .bearing(0)
-                .tilt(50)
-                .zoom(16)
-                .build();
-
-        map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 5000, null);
-    }
-
-    /**
-     * Add a custom pin to the Tim Hortons at Forestry.
-     * @param map Map to draw upon.
-     */
-    void locateTimHortons(MapboxMap map){
-        MarkerViewOptions timHortons = new MarkerViewOptions()
-                .position(new LatLng(49.260131, -123.248534))
-                .title("Forestry Tim Hortons")
-                .snippet("Where the line-up never gets short :(");
-
-        CameraPosition cameraPosition = new CameraPosition.Builder()
-                .target(timHortons.getPosition())
-                .bearing(270)
-                .tilt(50)
-                .zoom(17)
-                .build();
-
-        map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 5000, null);
-        map.addMarker(timHortons);
-    }
-
-    /**
-     * Prints the tag of all fragments in this list
-     * List might contain null elements
-     * @param fraglist the list containing the fragments
-     */
-    public void printFragmentNames(List<Fragment> fraglist){
-        ListIterator<Fragment> list_it = fraglist.listIterator();
-        while (list_it.hasNext()){
-            Fragment curr_frag = list_it.next();
-            if (curr_frag != null) {
-                String tag = curr_frag.getTag();
-                if (tag != null)
-                    Log.d("event_frag_list", tag);
-                else
-                    Log.d("event_frag_list", "null tag of frag: " + curr_frag.toString());
-            }
-        }
-    }
-
-    private void fragmentDisplayManager(List<Fragment> fragList, Fragment shownFragment, FragmentTransaction ft){
-        ListIterator<Fragment> li = fragList.listIterator();
-        while (li.hasNext()){
-            Fragment currFrag = li.next();
-            if ((currFrag != null) && (!currFrag.equals(shownFragment))){
-                ft.hide(currFrag);
-            }
-        }
-        ft.show(shownFragment);
     }
 
 
@@ -275,7 +250,7 @@ public class MainActivity extends AppCompatActivity
                     ft.remove(currFrag);
                 }
             }
-            //ft.addToBackStack(null);
+            getSupportActionBar().setTitle(getResources().getString(R.string.app_name));
             ft.commit();
 
         } else if (id == R.id.events_subscribed) {
@@ -291,6 +266,9 @@ public class MainActivity extends AppCompatActivity
             }
             ft.add(R.id.fragment_container, new EventsSubscribedFragment(), getResources().getString(R.string.events_sub_tag));
             ft.commit();
+            Log.d("events_sub", "commited the fragment");
+            getSupportActionBar().setTitle(getResources().getString(R.string.events_subscribed));
+
         } else if (id == R.id.events_nearby) {
 
         } else if (id == R.id.events_all) {
@@ -308,6 +286,8 @@ public class MainActivity extends AppCompatActivity
             }
             ft.add(R.id.fragment_container, new EventCreateFragment(), getResources().getString(R.string.events_create_tag));
             ft.commit();
+            Log.d("events_create", "commited the fragment");
+            getSupportActionBar().setTitle(getResources().getString((R.string.events_create)));
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

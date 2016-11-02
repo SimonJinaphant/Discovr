@@ -20,4 +20,7 @@
     <string name="events_sub_tag">Events Subscribed Fragment</string>
     <string name="events_create_tag">Events Create Fragment</string>
 
+    <!-- Search -->
+    <string name="action_search">Search locations</string>
+
 </resources>
