@@ -27,6 +27,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import com.mapbox.mapboxsdk.MapboxAccountManager;
+import com.mapbox.mapboxsdk.annotations.Marker;
 import com.mapbox.mapboxsdk.annotations.MarkerViewOptions;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
@@ -52,9 +53,10 @@ public class MainActivity extends AppCompatActivity
     Location userLocation = null;
     private static final int TWO_MINUTES = 1000 * 60 * 2;
 
-    //Still need reference to map after all
+    //Reference to map
     MapboxMap map;
 
+    Marker userPositionMarker;
 
 
     private static final int REQUEST_ALL_MAPBOX_PERMISSIONS = 3211;
@@ -78,7 +80,7 @@ public class MainActivity extends AppCompatActivity
         }
 
 
-        //Location Updater
+        //Location updater for position
         updateUserLocation();
 
         //Initialize mapbox variables
@@ -140,7 +142,7 @@ public class MainActivity extends AppCompatActivity
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-
+        //Button to fucus on user locatoin
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -150,12 +152,12 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+        //Create navigation drawer
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.app_name, R.string.app_name);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
-
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
@@ -252,8 +254,6 @@ public class MainActivity extends AppCompatActivity
         } catch (SecurityException e) {
 
         }
-
-
     }
 
     /**
@@ -268,12 +268,18 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-
+    /**
+     * Moves the map to user location as well as adding a marker on that position
+     */
     private void moveMapToLocation(){
         Log.d("location", "moving map");
         if (userLocation != null) {
-            MarkerViewOptions marker = new MarkerViewOptions().position(new LatLng(userLocation));
-            map.addMarker(marker);
+            if (userPositionMarker == null) {
+                MarkerViewOptions marker = new MarkerViewOptions().position(new LatLng(userLocation));
+                userPositionMarker = map.addMarker(marker);
+            } else {
+                userPositionMarker.setPosition(new LatLng(userLocation));
+            }
             CameraPosition position = new CameraPosition.Builder().target(new LatLng(userLocation)).zoom(17).tilt(30).build();
             Log.d("location", position.toString());
             map.animateCamera(CameraUpdateFactory.newCameraPosition(position), 7000);
