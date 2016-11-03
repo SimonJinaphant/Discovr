@@ -218,16 +218,6 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private void moveMapToLocation(){
-        Log.d("location", "moving map");
-        if (userLocation != null) {
-            MarkerViewOptions marker = new MarkerViewOptions().position(new LatLng(userLocation));
-            map.addMarker(marker);
-            CameraPosition position = new CameraPosition.Builder().target(new LatLng(userLocation)).zoom(17).tilt(30).build();
-            Log.d("location", position.toString());
-            map.animateCamera(CameraUpdateFactory.newCameraPosition(position), 7000);
-        }
-    }
 
 
     /**
@@ -275,6 +265,18 @@ public class MainActivity extends AppCompatActivity
         //Updates the user location on the map
         if (isBetterLocation(location, userLocation)) {
             userLocation = location;
+        }
+    }
+
+
+    private void moveMapToLocation(){
+        Log.d("location", "moving map");
+        if (userLocation != null) {
+            MarkerViewOptions marker = new MarkerViewOptions().position(new LatLng(userLocation));
+            map.addMarker(marker);
+            CameraPosition position = new CameraPosition.Builder().target(new LatLng(userLocation)).zoom(17).tilt(30).build();
+            Log.d("location", position.toString());
+            map.animateCamera(CameraUpdateFactory.newCameraPosition(position), 7000);
         }
     }
 
@@ -332,6 +334,7 @@ public class MainActivity extends AppCompatActivity
         }
         return provider1.equals(provider2);
     }
+
 
     /**
      * Overriden to handle drawer opening and closing as well as handling
