@@ -3,7 +3,8 @@
     <string name="draw_polygon">Show polygon overlay</string>
     <string name="action_settings">Settings</string>
     <string name="locate_tim_hortons">Locate Tim Hortons</string>
-    <string name="mapbox_key">pk.eyJ1Ijoic3ltb25qaW4iLCJhIjoiY2l1M2tzNHY2MGtwYzJ6cnd5eGFxZThvdSJ9.-cEuW_cz49IylF-WpRlX8g</string>
+    <!-- <string name="mapbox_key">pk.eyJ1Ijoic3ltb25qaW4iLCJhIjoiY2l1M2tzNHY2MGtwYzJ6cnd5eGFxZThvdSJ9.-cEuW_cz49IylF-WpRlX8g</string> -->
+    <string name="mapbox_key">pk.eyJ1Ijoic2Fuc25pY2tlbCIsImEiOiJjaXVrcDY2dzUwMDBmMm9ydG16bHBxYm9iIn0.f80e0-Yi92n_zb9_DgAJJQ</string>
     <string name="map_view">View Map</string>
     <string name="events_nearby">Events Nearby</string>
     <string name="events_subscribed">Subscribed Events</string>

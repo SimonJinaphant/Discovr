@@ -94,7 +94,7 @@ public class MainActivity extends AppCompatActivity
 
             // Build mapboxMap
             MapboxMapOptions options = new MapboxMapOptions();
-            options.styleUrl(Style.MAPBOX_STREETS);
+            options.styleUrl("mapbox://styles/sansnickel/ciuhw415o001k2iqo1mnjtjj2");
             options.camera(new CameraPosition.Builder()
                     .target(patagonia)
                     .zoom(9)
