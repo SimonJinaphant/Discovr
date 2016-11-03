@@ -52,6 +52,9 @@ public class MainActivity extends AppCompatActivity
     Location userLocation = null;
     private static final int TWO_MINUTES = 1000 * 60 * 2;
 
+    //Still need reference to map after all
+    MapboxMap map;
+
 
 
     private static final int REQUEST_ALL_MAPBOX_PERMISSIONS = 3211;
@@ -122,6 +125,7 @@ public class MainActivity extends AppCompatActivity
         mapFragment.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(MapboxMap mapboxMap) {
+                map = mapboxMap;
                 CameraPosition cameraPosition = new CameraPosition.Builder()
                         .target(mapboxMap.getCameraPosition().target)
                         .bearing(mapboxMap.getCameraPosition().bearing)
@@ -156,7 +160,14 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void moveMapToLocation(){
-
+        Log.d("location", "moving map");
+        if (userLocation != null) {
+            MarkerViewOptions marker = new MarkerViewOptions().position(new LatLng(userLocation));
+            map.addMarker(marker);
+            CameraPosition position = new CameraPosition.Builder().target(new LatLng(userLocation)).zoom(17).tilt(30).build();
+            Log.d("location", position.toString());
+            map.animateCamera(CameraUpdateFactory.newCameraPosition(position), 7000);
+        }
     }
 
 
@@ -173,7 +184,7 @@ public class MainActivity extends AppCompatActivity
         LocationListener netLocationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
-                updateLocationOnMap(location);
+                updateLocationVariable(location);
             }
 
             //Empty overrides for now
@@ -197,24 +208,14 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
-     * Updates the location on the mapbox map
+     * Updates user location variable
      * @param location
      */
-    private void updateLocationOnMap(Location location){
+    private void updateLocationVariable(Location location) {
         Log.d("location", "LocationUpdate: " + location.toString());
         //Updates the user location on the map
-        if (isBetterLocation(location, userLocation)){
+        if (isBetterLocation(location, userLocation)) {
             userLocation = location;
-            Log.d("location", "adding marker to map");
-            final MarkerViewOptions userLocationMarker = new MarkerViewOptions().position(new LatLng(userLocation));
-
-            mapFragment.getMapAsync(new OnMapReadyCallback() {
-                @Override
-                public void onMapReady(MapboxMap mapboxMap) {
-
-                    mapboxMap.addMarker(userLocationMarker);
-                }
-            });
         }
     }
 
