@@ -30,7 +30,7 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
 
     @Override
     public void onCreate(SQLiteDatabase db){
-        String CREATE_TABLE = "CREATE TABLE " + TABLE_USERDATA + "(" + KEY_ID + " INTEGER PRIMARY KEY," + KEY_INFO + " TEXT)";
+        String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS" + TABLE_USERDATA + "(" + KEY_ID + " INTEGER PRIMARY KEY," + KEY_INFO + " TEXT)";
         db.execSQL(CREATE_TABLE);
     }
 
