@@ -26,6 +26,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import com.mapbox.mapboxsdk.MapboxAccountManager;
+import com.mapbox.mapboxsdk.annotations.Marker;
+import com.mapbox.mapboxsdk.annotations.MarkerViewOptions;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.constants.Style;
@@ -52,6 +54,7 @@ public class MainActivity extends AppCompatActivity
     Location userLocation;
     LocationServices locationServices;
     FloatingActionButton fab;
+    Marker userPositionMarker;
 
     //Reference to map
     MapboxMap map;
@@ -120,11 +123,10 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onMapReady(MapboxMap mapboxMap) {
                 map = mapboxMap;
-                //Get user location and enable user location layer
+                //Get user location and [enable user location layer (BUGGED)]
                 userLocation = locationServices.getLastLocation();
                 Log.d("location", "location enabled is being set to true");
-                map.setMyLocationEnabled(true);
-                Log.d("location", "location enabled status" + map.isMyLocationEnabled());
+                map.setMyLocationEnabled(true); //TODO: find out why this function won't work
                 map.getMyLocationViewSettings().setForegroundTintColor(Color.parseColor("#FFB6C1"));
                 locationServices.addLocationListener(new LocationListener() {
                     @Override
@@ -144,7 +146,7 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (map != null) {
+                if ((map != null) && (userLocation != null)) {
                     Log.d("Location", "Current user location" + userLocation.toString());
                     cameraToUser();
                 }
@@ -168,8 +170,19 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    /**
+     * Moves the map to user location as well as adding a marker on that position
+     */
     private void cameraToUser(){
-        map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(userLocation), 16));
+        if (userPositionMarker == null){
+            MarkerViewOptions marker = new MarkerViewOptions().position(new LatLng(userLocation));
+            userPositionMarker = map.addMarker(marker);
+        } else {
+            userPositionMarker.setPosition(new LatLng(userLocation));
+        }
+        CameraPosition position = new CameraPosition.Builder().target(new LatLng(userLocation)).zoom(17).tilt(30).build();
+        Log.d("location", position.toString());
+        map.animateCamera(CameraUpdateFactory.newCameraPosition(position), 7000);
     }
 
     @Override
@@ -215,7 +228,7 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    /* toggleGps(!map.isMyLocationEnabl
+    /*
         We might not need onNewIntent or handleIntent if we can handle
         the map search within the onQueryTexListener class on the
         onCreateOptionsMenu() method. If we decide to go down that path delete
