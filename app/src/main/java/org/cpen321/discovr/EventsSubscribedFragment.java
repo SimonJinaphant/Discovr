@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import java.util.List;
@@ -29,23 +30,28 @@ public class EventsSubscribedFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+
+        return inflater.inflate(R.layout.fragment_events_subscribed, container, false);
+    }
+
+    @Override
+    public void onViewCreated (View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
         SQLiteDBHandler dbh = new SQLiteDBHandler(this.getActivity());
         List<EventInfo> allEvents = dbh.getAllEvents();
 
         for(EventInfo event : allEvents) {
             Button button = new Button(getActivity());
 
-            RelativeLayout.LayoutParams paramsd = new RelativeLayout.LayoutParams(150, 30);
-            paramsd.height = 600;
-            paramsd.width = 60;
+            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(150, 30);
+            params.height = 600;
+            params.width = 60;
+            button.setText(event.getID() + " " + event.getName() + "/n" + event.getTime() + "," + event.getLocation());
 
             ViewGroup viewGroup = (ViewGroup) getView();
-            viewGroup.addView(button, paramsd);
+            viewGroup.addView(button, params);
         }
-        return inflater.inflate(R.layout.fragment_events_subscribed, container, false);
     }
-
-
-
 
 }

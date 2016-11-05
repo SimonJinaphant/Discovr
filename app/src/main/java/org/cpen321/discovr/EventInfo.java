@@ -18,6 +18,16 @@ public class EventInfo {
     private String[] tags;
     private int size;
 
+    EventInfo(int id, String name, String buildingName, String time, String location, String eventDetails, String tags){
+        setID(id);
+        setName(name);
+        setBuildingName(buildingName);
+        setTime(time);
+        setLocation(location);
+        setEventDetails(eventDetails);
+        setTags(tags);
+    }
+    /*
     EventInfo(String id, String newInfo){
         this.id = parseInt(id);
         String[] splitInfo = newInfo.split("%");
@@ -34,7 +44,7 @@ public class EventInfo {
 
 
         size = this.tags.length;
-    }
+    }*/
 
     void setID( int id ){
         this.id = id;
@@ -60,6 +70,10 @@ public class EventInfo {
         this.eventDetails = eventDetails;
     }
 
+    void setTags (String tag){
+        this.tags = tag.split("%");
+        this.size = this.tags.length;
+    }
     void addTag( String tag ) {
         this.tags[size] = tag;
         size++;
@@ -79,10 +93,16 @@ public class EventInfo {
 
     String getEventDetails(){ return this.eventDetails; }
 
-    String[] getTags(){
-        return this.tags;
+    String getTags(){
+        String allTags = "";
+        for (String s:this.tags){
+            allTags = s + "%";
+        }
+        return allTags;
     }
 
+    /*
+    Used to test Sqlite when there were two columns ID | Rest of Event Details
     String getInfoString(){
         String infoString = getID() + "%" + getName() + "%" + getBuildingName() + "%" + getLocation() + "%" + getTime() + "%" + getEventDetails();
         for (String s:tags){
@@ -91,6 +111,7 @@ public class EventInfo {
 
         return infoString;
     }
+    */
 
 
 
