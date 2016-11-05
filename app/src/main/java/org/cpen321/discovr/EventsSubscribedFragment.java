@@ -30,6 +30,33 @@ public class EventsSubscribedFragment extends Fragment {
 
         SQLiteDBHandler dbh = new SQLiteDBHandler(this.getActivity());
 
+        EventInfo event1 = new EventInfo(1, "ELEC221 Midterm", "Lampe", "HEBB100", "2:00", "3:00", "12929939", "RIP");
+        EventInfo event2 = new EventInfo(2, "CPSC321 Midterm", "Farshid", "ICICS", "2:00", "3:00", "12929939", "RIP");
+        EventInfo event3 = new EventInfo(3, "CPSC123 Midterm", "Lampe", "ICICS", "2:00", "3:00", "12929939", "RIP");
+        EventInfo event4 = new EventInfo(4, "123", "Midterm", "ICIS", "2:00", "3:00", "12929939", "RIP");
+        EventInfo event5 = new EventInfo(5, "43456", "Lampe", "Midterm", "2:00", "3:00", "12929939", "RIP");
+        EventInfo event6 = new EventInfo(6, "Lampe Midterm", "Evans", "HEBB100", "2:00", "3:00", "12929939", "RIP");
+        dbh.addEvent(event1);
+        dbh.addEvent(event2);
+        dbh.addEvent(event3);
+        dbh.addEvent(event4);
+        dbh.addEvent(event5);
+        dbh.addEvent(event6);
+
+        Log.d("Searching..", "Search for midterm and Lampe");
+        EventInfo searchID = dbh.getEvent(4);
+        Log.d("Searching for event 4", searchID.getName());
+        List<EventInfo> searchMidterm = dbh.getEventbySearch("Midterm");
+        List<EventInfo> searchLampe = dbh.getEventbySearch("Lampe");
+
+        for(EventInfo event : searchMidterm) {
+            Log.d("Searched midterm...", event.getName() + " " + event.getHostName() + " " + event.getBuildingName());
+        }
+
+        for(EventInfo event : searchLampe) {
+            Log.d("Searched lampe...", event.getName() + " " + event.getHostName() + " " + event.getBuildingName());
+        }
+
         List<EventInfo> allEvents = dbh.getAllEvents();
 
         LinearLayout linearLayout = new LinearLayout(getActivity());
