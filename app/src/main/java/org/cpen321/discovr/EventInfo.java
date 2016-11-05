@@ -12,20 +12,21 @@ public class EventInfo {
     private int id;
     private String name;
     private String buildingName;
-    private String time;
+    private String startTime;
+    private String endTime;
     private String location;
     private String eventDetails;
-    private String[] tags;
+    /*private String[] tags;
     private int size;
+    */
 
-    EventInfo(int id, String name, String buildingName, String time, String location, String eventDetails, String tags){
+    EventInfo(int id, String name, String buildingName, String startTime, String endTime, String location, String eventDetails){
         setID(id);
         setName(name);
         setBuildingName(buildingName);
-        setTime(time);
+        setTime(startTime, endTime);
         setLocation(location);
         setEventDetails(eventDetails);
-        setTags(tags);
     }
     /*
     EventInfo(String id, String newInfo){
@@ -58,8 +59,9 @@ public class EventInfo {
         this.buildingName = buildingName;
     }
 
-    void setTime( String time ){
-        this.time = time;
+    void setTime( String startTime, String endTime ){
+        this.startTime = startTime;
+        this.endTime = endTime;
     }
 
     void setLocation( String location ){
@@ -70,7 +72,8 @@ public class EventInfo {
         this.eventDetails = eventDetails;
     }
 
-    void setTags (String tag){
+
+/*    void setTags (String tag){
         this.tags = tag.split("%");
         this.size = this.tags.length;
     }
@@ -78,6 +81,7 @@ public class EventInfo {
         this.tags[size] = tag;
         size++;
     }
+*/
 
     int getID (){
         return this.id;
@@ -87,19 +91,22 @@ public class EventInfo {
 
     String getBuildingName(){ return this.buildingName;}
 
-    String getTime(){ return this.time;}
+    String getStartTime(){ return this.startTime;}
+
+    String getEndTime(){ return this.endTime;
+    }
 
     String getLocation(){ return this.location;}
 
     String getEventDetails(){ return this.eventDetails; }
 
-    String getTags(){
+    /*String getTags(){
         String allTags = "";
         for (String s:this.tags){
             allTags = s + "%";
         }
         return allTags;
-    }
+    }*/
 
     /*
     Used to test Sqlite when there were two columns ID | Rest of Event Details
