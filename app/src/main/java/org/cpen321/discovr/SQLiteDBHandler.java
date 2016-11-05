@@ -24,6 +24,7 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
     //Column names in table "user"
     private static final String KEY_ID = "id";
     private static final String KEY_NAME = "name";
+    private static final String KEY_HOST = "hostName";
     private static final String KEY_BUILDING = "buildingName";
     private static final String KEY_STARTTIME = "startTime";
     private static final String KEY_ENDTIME = "endTime";
@@ -39,6 +40,7 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
         String CREATE_TABLE = "CREATE TABLE " + TABLE_SUBSCRIBED_EVENTS + "(" +
                 KEY_ID + " INTEGER PRIMARY KEY," +
                 KEY_NAME + " TEXT," +
+                KEY_HOST + " TEXT," +
                 KEY_BUILDING + " TEXT," +
                 KEY_STARTTIME + " TEXT," +
                 KEY_ENDTIME + " TEXT," +
@@ -63,6 +65,7 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
         Log.d("Place values", "Placing values...");
         values.put(KEY_ID, data.getID());
         values.put(KEY_NAME, data.getName());
+        values.put(KEY_HOST, data.getHostName());
         values.put(KEY_BUILDING, data.getBuildingName());
         values.put(KEY_STARTTIME, data.getStartTime());
         values.put(KEY_ENDTIME, data.getEndTime());
@@ -80,11 +83,27 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
     public EventInfo getEvent(int id){
         SQLiteDatabase db = this.getReadableDatabase();
 
-        Cursor cursor = db.query(TABLE_SUBSCRIBED_EVENTS, new String[]{KEY_ID, KEY_NAME, KEY_BUILDING, KEY_STARTTIME, KEY_ENDTIME, KEY_LOCATION, KEY_DETAILS }, KEY_ID + " =?", new String[]{String.valueOf(id) + "%"}, null, null, null, null);
+        Cursor cursor = db.query(TABLE_SUBSCRIBED_EVENTS, null, KEY_ID + " =?", new String[]{String.valueOf(id) + "%"}, null, null, null, null);
         if (cursor != null)
         cursor.moveToFirst();
 
-        EventInfo event = new EventInfo(cursor.getInt(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5), cursor.getString(6));
+        EventInfo event = new EventInfo(cursor.getInt(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5), cursor.getString(6), cursor.getString(7));
+        return event;
+    }
+
+    public EventInfo getEventbySearch(String searchString){
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.query(
+                TABLE_SUBSCRIBED_EVENTS,
+                null,
+                KEY_NAME + " = ? OR " + KEY_HOST + "= ? OR " + KEY_BUILDING + "= ?",
+                new String[]{"%" + searchString + "%", "%" + searchString + "%", "%" + searchString + "%"},
+                null, null, KEY_NAME);
+        if (cursor != null)
+            cursor.moveToFirst();
+
+        EventInfo event = new EventInfo(cursor.getInt(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5), cursor.getString(6), cursor.getString(7));
         return event;
     }
 
@@ -100,7 +119,7 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
         //loop through each row and add that event to the list
         if (cursor.moveToFirst()) {
             do {
-                EventInfo event = new EventInfo(cursor.getInt(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5), cursor.getString(6));
+                EventInfo event = new EventInfo(cursor.getInt(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5), cursor.getString(6), cursor.getString(7));
                 eventList.add(event);
             }
             while (cursor.moveToNext());
