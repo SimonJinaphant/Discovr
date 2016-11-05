@@ -5,9 +5,8 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
@@ -34,6 +33,8 @@ import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.constants.Style;
 import com.mapbox.mapboxsdk.exceptions.InvalidAccessTokenException;
 import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.mapboxsdk.location.LocationListener;
+import com.mapbox.mapboxsdk.location.LocationServices;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.MapboxMapOptions;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
@@ -42,7 +43,7 @@ import java.util.List;
 import java.util.ListIterator;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener{
 
     //Made these global as per tutorial, can be made local (?)
     NavigationView navigationView = null;
@@ -50,17 +51,15 @@ public class MainActivity extends AppCompatActivity
     SupportMapFragment mapFragment;
 
     //Location Variables
-    Location userLocation = null;
-    private static final int TWO_MINUTES = 1000 * 60 * 2;
+    Location userLocation;
+    LocationServices locationServices;
+    FloatingActionButton fab;
+    Marker userPositionMarker;
 
     //Reference to map
     MapboxMap map;
 
-    Marker userPositionMarker;
-
-
     private static final int REQUEST_ALL_MAPBOX_PERMISSIONS = 3211;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {// Get the SearchView and set the searchable configuration
@@ -70,6 +69,7 @@ public class MainActivity extends AppCompatActivity
         // TODO: Refactor permission code
         String[] permissions = {
                 Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION,
         };
 
         for (int i = 0; i < permissions.length; i++) {
@@ -78,10 +78,7 @@ public class MainActivity extends AppCompatActivity
                 ActivityCompat.requestPermissions(this, new String[]{permissions[i]}, REQUEST_ALL_MAPBOX_PERMISSIONS);
             }
         }
-
-
-        //Location updater for position
-        updateUserLocation();
+        locationServices = LocationServices.getLocationServices(this);
 
         //Initialize mapbox variables
         try {
@@ -95,8 +92,6 @@ public class MainActivity extends AppCompatActivity
         } catch (InvalidAccessTokenException e) {
             System.err.println("Invalid access token: " + e);
         }
-
-
 
         if (savedInstanceState == null) {
 
@@ -123,11 +118,12 @@ public class MainActivity extends AppCompatActivity
             mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentByTag("com.mapbox.map");
         }
 
-
         mapFragment.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(MapboxMap mapboxMap) {
                 map = mapboxMap;
+
+                //Initial map location on campus
                 CameraPosition cameraPosition = new CameraPosition.Builder()
                         .target(mapboxMap.getCameraPosition().target)
                         .bearing(mapboxMap.getCameraPosition().bearing)
@@ -136,23 +132,42 @@ public class MainActivity extends AppCompatActivity
                         .build();
 
                 mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 5000, null);
+
+
+                //Get user location and [enable user location layer (BUGGED)]
+                userLocation = locationServices.getLastLocation();
+                Log.d("location", "location enabled is being set to true");
+                map.setMyLocationEnabled(true); //TODO: find out why this function won't work
+                map.getMyLocationViewSettings().setForegroundTintColor(Color.parseColor("#FFB6C1"));
+                locationServices.addLocationListener(new LocationListener() {
+                    @Override
+                    public void onLocationChanged(Location location){
+                        if (location != null){
+                            Log.d("location", "User location has changed to: " + location.toString());
+                            userLocation = location;
+                        }
+                    }
+                });
+
             }
         });
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        //Button to fucus on user locatoin
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        //Button to focus on user location
+        fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d("location fab", "fab clicked");
-                moveMapToLocation();
+                if ((map != null) && (userLocation != null)) {
+                    Log.d("Location", "Current user location" + userLocation.toString());
+                    cameraToUser();
+                }
             }
         });
 
         //Create navigation drawer
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.app_name, R.string.app_name);
@@ -164,6 +179,30 @@ public class MainActivity extends AppCompatActivity
         //Search handler to exist on onCreate
         handleIntent(getIntent());
 
+    }
+
+    /**
+     * Moves the map to user location as well as adding a marker on that position
+     */
+    private void cameraToUser(){
+        if (userPositionMarker == null){
+            MarkerViewOptions marker = new MarkerViewOptions().position(new LatLng(userLocation));
+            userPositionMarker = map.addMarker(marker);
+        } else {
+            userPositionMarker.setPosition(new LatLng(userLocation));
+        }
+        CameraPosition position = new CameraPosition.Builder().target(new LatLng(userLocation)).zoom(17).tilt(30).build();
+        map.animateCamera(CameraUpdateFactory.newCameraPosition(position), 7000);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
     }
 
     /**
@@ -218,127 +257,6 @@ public class MainActivity extends AppCompatActivity
             Log.d("search", "Search intent with: " + query);
             //Do something with query such as searching for it in database
         }
-    }
-
-
-
-    /**
-     * Obtains the user location through both the
-     * GPS and Network
-     *
-     * TODO:See if we can't save power by using only one/changing update rate
-     *
-     */
-    private void updateUserLocation(){
-        LocationManager lm = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-        String netLocationProvider = lm.NETWORK_PROVIDER;
-        LocationListener netLocationListener = new LocationListener() {
-            @Override
-            public void onLocationChanged(Location location) {
-                updateLocationVariable(location);
-            }
-
-            //Empty overrides for now
-            @Override
-            public void onStatusChanged(String provider, int status, Bundle extras) {}
-
-            @Override
-            public void onProviderDisabled(String provider) {}
-
-            @Override
-            public void onProviderEnabled(String provider) {}
-        };
-
-        try {
-            lm.requestLocationUpdates(netLocationProvider, 0, 0, netLocationListener);
-        } catch (SecurityException e) {
-
-        }
-    }
-
-    /**
-     * Updates user location variable
-     * @param location
-     */
-    private void updateLocationVariable(Location location) {
-        Log.d("location", "LocationUpdate: " + location.toString());
-        //Updates the user location on the map
-        if (isBetterLocation(location, userLocation)) {
-            userLocation = location;
-        }
-    }
-
-    /**
-     * Moves the map to user location as well as adding a marker on that position
-     */
-    private void moveMapToLocation(){
-        Log.d("location", "moving map");
-        if (userLocation != null) {
-            if (userPositionMarker == null) {
-                MarkerViewOptions marker = new MarkerViewOptions().position(new LatLng(userLocation));
-                userPositionMarker = map.addMarker(marker);
-            } else {
-                userPositionMarker.setPosition(new LatLng(userLocation));
-            }
-            CameraPosition position = new CameraPosition.Builder().target(new LatLng(userLocation)).zoom(17).tilt(30).build();
-            Log.d("location", position.toString());
-            map.animateCamera(CameraUpdateFactory.newCameraPosition(position), 7000);
-        }
-    }
-
-    /** Determines whether one Location reading is better than the current Location fix
-     * @param location  The new Location that you want to evaluate
-     * @param currentBestLocation  The current Location fix, to which you want to compare the new one
-     * @see <a href="https://developer.android.com/guide/topics/location/strategies.html">developer reference</a>
-     */
-    protected boolean isBetterLocation(Location location, Location currentBestLocation) {
-        if (currentBestLocation == null) {
-            // A new location is always better than no location
-            return true;
-        }
-
-        // Check whether the new location fix is newer or older
-        long timeDelta = location.getTime() - currentBestLocation.getTime();
-        boolean isSignificantlyNewer = timeDelta > TWO_MINUTES;
-        boolean isSignificantlyOlder = timeDelta < -TWO_MINUTES;
-        boolean isNewer = timeDelta > 0;
-
-        // If it's been more than two minutes since the current location, use the new location
-        // because the user has likely moved
-        if (isSignificantlyNewer) {
-            return true;
-            // If the new location is more than two minutes older, it must be worse
-        } else if (isSignificantlyOlder) {
-            return false;
-        }
-
-        // Check whether the new location fix is more or less accurate
-        int accuracyDelta = (int) (location.getAccuracy() - currentBestLocation.getAccuracy());
-        boolean isLessAccurate = accuracyDelta > 0;
-        boolean isMoreAccurate = accuracyDelta < 0;
-        boolean isSignificantlyLessAccurate = accuracyDelta > 200;
-
-        // Check if the old and new location are from the same provider
-        boolean isFromSameProvider = isSameProvider(location.getProvider(),
-                currentBestLocation.getProvider());
-
-        // Determine location quality using a combination of timeliness and accuracy
-        if (isMoreAccurate) {
-            return true;
-        } else if (isNewer && !isLessAccurate) {
-            return true;
-        } else if (isNewer && !isSignificantlyLessAccurate && isFromSameProvider) {
-            return true;
-        }
-        return false;
-    }
-
-    /** Checks whether two providers are the same */
-    private boolean isSameProvider(String provider1, String provider2) {
-        if (provider1 == null) {
-            return provider2 == null;
-        }
-        return provider1.equals(provider2);
     }
 
 
