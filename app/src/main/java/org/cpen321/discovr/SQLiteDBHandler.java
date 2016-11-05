@@ -96,7 +96,7 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
         SQLiteDatabase db = this.getReadableDatabase();
 
         String query = "SELECT * FROM " + TABLE_SUBSCRIBED_EVENTS + " WHERE " + KEY_NAME + " LIKE ? OR " + KEY_BUILDING + " LIKE ? OR " + KEY_HOST + " LIKE ?";
-        Log.d("query string:", query);
+
         Cursor cursor = db.rawQuery(query, new String[]{"%" + searchString + "%", "%" + searchString + "%", "%" + searchString + "%"});
 
         if (cursor.moveToFirst()) {

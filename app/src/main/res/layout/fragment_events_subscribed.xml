@@ -7,7 +7,12 @@
     <!-- This layout will need to be filled programmatically,
             currently hardcoding to show framework      -->
 
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
     <LinearLayout
+        android:id="@+id/LL1"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
@@ -57,5 +62,5 @@
             android:background="@drawable/button_press_colors"
             android:padding="@dimen/button_margin"/>
     </LinearLayout>
-
+    </ScrollView>
 </FrameLayout>
