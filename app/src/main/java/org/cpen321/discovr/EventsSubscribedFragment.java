@@ -1,16 +1,14 @@
 package org.cpen321.discovr;
 
 
-import android.app.usage.UsageEvents;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 
 import java.util.List;
 
@@ -20,7 +18,6 @@ import java.util.List;
  */
 public class EventsSubscribedFragment extends Fragment {
 
-    Button button;
     public EventsSubscribedFragment() {
         // Required empty public constructor
     }
@@ -31,27 +28,33 @@ public class EventsSubscribedFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
-        return inflater.inflate(R.layout.fragment_events_subscribed, container, false);
-    }
-
-    @Override
-    public void onViewCreated (View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
         SQLiteDBHandler dbh = new SQLiteDBHandler(this.getActivity());
+
         List<EventInfo> allEvents = dbh.getAllEvents();
 
+        LinearLayout linearLayout = new LinearLayout(getActivity());
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+        linearLayout.setLayoutParams(layoutParams);
+        linearLayout.setOrientation(LinearLayout.HORIZONTAL); //or VERTICAL
+
+        LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+
+        int id = 0;
         for(EventInfo event : allEvents) {
+            Log.d("Getting events", event.getName());
             Button button = new Button(getActivity());
 
-            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(150, 30);
-            params.height = 600;
-            params.width = 60;
-            button.setText(event.getID() + " " + event.getName() + "/n" + event.getTime() + "," + event.getLocation());
+            button.setId(id);
+            id++;
 
-            ViewGroup viewGroup = (ViewGroup) getView();
-            viewGroup.addView(button, params);
+            button.setText(event.getID() + " " + event.getName() + "\n" + event.getStartTime() + "-" + event.getEndTime() +  "," + event.getLocation());
+            button.setLayoutParams(buttonParams);
+            linearLayout.addView(button);
         }
+
+        container.addView(linearLayout);
+
+        return inflater.inflate(R.layout.fragment_events_subscribed, container, false);
     }
 
 }

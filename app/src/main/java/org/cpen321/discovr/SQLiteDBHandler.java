@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,10 +25,10 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
     private static final String KEY_ID = "id";
     private static final String KEY_NAME = "name";
     private static final String KEY_BUILDING = "buildingName";
-    private static final String KEY_TIME = "time";
+    private static final String KEY_STARTTIME = "startTime";
+    private static final String KEY_ENDTIME = "endTime";
     private static final String KEY_LOCATION = "location";
     private static final String KEY_DETAILS = "eventDetails";
-    private static final String KEY_TAGS = "tags";
 
     public SQLiteDBHandler (Context context){
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -35,14 +36,14 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
 
     @Override
     public void onCreate(SQLiteDatabase db){
-        String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS" + TABLE_SUBSCRIBED_EVENTS + "(" +
+        String CREATE_TABLE = "CREATE TABLE " + TABLE_SUBSCRIBED_EVENTS + "(" +
                 KEY_ID + " INTEGER PRIMARY KEY," +
                 KEY_NAME + " TEXT," +
                 KEY_BUILDING + " TEXT," +
-                KEY_TIME + " TEXT," +
+                KEY_STARTTIME + " TEXT," +
+                KEY_ENDTIME + " TEXT," +
                 KEY_LOCATION + " TEXT," +
-                KEY_DETAILS + " TEXT," +
-                KEY_TAGS + ");";
+                KEY_DETAILS + " TEXT" + ");";
         db.execSQL(CREATE_TABLE);
     }
 
@@ -56,17 +57,20 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
 
     public void addEvent(EventInfo data){
         SQLiteDatabase db = this.getWritableDatabase();
+        Log.d("Get Database", "Got database");
 
         ContentValues values = new ContentValues();
+        Log.d("Place values", "Placing values...");
         values.put(KEY_ID, data.getID());
         values.put(KEY_NAME, data.getName());
         values.put(KEY_BUILDING, data.getBuildingName());
-        values.put(KEY_TIME, data.getTime());
+        values.put(KEY_STARTTIME, data.getStartTime());
+        values.put(KEY_ENDTIME, data.getEndTime());
         values.put(KEY_LOCATION, data.getLocation());
         values.put(KEY_DETAILS, data.getEventDetails());
-        values.put(KEY_TAGS, data.getTags());
 
         //Insert new row
+        Log.d("Add to db", "adding to db...");
         db.insert(TABLE_SUBSCRIBED_EVENTS, null, values);
         //close database connection
         db.close();
@@ -76,7 +80,7 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
     public EventInfo getEvent(int id){
         SQLiteDatabase db = this.getReadableDatabase();
 
-        Cursor cursor = db.query(TABLE_SUBSCRIBED_EVENTS, new String[]{KEY_ID, KEY_NAME, KEY_BUILDING, KEY_TIME, KEY_LOCATION, KEY_DETAILS, KEY_TAGS }, KEY_ID + " =?", new String[]{String.valueOf(id) + "%"}, null, null, null, null);
+        Cursor cursor = db.query(TABLE_SUBSCRIBED_EVENTS, new String[]{KEY_ID, KEY_NAME, KEY_BUILDING, KEY_STARTTIME, KEY_ENDTIME, KEY_LOCATION, KEY_DETAILS }, KEY_ID + " =?", new String[]{String.valueOf(id) + "%"}, null, null, null, null);
         if (cursor != null)
         cursor.moveToFirst();
 
@@ -125,10 +129,10 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
         values.put(KEY_ID, event.getID());
         values.put(KEY_NAME, event.getName());
         values.put(KEY_BUILDING, event.getBuildingName());
-        values.put(KEY_TIME, event.getTime());
+        values.put(KEY_STARTTIME, event.getStartTime());
+        values.put(KEY_ENDTIME, event.getEndTime());
         values.put(KEY_LOCATION, event.getLocation());
         values.put(KEY_DETAILS, event.getEventDetails());
-        values.put(KEY_TAGS, event.getTags());
 
         //update that row
         return db.update(TABLE_SUBSCRIBED_EVENTS, values, KEY_ID + " = ?", new String[]{String.valueOf(event.getID())});
