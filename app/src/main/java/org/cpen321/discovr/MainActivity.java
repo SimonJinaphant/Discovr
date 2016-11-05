@@ -100,7 +100,7 @@ public class MainActivity extends AppCompatActivity
 
             // Build mapboxMap
             MapboxMapOptions options = new MapboxMapOptions();
-            options.styleUrl("mapbox://styles/mapbox/outdoors-v9");//"mapbox://styles/sansnickel/ciuhw415o001k2iqo1mnjtjj2");
+            options.styleUrl("mapbox://styles/sansnickel/ciuhw415o001k2iqo1mnjtjj2");
             options.camera(new CameraPosition.Builder()
                     .target(patagonia)
                     .zoom(9)
@@ -123,6 +123,18 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onMapReady(MapboxMap mapboxMap) {
                 map = mapboxMap;
+
+                //Initial map location on campus
+                CameraPosition cameraPosition = new CameraPosition.Builder()
+                        .target(mapboxMap.getCameraPosition().target)
+                        .bearing(mapboxMap.getCameraPosition().bearing)
+                        .tilt(50)
+                        .zoom(16)
+                        .build();
+
+                mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 5000, null);
+
+
                 //Get user location and [enable user location layer (BUGGED)]
                 userLocation = locationServices.getLastLocation();
                 Log.d("location", "location enabled is being set to true");
