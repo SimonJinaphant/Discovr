@@ -11,6 +11,7 @@ import static java.lang.Integer.parseInt;
 public class EventInfo {
     private int id;
     private String name;
+    private String hostName;
     private String buildingName;
     private String startTime;
     private String endTime;
@@ -20,9 +21,10 @@ public class EventInfo {
     private int size;
     */
 
-    EventInfo(int id, String name, String buildingName, String startTime, String endTime, String location, String eventDetails){
+    EventInfo(int id, String name, String hostName, String buildingName, String startTime, String endTime, String location, String eventDetails){
         setID(id);
         setName(name);
+        setHostName(hostName);
         setBuildingName(buildingName);
         setTime(startTime, endTime);
         setLocation(location);
@@ -53,6 +55,10 @@ public class EventInfo {
 
     void setName( String name ){
         this.name = name;
+    }
+
+    void setHostName( String hostName ){
+        this.hostName = hostName;
     }
 
     void setBuildingName( String buildingName ){
@@ -89,12 +95,13 @@ public class EventInfo {
 
     String getName (){return this.name; }
 
+    String getHostName(){return this.hostName; }
+
     String getBuildingName(){ return this.buildingName;}
 
     String getStartTime(){ return this.startTime;}
 
-    String getEndTime(){ return this.endTime;
-    }
+    String getEndTime(){ return this.endTime;}
 
     String getLocation(){ return this.location;}
 
