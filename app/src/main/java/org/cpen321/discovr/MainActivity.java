@@ -69,6 +69,7 @@ public class MainActivity extends AppCompatActivity
         // TODO: Refactor permission code
         String[] permissions = {
                 Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION,
         };
 
         for (int i = 0; i < permissions.length; i++) {
@@ -77,6 +78,7 @@ public class MainActivity extends AppCompatActivity
                 ActivityCompat.requestPermissions(this, new String[]{permissions[i]}, REQUEST_ALL_MAPBOX_PERMISSIONS);
             }
         }
+        locationServices = LocationServices.getLocationServices(this);
 
         //Initialize mapbox variables
         try {
@@ -115,9 +117,6 @@ public class MainActivity extends AppCompatActivity
         } else {
             mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentByTag("com.mapbox.map");
         }
-
-        locationServices = LocationServices.getLocationServices(this);
-
 
         mapFragment.getMapAsync(new OnMapReadyCallback() {
             @Override
@@ -193,7 +192,6 @@ public class MainActivity extends AppCompatActivity
             userPositionMarker.setPosition(new LatLng(userLocation));
         }
         CameraPosition position = new CameraPosition.Builder().target(new LatLng(userLocation)).zoom(17).tilt(30).build();
-        Log.d("location", position.toString());
         map.animateCamera(CameraUpdateFactory.newCameraPosition(position), 7000);
     }
 
