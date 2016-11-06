@@ -345,6 +345,21 @@ public class MainActivity extends AppCompatActivity
             ft.commit();
             Log.d("events_create", "commited the fragment");
             getSupportActionBar().setTitle(getResources().getString((R.string.events_create)));
+        } else if (id == R.id.test_frag){
+            FragmentManager fm = getSupportFragmentManager();
+            FragmentTransaction ft = fm.beginTransaction();
+            List<Fragment> all_frag = fm.getFragments();
+            ListIterator<Fragment> li = all_frag.listIterator();
+            while (li.hasNext()){
+                Fragment currFrag = li.next();
+                if ((currFrag != null) && (!currFrag.equals(mapFragment))){
+                    ft.remove(currFrag);
+                }
+            }
+            ft.add(R.id.fragment_container, new BlankFragment(), "test fragment");
+            ft.commit();
+            Log.d("testing_fragment", "commited the fragment");
+            getSupportActionBar().setTitle("Testing Fragment");
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
