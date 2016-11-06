@@ -281,7 +281,6 @@ public class MainActivity extends AppCompatActivity
                                 Log.d("location", position.toString());
                                 map.animateCamera(CameraUpdateFactory.newCameraPosition(position), 7000);
                                 Position pos = Position.fromCoordinates(a.getLongitude(), a.getLatitude());
-
                                 try{
                                     getRoute(Position.fromCoordinates(userLocation.getLongitude(), userLocation.getLatitude()), pos);
                                 } catch (ServicesException servicesException) {
