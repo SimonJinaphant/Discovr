@@ -21,7 +21,7 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
     private static final String DATABASE_NAME = "LocalEvents";
     //Table name
     private static final String TABLE_SUBSCRIBED_EVENTS = "SubscribedEvents";
-    //Column names in table "user"
+    //Column names in table "SubscribedEvents"
     private static final String KEY_ID = "id";
     private static final String KEY_NAME = "name";
     private static final String KEY_HOST = "hostName";
@@ -35,6 +35,7 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
+    //Creates table when getReadableDatabase or getWritableDatabase is called and no DB exists
     @Override
     public void onCreate(SQLiteDatabase db){
         String CREATE_TABLE = "CREATE TABLE " + TABLE_SUBSCRIBED_EVENTS + "(" +
@@ -49,6 +50,7 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
         db.execSQL(CREATE_TABLE);
     }
 
+    //Creates new db if new version > old version
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion){
         //Drop older tables if they existed
@@ -57,12 +59,12 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
         onCreate(db);
     }
 
+    //Adds new event to database
     public void addEvent(EventInfo data){
         SQLiteDatabase db = this.getWritableDatabase();
-        Log.d("Get Database", "Got database");
 
+        //Place values in contentValues
         ContentValues values = new ContentValues();
-        Log.d("Place values", "Placing values...");
         values.put(KEY_ID, data.getID());
         values.put(KEY_NAME, data.getName());
         values.put(KEY_HOST, data.getHostName());
@@ -73,8 +75,8 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
         values.put(KEY_DETAILS, data.getEventDetails());
 
         //Insert new row
-        Log.d("Add to db", "adding to db...");
         db.insert(TABLE_SUBSCRIBED_EVENTS, null, values);
+
         //close database connection
         db.close();
     }
@@ -83,6 +85,7 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
     public EventInfo getEvent(int id){
         SQLiteDatabase db = this.getReadableDatabase();
 
+        //Select all rows from TABLE_SUBSCRIBED_EVENTS where key_ID = id
         Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_SUBSCRIBED_EVENTS + " WHERE " + KEY_ID + " = ? ", new String[]{String.valueOf(id)} );
         if (cursor != null)
         cursor.moveToFirst();
@@ -95,10 +98,12 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
         List<EventInfo> eventList = new ArrayList<EventInfo>();
         SQLiteDatabase db = this.getReadableDatabase();
 
+        //Select all rows from TABLE_SUBSCRIBED_EVENTS where KEY_NAME contains searchString or KEY_BUILDING contains searchString or KEY_HOST contains searchString
         String query = "SELECT * FROM " + TABLE_SUBSCRIBED_EVENTS + " WHERE " + KEY_NAME + " LIKE ? OR " + KEY_BUILDING + " LIKE ? OR " + KEY_HOST + " LIKE ?";
 
         Cursor cursor = db.rawQuery(query, new String[]{"%" + searchString + "%", "%" + searchString + "%", "%" + searchString + "%"});
 
+        //Add all those elements to a list
         if (cursor.moveToFirst()) {
             do {
                 Log.d("found events", cursor.getString(1));
@@ -108,6 +113,7 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
             while (cursor.moveToNext());
 
         }
+
         //close cursor and return list of all events
         cursor.close();
         return eventList;
@@ -117,6 +123,7 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
     public List<EventInfo> getAllEvents() {
         List<EventInfo> eventList = new ArrayList<EventInfo>();
 
+        //Select all rows from TABLE_SUBSCRIBED_EVENTS
         String selectQuery = "SELECT * FROM " + TABLE_SUBSCRIBED_EVENTS;
 
         SQLiteDatabase db = this.getReadableDatabase();
