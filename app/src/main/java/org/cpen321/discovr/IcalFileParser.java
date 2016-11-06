@@ -16,12 +16,13 @@ import java.util.Iterator;
 
 /**
  * Created by Yueyue Zhang on 2016/11/2.
+ * Reference: http://www.cnblogs.com/parryyang/p/5948436.html
  *
- * 1. See output in logcat rather than phone or emulator
+ * 1. See output in logcat
  * 2. Finish up parsing info from ical files only, havent saved them as "Event" object
  * 3. Test one ical file only, more tests are necessary
  * 4. Replace  log.e("") to store info in the format of "Event"
- * 5. Modified the Manifest.xml for testing only
+ * 5. Modified the Manifest.xml for testing only, dont merge for now!
  */
 
 public class IcalFileParser extends Activity {
