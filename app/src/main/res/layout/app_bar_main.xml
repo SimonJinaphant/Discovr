@@ -19,6 +19,24 @@
 
     </android.support.design.widget.AppBarLayout>
 
+    <com.mapbox.services.android.geocoder.ui.GeocoderAutoCompleteView
+        android:id="@+id/query"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginEnd="18dp"
+        android:layout_marginStart="18dp"
+        android:layout_marginTop="14dp"
+        android:background="@android:color/white"
+        android:elevation="12dp"
+        android:hint="Search Location"
+        android:padding="10dp"
+        android:maxLines="1"
+        android:textColor="@android:color/black"/>
+
+
     <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"

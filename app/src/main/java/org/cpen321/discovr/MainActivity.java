@@ -47,7 +47,6 @@ import com.mapbox.mapboxsdk.maps.MapboxMapOptions;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.mapboxsdk.maps.SupportMapFragment;
 import com.mapbox.services.Constants;
-import com.mapbox.services.android.geocoder.ui.GeocoderAutoCompleteView;
 import com.mapbox.services.commons.ServicesException;
 import com.mapbox.services.commons.geojson.LineString;
 import com.mapbox.services.commons.models.Position;
@@ -55,10 +54,6 @@ import com.mapbox.services.directions.v5.DirectionsCriteria;
 import com.mapbox.services.directions.v5.MapboxDirections;
 import com.mapbox.services.directions.v5.models.DirectionsResponse;
 import com.mapbox.services.directions.v5.models.DirectionsRoute;
-import com.mapbox.services.geocoding.v5.GeocodingCriteria;
-import com.mapbox.services.geocoding.v5.MapboxGeocoding;
-import com.mapbox.services.geocoding.v5.models.CarmenFeature;
-import com.mapbox.services.geocoding.v5.models.GeocodingResponse;
 
 import java.io.IOException;
 import java.util.List;
@@ -170,8 +165,8 @@ public class MainActivity extends AppCompatActivity
                 map.getMyLocationViewSettings().setForegroundTintColor(Color.parseColor("#FFB6C1"));
                 locationServices.addLocationListener(new LocationListener() {
                     @Override
-                    public void onLocationChanged(Location location){
-                        if (location != null){
+                    public void onLocationChanged(Location location) {
+                        if (location != null) {
                             Log.d("location", "User location has changed to: " + location.toString());
                             userLocation = location;
                         }
@@ -187,12 +182,13 @@ public class MainActivity extends AppCompatActivity
         //Button to fucus on user locatoin
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.d("location fab", "fab clicked");
-                moveMapToLocation(new LatLng(userLocation));
-            }
-        });
+
+                                   @Override
+                                   public void onClick(View view) {
+                                       Log.d("location fab", "fab clicked");
+                                       moveMapToLocation(new LatLng(userLocation));
+                                   }
+                               });
 
         //Create navigation drawer
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -291,8 +287,6 @@ public class MainActivity extends AppCompatActivity
                                 } catch (ServicesException servicesException) {
                                     servicesException.printStackTrace();
                                 }
-
-
                             }
                         } catch (IOException e) {
                             e.printStackTrace();
