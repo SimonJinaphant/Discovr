@@ -8,16 +8,11 @@ import android.widget.TextView;
 import net.fortuna.ical4j.data.CalendarBuilder;
 import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.model.Component;
-import net.fortuna.ical4j.model.IndexedComponentList;
 import net.fortuna.ical4j.model.ParameterList;
-import net.fortuna.ical4j.model.Property;
-import net.fortuna.ical4j.model.component.VAlarm;
 import net.fortuna.ical4j.model.component.VEvent;
 
 import java.io.InputStream;
 import java.util.Iterator;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Created by Yueyue Zhang on 2016/11/2.
@@ -29,13 +24,15 @@ import java.util.regex.Pattern;
  * 5. Modified the Manifest.xml for testing only
  */
 
-public class EventActivity extends Activity {
+public class IcalFileParser extends Activity {
     TextView textview;
     String path;
 
     public void onCreate(Bundle save) {
         super.onCreate(save);
-        setContentView(R.layout.activity_event);
+
+        //combine the xml file to the current activity
+        setContentView(R.layout.ical_event_test);
         textview = (TextView) findViewById(R.id.textView);
         textview.setText("print out in log...");
 
@@ -48,6 +45,7 @@ public class EventActivity extends Activity {
                 VEvent event = (VEvent) i.next();
                 // time starts
                 Log.e("error","Starts from:  " + event.getStartDate().getValue());
+
                 // time ends
                 Log.e("error","Ends at:  " + event.getEndDate().getValue());
                 if (null != event.getProperty("DTSTART")) {
