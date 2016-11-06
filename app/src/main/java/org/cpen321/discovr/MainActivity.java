@@ -5,6 +5,7 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -28,9 +29,12 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.widget.Toast;
+
 import com.mapbox.mapboxsdk.MapboxAccountManager;
 import com.mapbox.mapboxsdk.annotations.Marker;
 import com.mapbox.mapboxsdk.annotations.MarkerViewOptions;
+import com.mapbox.mapboxsdk.annotations.PolylineOptions;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.constants.Style;
@@ -40,9 +44,15 @@ import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.MapboxMapOptions;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.mapboxsdk.maps.SupportMapFragment;
+import com.mapbox.services.Constants;
 import com.mapbox.services.android.geocoder.ui.GeocoderAutoCompleteView;
 import com.mapbox.services.commons.ServicesException;
+import com.mapbox.services.commons.geojson.LineString;
 import com.mapbox.services.commons.models.Position;
+import com.mapbox.services.directions.v5.DirectionsCriteria;
+import com.mapbox.services.directions.v5.MapboxDirections;
+import com.mapbox.services.directions.v5.models.DirectionsResponse;
+import com.mapbox.services.directions.v5.models.DirectionsRoute;
 import com.mapbox.services.geocoding.v5.GeocodingCriteria;
 import com.mapbox.services.geocoding.v5.MapboxGeocoding;
 import com.mapbox.services.geocoding.v5.models.CarmenFeature;
@@ -53,6 +63,8 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Locale;
 
+import retrofit2.Call;
+import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity
@@ -72,6 +84,7 @@ public class MainActivity extends AppCompatActivity
 
     Marker userPositionMarker;
     Marker pointOfInterestMarker;
+    private DirectionsRoute currentRoute;
 
 
     private static final int REQUEST_ALL_MAPBOX_PERMISSIONS = 3211;
@@ -156,19 +169,6 @@ public class MainActivity extends AppCompatActivity
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        //Testing mapbox automatic geocoder
-        GeocoderAutoCompleteView autocomplete = (GeocoderAutoCompleteView) findViewById(R.id.query);
-        autocomplete.setAccessToken(MapboxAccountManager.getInstance().getAccessToken());
-        autocomplete.setType(GeocodingCriteria.TYPE_POI);
-        autocomplete.setOnFeatureListener(new GeocoderAutoCompleteView.OnFeatureListener() {
-            @Override
-            public void OnFeatureClick(CarmenFeature feature) {
-                Position position = feature.asPosition();
-                moveMapToLocation(new LatLng(position.getLatitude(), position.getLongitude()));
-            }
-
-
-        });
 
         //Button to fucus on user locatoin
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -221,7 +221,7 @@ public class MainActivity extends AppCompatActivity
                     @Override
                     public boolean onQueryTextSubmit(String query){
                         Log.d("search", "Text submitted: " + query);
-                        /*
+
                         Geocoder gc = new Geocoder(getBaseContext(), Locale.getDefault());
 
                         try {
@@ -243,20 +243,83 @@ public class MainActivity extends AppCompatActivity
                                 CameraPosition position = new CameraPosition.Builder().target(new LatLng(a.getLatitude(), a.getLongitude())).zoom(17).tilt(30).build();
                                 Log.d("location", position.toString());
                                 map.animateCamera(CameraUpdateFactory.newCameraPosition(position), 7000);
+                                Position pos = Position.fromCoordinates(a.getLongitude(), a.getLatitude());
+
+                                try{
+                                    getRoute(Position.fromCoordinates(userLocation.getLongitude(), userLocation.getLatitude()), pos);
+                                } catch (ServicesException servicesException) {
+                                    servicesException.printStackTrace();
+                                }
 
 
                             }
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
-
-                        */
                         return true;
                     }
                 });
         return true;
     }
 
+    private void getRoute(Position origin, Position destination) throws ServicesException {
+        MapboxDirections client = new MapboxDirections.Builder()
+                .setOrigin(origin)
+                .setDestination(destination)
+                .setProfile(DirectionsCriteria.PROFILE_CYCLING)
+                .setAccessToken(getResources().getString(R.string.mapbox_key))
+                .build();
+
+        client.enqueueCall(new Callback<DirectionsResponse>() {
+            @Override
+            public void onResponse(Call<DirectionsResponse> call, Response<DirectionsResponse> response) {
+                // You can get the generic HTTP info about the response
+                Log.d("direction", "Response code: " + response.code());
+                if (response.body() == null) {
+                    Log.e("direction", "No routes found, make sure you set the right user and access token.");
+                    return;
+                } else if (response.body().getRoutes().size() < 1) {
+                    Log.e("direction", "No routes found");
+                    return;
+                }
+
+                // Print some info about the route
+                currentRoute = response.body().getRoutes().get(0);
+                Log.d("direction", "Distance: " + currentRoute.getDistance());
+                Toast.makeText(
+                        MainActivity.this,
+                        "Route is " + currentRoute.getDistance() + " meters long.",
+                        Toast.LENGTH_SHORT).show();
+
+                // Draw the route on the map
+                drawRoute(currentRoute);
+            }
+
+            @Override
+            public void onFailure(Call<DirectionsResponse> call, Throwable throwable) {
+                Log.e("direction", "Error: " + throwable.getMessage());
+                Toast.makeText(MainActivity.this, "Error: " + throwable.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void drawRoute(DirectionsRoute route) {
+        // Convert LineString coordinates into LatLng[]
+        LineString lineString = LineString.fromPolyline(route.getGeometry(), Constants.OSRM_PRECISION_V5);
+        List<Position> coordinates = lineString.getCoordinates();
+        LatLng[] points = new LatLng[coordinates.size()];
+        for (int i = 0; i < coordinates.size(); i++) {
+            points[i] = new LatLng(
+                    coordinates.get(i).getLatitude(),
+                    coordinates.get(i).getLongitude());
+        }
+
+        // Draw Points on MapView
+        map.addPolyline(new PolylineOptions()
+                .add(points)
+                .color(Color.parseColor("#009688"))
+                .width(5));
+    }
 
     /*
         We might not need onNewIntent or handleIntent if we can handle
