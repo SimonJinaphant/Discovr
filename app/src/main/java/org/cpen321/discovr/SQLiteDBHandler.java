@@ -173,9 +173,9 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
     }
 
     //Delete single Event
-    public void deleteEvent(EventInfo event){
+    public void deleteEvent(int eventID){
         SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(TABLE_SUBSCRIBED_EVENTS, KEY_ID + " = ?", new String[]{String.valueOf(event.getID())});
+        db.delete(TABLE_SUBSCRIBED_EVENTS, KEY_ID + " = ?", new String[]{String.valueOf(eventID)});
         db.close();
     }
 
