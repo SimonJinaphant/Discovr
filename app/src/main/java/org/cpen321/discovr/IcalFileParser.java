@@ -37,12 +37,15 @@ public class IcalFileParser extends Activity {
         textview.setText("print out in log...");
 
         try {
+            //asset is for storing local files --> will be replaced by ical files on android phone
             InputStream fin=getClassLoader().getResourceAsStream("assets/CourseSchedule.ics");
             CalendarBuilder build = new CalendarBuilder();
             Calendar calendar = build.build(fin);
 
             for (Iterator i = calendar.getComponents(Component.VEVENT).iterator(); i.hasNext();) {
                 VEvent event = (VEvent) i.next();
+
+                // -----------repalce all log.e() to save events on local db----------------------
                 // time starts
                 Log.e("error","Starts from:  " + event.getStartDate().getValue());
 
@@ -54,6 +57,7 @@ public class IcalFileParser extends Activity {
                         Log.e("error",parameters.getParameter("VALUE").getValue());
                     }
                 }
+
                 // Title
                 Log.e("error","Title:  " + event.getSummary().getValue());
 
@@ -66,28 +70,34 @@ public class IcalFileParser extends Activity {
                 if (null != event.getDescription()) {
                     Log.e("error","Description:  " + event.getDescription().getValue());
                 }
+
                 // Time created
                 if (null != event.getCreated()) {
                     Log.e("error","Time Created:  " + event.getCreated().getValue());
                 }
+
                 // Last Modification
                 if (null != event.getLastModified()) {
                     Log.e("error","Last Modification:  " + event.getLastModified().getValue());
                 }
+
                 // Repeat Frequency
                 if (null != event.getProperty("RRULE")) {
                     Log.e("error","Repeat Frequency:  " + event.getProperty("RRULE").getValue());
                 }
+
                 // Attendee
                 if (null != event.getProperty("ATTENDEE")) {
                     ParameterList parameters = event.getProperty("ATTENDEE").getParameters();
                     Log.e("error",event.getProperty("ATTENDEE").getValue().split(":")[1]);
                     Log.e("error",parameters.getParameter("PARTSTAT").getValue());
                 }
-                Log.e("error","----------------------------");
+                Log.e("error","-------------------------------");
             }
 
+            //for testing purposes only
             Log.e("error","done parsing here");
+
         } catch (Exception e) {
             e.printStackTrace();
         }
