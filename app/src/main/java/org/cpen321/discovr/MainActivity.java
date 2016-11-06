@@ -268,13 +268,30 @@ public class MainActivity extends AppCompatActivity
      */
     @Override
     public void onBackPressed() {
+        FragmentManager manager = getSupportFragmentManager();
+        Fragment currentFragment = manager.findFragmentById(R.id.fragment_container);
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        } else {
-            FragmentManager manager = getSupportFragmentManager();
+        } else if (currentFragment instanceof SingleEventFragment) {
+            FragmentTransaction ft = manager.beginTransaction();
+            List<Fragment> all_frag = manager.getFragments();
+            ListIterator<Fragment> li = all_frag.listIterator();
+            while (li.hasNext()){
+                Fragment currFrag = li.next();
+                if ((currFrag != null) && (!currFrag.equals(mapFragment))){
+                    ft.remove(currFrag);
+                }
+            }
+            ft.add(R.id.fragment_container, new EventsSubscribedFragment(), getResources().getString(R.string.events_sub_tag));
+            ft.commit();
+            Log.d("events_sub", "commited the fragment");
+            getSupportActionBar().setTitle(getResources().getString(R.string.events_subscribed));
+        }else {
+
             if (manager.getBackStackEntryCount() > 0){
-                Fragment currentFragment = manager.findFragmentById(R.id.fragment_container);
+
                 if (currentFragment instanceof SupportMapFragment){
                     navigationView.getMenu().getItem(0).setChecked(true);
                 } else if (currentFragment instanceof EventsSubscribedFragment){

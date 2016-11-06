@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:weightSum="1"
+    app:layout_scrollFlags="scroll"
+    app:layout_collapseParallaxMultiplier="1.0"
+    android:id="@+id/singleEventLL"
+    android:layout_height="wrap_content"
+    android:gravity="bottom"
+    android:background="@color/colorPrimaryDark"
+    android:layout_gravity="bottom">
+
+
+    <TextView
+        android:text="EVENT NAME, HOST"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/primaryTextColor"
+        android:gravity="left|center_vertical"
+        android:id="@+id/textView_event_name"
+        android:textAllCaps="false"
+        android:paddingTop="5dp"
+        android:textSize="30sp" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:layout_height="96dp"
+            android:id="@+id/subscribeButton"
+            android:background="@android:drawable/btn_star_big_off"
+            android:layout_width="wrap_content" />
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:text="12345"
+                android:textColor="@color/primaryTextColor"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="left|center_vertical"
+                android:id="@+id/textView_event_info"
+                android:textAllCaps="false"
+                android:textSize="18sp"
+                android:scrollbars="horizontal"
+                android:isScrollContainer="false"
+                android:fadeScrollbars="true"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"/>
+
+        </ScrollView>
+    </LinearLayout>
+
+</LinearLayout>
