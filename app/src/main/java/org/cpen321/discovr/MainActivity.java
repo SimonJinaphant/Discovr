@@ -5,6 +5,8 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -38,8 +40,20 @@ import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.MapboxMapOptions;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.mapboxsdk.maps.SupportMapFragment;
+import com.mapbox.services.android.geocoder.ui.GeocoderAutoCompleteView;
+import com.mapbox.services.commons.ServicesException;
+import com.mapbox.services.commons.models.Position;
+import com.mapbox.services.geocoding.v5.GeocodingCriteria;
+import com.mapbox.services.geocoding.v5.MapboxGeocoding;
+import com.mapbox.services.geocoding.v5.models.CarmenFeature;
+import com.mapbox.services.geocoding.v5.models.GeocodingResponse;
+
+import java.io.IOException;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Locale;
+
+import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -57,6 +71,7 @@ public class MainActivity extends AppCompatActivity
     MapboxMap map;
 
     Marker userPositionMarker;
+    Marker pointOfInterestMarker;
 
 
     private static final int REQUEST_ALL_MAPBOX_PERMISSIONS = 3211;
@@ -95,7 +110,6 @@ public class MainActivity extends AppCompatActivity
         } catch (InvalidAccessTokenException e) {
             System.err.println("Invalid access token: " + e);
         }
-
 
 
         if (savedInstanceState == null) {
@@ -142,13 +156,27 @@ public class MainActivity extends AppCompatActivity
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        //Testing mapbox automatic geocoder
+        GeocoderAutoCompleteView autocomplete = (GeocoderAutoCompleteView) findViewById(R.id.query);
+        autocomplete.setAccessToken(MapboxAccountManager.getInstance().getAccessToken());
+        autocomplete.setType(GeocodingCriteria.TYPE_POI);
+        autocomplete.setOnFeatureListener(new GeocoderAutoCompleteView.OnFeatureListener() {
+            @Override
+            public void OnFeatureClick(CarmenFeature feature) {
+                Position position = feature.asPosition();
+                moveMapToLocation(new LatLng(position.getLatitude(), position.getLongitude()));
+            }
+
+
+        });
+
         //Button to fucus on user locatoin
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Log.d("location fab", "fab clicked");
-                moveMapToLocation();
+                moveMapToLocation(new LatLng(userLocation));
             }
         });
 
@@ -163,6 +191,8 @@ public class MainActivity extends AppCompatActivity
 
         //Search handler to exist on onCreate
         handleIntent(getIntent());
+
+
 
     }
 
@@ -191,7 +221,36 @@ public class MainActivity extends AppCompatActivity
                     @Override
                     public boolean onQueryTextSubmit(String query){
                         Log.d("search", "Text submitted: " + query);
-                        //Make map go to location
+                        /*
+                        Geocoder gc = new Geocoder(getBaseContext(), Locale.getDefault());
+
+                        try {
+                            List<Address> add = gc.getFromLocationName(query, 5);
+                            if (!add.isEmpty()){
+                                Log.d("search", "Size of results: " + add.size());
+                                for (int i = 0; i < add.size(); i++)
+                                    Log.d("search", add.get(i).getCountryName());
+                                Address a = add.get(0);
+                                if (pointOfInterestMarker == null) {
+                                    if (a.hasLatitude() && a.hasLongitude()) {
+                                        Log.d("search", "search contains lat and long");
+                                        MarkerViewOptions marker = new MarkerViewOptions().position(new LatLng(a.getLatitude(), a.getLongitude()));
+                                        pointOfInterestMarker = map.addMarker(marker);
+                                    }
+                                } else {
+                                    pointOfInterestMarker.setPosition(new LatLng(a.getLatitude(), a.getLongitude()));
+                                }
+                                CameraPosition position = new CameraPosition.Builder().target(new LatLng(a.getLatitude(), a.getLongitude())).zoom(17).tilt(30).build();
+                                Log.d("location", position.toString());
+                                map.animateCamera(CameraUpdateFactory.newCameraPosition(position), 7000);
+
+
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                        */
                         return true;
                     }
                 });
@@ -271,16 +330,16 @@ public class MainActivity extends AppCompatActivity
     /**
      * Moves the map to user location as well as adding a marker on that position
      */
-    private void moveMapToLocation(){
+    private void moveMapToLocation(LatLng loc){
         Log.d("location", "moving map");
         if (userLocation != null) {
             if (userPositionMarker == null) {
-                MarkerViewOptions marker = new MarkerViewOptions().position(new LatLng(userLocation));
+                MarkerViewOptions marker = new MarkerViewOptions().position(loc);
                 userPositionMarker = map.addMarker(marker);
             } else {
-                userPositionMarker.setPosition(new LatLng(userLocation));
+                userPositionMarker.setPosition(loc);
             }
-            CameraPosition position = new CameraPosition.Builder().target(new LatLng(userLocation)).zoom(17).tilt(30).build();
+            CameraPosition position = new CameraPosition.Builder().target(loc).zoom(17).tilt(30).build();
             Log.d("location", position.toString());
             map.animateCamera(CameraUpdateFactory.newCameraPosition(position), 7000);
         }

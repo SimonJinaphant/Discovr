@@ -57,5 +57,4 @@
             android:background="@drawable/button_press_colors"
             android:padding="@dimen/button_margin"/>
     </LinearLayout>
-
 </FrameLayout>
