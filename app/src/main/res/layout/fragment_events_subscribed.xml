@@ -23,9 +23,7 @@
         found on:
         http://stackoverflow.com/questions/7779125/two-lines-in-a-button-text-with-different-sizes
         -->
-
-
-        <Button
+        <!--<Button
             android:id="@+id/button_one"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -61,6 +59,7 @@
             android:textAllCaps="false"
             android:background="@drawable/button_press_colors"
             android:padding="@dimen/button_margin"/>
+        -->
     </LinearLayout>
     </ScrollView>
 </FrameLayout>
