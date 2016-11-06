@@ -6,9 +6,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -26,32 +26,40 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import com.mapbox.mapboxsdk.MapboxAccountManager;
+import com.mapbox.mapboxsdk.annotations.Marker;
 import com.mapbox.mapboxsdk.annotations.MarkerViewOptions;
-import com.mapbox.mapboxsdk.annotations.PolygonOptions;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.constants.Style;
 import com.mapbox.mapboxsdk.exceptions.InvalidAccessTokenException;
 import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.mapboxsdk.location.LocationListener;
+import com.mapbox.mapboxsdk.location.LocationServices;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.MapboxMapOptions;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.mapboxsdk.maps.SupportMapFragment;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener{
 
     //Made these global as per tutorial, can be made local (?)
     NavigationView navigationView = null;
     Toolbar toolbar = null;
     SupportMapFragment mapFragment;
 
+    //Location Variables
+    Location userLocation;
+    LocationServices locationServices;
+    FloatingActionButton fab;
+    Marker userPositionMarker;
+
+    //Reference to map
+    MapboxMap map;
 
     private static final int REQUEST_ALL_MAPBOX_PERMISSIONS = 3211;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {// Get the SearchView and set the searchable configuration
@@ -61,6 +69,7 @@ public class MainActivity extends AppCompatActivity
         // TODO: Refactor permission code
         String[] permissions = {
                 Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION,
         };
 
         for (int i = 0; i < permissions.length; i++) {
@@ -69,6 +78,7 @@ public class MainActivity extends AppCompatActivity
                 ActivityCompat.requestPermissions(this, new String[]{permissions[i]}, REQUEST_ALL_MAPBOX_PERMISSIONS);
             }
         }
+        locationServices = LocationServices.getLocationServices(this);
 
         //Initialize mapbox variables
         try {
@@ -83,8 +93,6 @@ public class MainActivity extends AppCompatActivity
             System.err.println("Invalid access token: " + e);
         }
 
-
-
         if (savedInstanceState == null) {
 
             // Create fragment
@@ -94,7 +102,7 @@ public class MainActivity extends AppCompatActivity
 
             // Build mapboxMap
             MapboxMapOptions options = new MapboxMapOptions();
-            options.styleUrl(Style.MAPBOX_STREETS);
+            options.styleUrl("mapbox://styles/sansnickel/ciuhw415o001k2iqo1mnjtjj2");
             options.camera(new CameraPosition.Builder()
                     .target(patagonia)
                     .zoom(9)
@@ -110,10 +118,12 @@ public class MainActivity extends AppCompatActivity
             mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentByTag("com.mapbox.map");
         }
 
-
         mapFragment.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(MapboxMap mapboxMap) {
+                map = mapboxMap;
+
+                //Initial map location on campus
                 CameraPosition cameraPosition = new CameraPosition.Builder()
                         .target(mapboxMap.getCameraPosition().target)
                         .bearing(mapboxMap.getCameraPosition().bearing)
@@ -122,34 +132,77 @@ public class MainActivity extends AppCompatActivity
                         .build();
 
                 mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 5000, null);
+
+
+                //Get user location and [enable user location layer (BUGGED)]
+                userLocation = locationServices.getLastLocation();
+                Log.d("location", "location enabled is being set to true");
+                map.setMyLocationEnabled(true); //TODO: find out why this function won't work
+                map.getMyLocationViewSettings().setForegroundTintColor(Color.parseColor("#FFB6C1"));
+                locationServices.addLocationListener(new LocationListener() {
+                    @Override
+                    public void onLocationChanged(Location location){
+                        if (location != null){
+                            Log.d("location", "User location has changed to: " + location.toString());
+                            userLocation = location;
+                        }
+                    }
+                });
+
             }
         });
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        //Button to focus on user location
+        fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                if ((map != null) && (userLocation != null)) {
+                    Log.d("Location", "Current user location" + userLocation.toString());
+                    cameraToUser();
+                }
             }
         });
+
+        //Create navigation drawer
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.app_name, R.string.app_name);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
-
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         //Search handler to exist on onCreate
         handleIntent(getIntent());
 
+    }
+
+    /**
+     * Moves the map to user location as well as adding a marker on that position
+     */
+    private void cameraToUser(){
+        if (userPositionMarker == null){
+            MarkerViewOptions marker = new MarkerViewOptions().position(new LatLng(userLocation));
+            userPositionMarker = map.addMarker(marker);
+        } else {
+            userPositionMarker.setPosition(new LatLng(userLocation));
+        }
+        CameraPosition position = new CameraPosition.Builder().target(new LatLng(userLocation)).zoom(17).tilt(30).build();
+        map.animateCamera(CameraUpdateFactory.newCameraPosition(position), 7000);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
     }
 
     /**
@@ -184,6 +237,7 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+
     /*
         We might not need onNewIntent or handleIntent if we can handle
         the map search within the onQueryTexListener class on the
@@ -204,6 +258,7 @@ public class MainActivity extends AppCompatActivity
             //Do something with query such as searching for it in database
         }
     }
+
 
     /**
      * Overriden to handle drawer opening and closing as well as handling
