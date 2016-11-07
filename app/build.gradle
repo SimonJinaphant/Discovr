@@ -33,6 +33,7 @@ dependencies {
     compile('com.mapbox.mapboxsdk:mapbox-android-sdk:4.1.1@aar') {
         transitive = true
     }
+    compile group: 'commons-io', name: 'commons-io', version: '2.0.1'
     compile 'com.android.support:appcompat-v7:24.2.1'
     compile 'com.android.support:design:24.2.1'
     compile 'com.android.support:support-v4:24.2.1'

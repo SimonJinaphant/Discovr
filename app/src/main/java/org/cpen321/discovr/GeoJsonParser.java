@@ -14,7 +14,7 @@ import org.apache.commons.io.IOUtils;
 
 public class GeoJsonParser {
 	
-	
+	/*
 	
 	public static List<String> allnames() throws IOException {
 	
@@ -94,9 +94,10 @@ public class GeoJsonParser {
 		/*
 		for (String s : names) {
 			System.out.println(s);
-		}*/
+		}
 		return;
 	}
+	*/
 	
 	
 }
