@@ -54,6 +54,10 @@ import com.mapbox.services.directions.v5.DirectionsCriteria;
 import com.mapbox.services.directions.v5.MapboxDirections;
 import com.mapbox.services.directions.v5.models.DirectionsResponse;
 import com.mapbox.services.directions.v5.models.DirectionsRoute;
+import com.mapbox.services.geocoding.v5.MapboxGeocoding;
+import com.mapbox.services.geocoding.v5.models.CarmenFeature;
+import com.mapbox.services.geocoding.v5.models.GeocodingResponse;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.ListIterator;
@@ -180,7 +184,7 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
 
-        //Button to fucus on user locatoin
+        //Button to focus on user location
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
                                    @Override
@@ -207,20 +211,6 @@ public class MainActivity extends AppCompatActivity
 
 
 
-    }
-
-    /**
-     * Moves the map to user location as well as adding a marker on that position
-     */
-    private void cameraToUser(){
-        if (userPositionMarker == null){
-            MarkerViewOptions marker = new MarkerViewOptions().position(new LatLng(userLocation));
-            userPositionMarker = map.addMarker(marker);
-        } else {
-            userPositionMarker.setPosition(new LatLng(userLocation));
-        }
-        CameraPosition position = new CameraPosition.Builder().target(new LatLng(userLocation)).zoom(17).tilt(30).build();
-        map.animateCamera(CameraUpdateFactory.newCameraPosition(position), 7000);
     }
 
     @Override
@@ -259,6 +249,39 @@ public class MainActivity extends AppCompatActivity
                     public boolean onQueryTextSubmit(String query){
                         Log.d("search", "Text submitted: " + query);
 
+                        /* Work in progress
+                        try {
+                            Log.d("search", "about to make a geojson parser");
+                            double[] coords = GeoJsonParser.getCoordinates(query);
+                            Log.d("search", "made a geojson parser");
+                            if (coords.length < 1){
+                                return false;
+                            }
+                            Log.d("search", "coords size: " + coords.length + " latlng: = " + coords[0] + " " +coords[1]);
+                            if (pointOfInterestMarker == null) {
+                                MarkerViewOptions marker = new MarkerViewOptions().position(new LatLng(coords[0], coords[1]));
+                                pointOfInterestMarker = map.addMarker(marker);
+                            }
+                            else {
+                                pointOfInterestMarker.setPosition(new LatLng(coords[0], coords[1]));
+                            }
+                            CameraPosition position = new CameraPosition.Builder().target(new LatLng(coords[0], coords[1])).zoom(17).tilt(30).build();
+                            Log.d("location", position.toString());
+                            map.animateCamera(CameraUpdateFactory.newCameraPosition(position), 7000);
+                            Position pos = Position.fromCoordinates(coords[0], coords[1]);
+                            try{
+                                getRoute(Position.fromCoordinates(userLocation.getLongitude(), userLocation.getLatitude()), pos);
+                            } catch (ServicesException servicesException) {
+                                servicesException.printStackTrace();
+                            }
+                        } catch (Exception e){
+                            e.printStackTrace();
+                            return false;
+                        }
+
+                        */
+
+                        /*
                         Geocoder gc = new Geocoder(getBaseContext(), Locale.getDefault());
 
                         try {
@@ -290,6 +313,66 @@ public class MainActivity extends AppCompatActivity
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
+
+
+                        */
+                        Position position = Position.fromCoordinates(-123.2460, 49.2606);
+                        try {
+                            MapboxGeocoding client = new MapboxGeocoding.Builder()
+                                        .setAccessToken(MapboxAccountManager.getInstance().getAccessToken())
+                                        .setLocation(query)
+                                        .setProximity(position)
+                                        .build();
+
+                            client.enqueueCall(new Callback<GeocodingResponse>() {
+                                @Override
+                                public void onResponse(Call<GeocodingResponse> call, Response<GeocodingResponse> response) {
+                                    Log.d("search", "Response code: " + response.code());
+                                    if (response.body() == null){
+                                        Log.e("search", "No results found, make sure access token is validated");
+                                        return;
+                                    } else if (response.body().getFeatures().isEmpty()){
+                                        Log.d("search", "No results found from query");
+                                        return;
+                                    }
+
+                                    Position currpos = response.body().getFeatures().get(0).asPosition();
+
+                                    List<CarmenFeature> cfList = response.body().getFeatures();
+                                    for(CarmenFeature cf : cfList){
+                                        Log.d("search", "result: " + cf.getPlaceName());
+                                    }
+                                    LatLng coords = new LatLng(currpos.getLatitude(), currpos.getLongitude());
+                                    if (pointOfInterestMarker == null) {
+                                        Log.d("search", "search contains lat and long");
+                                        MarkerViewOptions marker = new MarkerViewOptions().position(coords);
+                                        pointOfInterestMarker = map.addMarker(marker);
+                                    } else {
+                                        pointOfInterestMarker.setPosition(new LatLng(coords));
+                                    }
+                                    CameraPosition position = new CameraPosition.Builder().target(coords).zoom(17).tilt(30).build();
+                                    Log.d("location", position.toString());
+                                    map.animateCamera(CameraUpdateFactory.newCameraPosition(position), 7000);
+                                    try{
+                                        getRoute(Position.fromCoordinates(userLocation.getLongitude(), userLocation.getLatitude()), currpos);
+                                    } catch (ServicesException servicesException) {
+                                        servicesException.printStackTrace();
+                                    }
+
+                                }
+
+                                @Override
+                                public void onFailure(Call<GeocodingResponse> call, Throwable t) {
+                                    Log.e("search", "Error" + t.getMessage());
+                                }
+                            });
+
+                        } catch (ServicesException e) {
+                            e.printStackTrace();
+                            return false;
+                        }
+
+
                         return true;
                     }
                 });
