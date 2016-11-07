@@ -1,6 +1,7 @@
 # Discovr
 A personalized UBC companion app.
 
+Instructional and informational wiki: [Discovr Wiki](https://github.com/SimonJinaphant/Discovr/wiki)
 
 ### Setting up
 Before continuing make sure you have Android Studio installed and set up.
