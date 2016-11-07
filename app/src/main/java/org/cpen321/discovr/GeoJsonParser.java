@@ -13,8 +13,7 @@ import org.json.*;
 import org.apache.commons.io.IOUtils;
 
 public class GeoJsonParser {
-	
-	
+
 	
 	public static List<String> allnames(InputStream is) throws IOException {
 		
@@ -89,20 +88,12 @@ public class GeoJsonParser {
 		if (f.exists()) {
 			InputStream is = new FileInputStream("./app/src/main/java/org/cpen321/discovr/buildings.geojson");
 			
-			double[] arr = getCoordinates("Hebb Building", is);
+			double[] arr = getCoordinates("Civil And Mechanical Engineering Building", is);
 			System.out.println(arr[0]);
 			System.out.println(arr[1]);
 			
-			
 		}
-		
-		
-		/*
-		for (String s : names) {
-			System.out.println(s);
-		}*/
 		return;
 	}
-	
-	
 }
+

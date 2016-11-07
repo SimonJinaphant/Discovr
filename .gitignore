@@ -3,6 +3,7 @@
 /local.properties
 /.idea/workspace.xml
 /.idea/libraries
+/.idea/gradle.xml
 .DS_Store
 /build
 /captures
@@ -54,3 +55,4 @@ Thumbs.db
 .idea/encoding.xml
 .idea/.name
 .idea/misc.xml
+.idea/gradle.xml
