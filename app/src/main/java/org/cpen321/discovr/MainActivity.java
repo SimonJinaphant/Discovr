@@ -54,7 +54,6 @@ import com.mapbox.services.directions.v5.DirectionsCriteria;
 import com.mapbox.services.directions.v5.MapboxDirections;
 import com.mapbox.services.directions.v5.models.DirectionsResponse;
 import com.mapbox.services.directions.v5.models.DirectionsRoute;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.ListIterator;
@@ -176,13 +175,14 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
 
         //Button to fucus on user locatoin
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
-
                                    @Override
                                    public void onClick(View view) {
                                        Log.d("location fab", "fab clicked");
@@ -393,6 +393,7 @@ public class MainActivity extends AppCompatActivity
             map.animateCamera(CameraUpdateFactory.newCameraPosition(position), 7000);
         }
     }
+
 
     /**
      * Overriden to handle drawer opening and closing as well as handling
