@@ -103,6 +103,7 @@ public class EventInfo {
 
     String getEndTime(){ return this.endTime;}
 
+
     String getLocation(){ return this.location;}
 
     String getEventDetails(){ return this.eventDetails; }

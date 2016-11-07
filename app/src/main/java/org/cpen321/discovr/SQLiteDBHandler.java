@@ -84,13 +84,13 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
     //Get one specific event based on ID
     public EventInfo getEvent(int id){
         SQLiteDatabase db = this.getReadableDatabase();
-
+        EventInfo event = null;
         //Select all rows from TABLE_SUBSCRIBED_EVENTS where key_ID = id
         Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_SUBSCRIBED_EVENTS + " WHERE " + KEY_ID + " = ? ", new String[]{String.valueOf(id)} );
-        if (cursor != null)
-        cursor.moveToFirst();
-
-        EventInfo event = new EventInfo(cursor.getInt(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5), cursor.getString(6), cursor.getString(7));
+        if (cursor.getCount() != 0) {
+            cursor.moveToFirst();
+            event = new EventInfo(cursor.getInt(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5), cursor.getString(6), cursor.getString(7));
+        }
         return event;
     }
 

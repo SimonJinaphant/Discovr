@@ -57,7 +57,7 @@ public class EventsSubscribedFragment extends Fragment {
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
         //Add new button for each event in DB
-        for(EventInfo event : allEvents) {
+        for(final EventInfo event : allEvents) {
             final Button button = new Button(getActivity());
 
             //Set ID of button = id of event
@@ -69,10 +69,10 @@ public class EventsSubscribedFragment extends Fragment {
             button.setPadding(getResources().getDimensionPixelSize(button_margin), getResources().getDimensionPixelSize(button_margin), getResources().getDimensionPixelSize(button_margin), getResources().getDimensionPixelSize(button_margin));
             button.setBackground(ContextCompat.getDrawable(getContext(),R.drawable.button_press_colors));
             button.setTextColor(ContextCompat.getColor(getContext(), R.color.primaryTextColor));
-            SpannableString buttonText = new SpannableString(event.getName() + "\n" + event.getStartTime() + " - " + event.getEndTime() + ", in " + event.getLocation());
+            SpannableString buttonText = new SpannableString(event.getName() + "\n" + formatTime(event.getStartTime()) + " - " + formatTime(event.getEndTime()) + ", " + getDate(event.getStartTime()) + "\n" + event.getBuildingName());
             int index = buttonText.toString().indexOf("\n");
-            buttonText.setSpan(new AbsoluteSizeSpan(60), 0, index, SPAN_INCLUSIVE_INCLUSIVE);
-            buttonText.setSpan(new AbsoluteSizeSpan(40), index, buttonText.length(), SPAN_INCLUSIVE_INCLUSIVE);
+            buttonText.setSpan(new AbsoluteSizeSpan(100), 0, index, SPAN_INCLUSIVE_INCLUSIVE);
+            buttonText.setSpan(new AbsoluteSizeSpan(60), index, buttonText.length(), SPAN_INCLUSIVE_INCLUSIVE);
             button.setText(buttonText);
 
             //Add arrow to end of button
@@ -87,6 +87,8 @@ public class EventsSubscribedFragment extends Fragment {
                     SingleEventFragment fragment = new SingleEventFragment();
                     Fragment currentFrag = getActivity().getSupportFragmentManager().findFragmentById(R.id.fragment_container);
                     FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                    fragment.setEvent(event);
+                    fragment.setFromAllEventsFragment(false);
                     //hide current fragment, will reopen when back key pressed
                     transaction.remove(currentFrag);
                     transaction.add(R.id.fragment_container, fragment, String.valueOf(button.getId()));
@@ -101,6 +103,16 @@ public class EventsSubscribedFragment extends Fragment {
         }
 
         return fm;
+    }
+
+    public String formatTime(String Time){
+        String[] dateTime = Time.split("T");
+        return dateTime[1].substring(0, 5);
+    }
+
+    public String getDate(String Time){
+        String[] dateTime = Time.split("T");
+        return dateTime[0];
     }
 
 }
