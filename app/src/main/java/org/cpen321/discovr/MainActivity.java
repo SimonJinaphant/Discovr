@@ -84,7 +84,7 @@ public class MainActivity extends AppCompatActivity
     Marker pointOfInterestMarker;
     private DirectionsRoute currentRoute;
 
-    //Building information JSON
+    //Building information JSON inputstream for searching
     InputStream is;
 
     private static final int REQUEST_ALL_MAPBOX_PERMISSIONS = 3211;
@@ -212,7 +212,7 @@ public class MainActivity extends AppCompatActivity
         handleIntent(getIntent());
 
 
-        //Create asset manager to access building JSON files
+        //Access the building JSON file and initialize input stream
         AssetManager am = getAssets();
         try {
             is = am.open("buildings.geojson");
@@ -245,10 +245,11 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
         getMenuInflater().inflate(R.menu.toolbar_menu, menu);
+
+        //Creates the searchbar
         MenuItem searchItem = menu.findItem(R.id.action_search);
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        searchView.setIconifiedByDefault(false);
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         searchView.setOnQueryTextListener(
                 new SearchView.OnQueryTextListener() {
@@ -259,20 +260,26 @@ public class MainActivity extends AppCompatActivity
                         return true;
                     }
 
+
                     @Override
                     public boolean onQueryTextSubmit(String query){
+                        //Search is submitted
                         Log.d("search", "Text submitted: " + query);
                         try {
-                            Log.d("search", "about to make a geojson parser");
+                            //Workaround the "refresh" the input stream
                             is.mark(Integer.MAX_VALUE);
-                            double[] coords = GeoJsonParser.getCoordinates(query, is);
+                            double[] coords = GeoJsonParser.getCoordinates(query, is); //obtains coordinates from query
                             is.reset();
-                            Log.d("search", "made a geojson parser");
+
+                            //Failed to return values
                             if (coords.length < 1){
                                 return false;
                             }
+
                             Log.d("search", "coords size: " + coords.length + " latlng: = " + coords[0] + " " +coords[1]);
                             LatLng loc = new LatLng(coords[1], coords[0]);
+
+                            //Creates a marker on the queried location
                             if (pointOfInterestMarker == null) {
                                 MarkerViewOptions marker = new MarkerViewOptions().position(loc);
                                 pointOfInterestMarker = map.addMarker(marker);
@@ -280,9 +287,13 @@ public class MainActivity extends AppCompatActivity
                             else {
                                 pointOfInterestMarker.setPosition(loc);
                             }
+
+                            //Moves the camera to focus on queried location
                             CameraPosition position = new CameraPosition.Builder().target(loc).zoom(17).tilt(30).build();
                             Log.d("location", position.toString());
                             map.animateCamera(CameraUpdateFactory.newCameraPosition(position), 7000);
+
+                            //Determines a route from user position to the current location
                             Position pos = Position.fromCoordinates(loc.getLongitude(), loc.getLatitude());
                             try{
                                 getRoute(Position.fromCoordinates(userLocation.getLongitude(), userLocation.getLatitude()), pos);
@@ -300,6 +311,13 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    /**
+     * Obtain route from one position to another
+     * Obtained from: https://www.mapbox.com/android-sdk/examples/directions/
+     * @param origin the starting point
+     * @param destination the endpoint
+     * @throws ServicesException
+     */
     private void getRoute(Position origin, Position destination) throws ServicesException {
         MapboxDirections client = new MapboxDirections.Builder()
                 .setOrigin(origin)
@@ -341,6 +359,11 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
+    /**
+     * Displays the route on the map
+     * Obtained from: https://www.mapbox.com/android-sdk/examples/directions/
+     * @param route
+     */
     private void drawRoute(DirectionsRoute route) {
         // Convert LineString coordinates into LatLng[]
         LineString lineString = LineString.fromPolyline(route.getGeometry(), Constants.OSRM_PRECISION_V5);
