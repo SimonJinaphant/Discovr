@@ -321,73 +321,56 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
+        drawerFragmentManager(id);
 
-        if (id == R.id.map_view) {
-            FragmentManager fm = getSupportFragmentManager();
-            FragmentTransaction ft = fm.beginTransaction();
-            List<Fragment> all_frag = fm.getFragments();
-            ListIterator<Fragment> li = all_frag.listIterator();
-            while (li.hasNext()){
-                Fragment currFrag = li.next();
-                if ((currFrag != null) && (!currFrag.equals(mapFragment))){
-                    ft.remove(currFrag);
-                }
-            }
-            getSupportActionBar().setTitle(getResources().getString(R.string.app_name));
-            ft.commit();
-
-        } else if (id == R.id.events_subscribed) {
-            FragmentManager fm = getSupportFragmentManager();
-            FragmentTransaction ft = fm.beginTransaction();
-            List<Fragment> all_frag = fm.getFragments();
-            ListIterator<Fragment> li = all_frag.listIterator();
-            while (li.hasNext()){
-                Fragment currFrag = li.next();
-                if ((currFrag != null) && (!currFrag.equals(mapFragment))){
-                    ft.remove(currFrag);
-                }
-            }
-            ft.add(R.id.fragment_container, new EventsSubscribedFragment(), getResources().getString(R.string.events_sub_tag));
-            ft.commit();
-            Log.d("events_sub", "commited the fragment");
-            getSupportActionBar().setTitle(getResources().getString(R.string.events_subscribed));
-
-        } else if (id == R.id.events_nearby) {
-
-        } else if (id == R.id.events_all) {
-            FragmentManager fm = getSupportFragmentManager();
-            FragmentTransaction ft = fm.beginTransaction();
-            List<Fragment> all_frag = fm.getFragments();
-            ListIterator<Fragment> li = all_frag.listIterator();
-            while (li.hasNext()){
-                Fragment currFrag = li.next();
-                if ((currFrag != null) && (!currFrag.equals(mapFragment))){
-                    ft.remove(currFrag);
-                }
-            }
-            ft.add(R.id.fragment_container, new AllEventsFragment(), getResources().getString(R.string.all_events_tag));
-            ft.commit();
-            Log.d("all_events", "commited the fragment");
-            getSupportActionBar().setTitle(getResources().getString((R.string.events_all)));
-        } else if (id == R.id.test_frag){
-            FragmentManager fm = getSupportFragmentManager();
-            FragmentTransaction ft = fm.beginTransaction();
-            List<Fragment> all_frag = fm.getFragments();
-            ListIterator<Fragment> li = all_frag.listIterator();
-            while (li.hasNext()){
-                Fragment currFrag = li.next();
-                if ((currFrag != null) && (!currFrag.equals(mapFragment))){
-                    ft.remove(currFrag);
-                }
-            }
-            ft.add(R.id.fragment_container, new BlankFragment(), "test fragment");
-            ft.commit();
-            Log.d("testing_fragment", "commited the fragment");
-            getSupportActionBar().setTitle("Testing Fragment");
-        }
-
+        // Closes the drawer
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    /**
+     * Takes care of hiding and switching of fragments
+     * @param fragmentID the ID of the fragment selected
+     */
+    private void drawerFragmentManager(int fragmentID){
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        List<Fragment> all_frag = fm.getFragments();
+
+        //Remove all the fragments but the map fragment
+        ListIterator<Fragment> li = all_frag.listIterator();
+        while (li.hasNext()){
+            Fragment currFrag = li.next();
+            if ((currFrag != null) && (!currFrag.equals(mapFragment))){
+                ft.remove(currFrag);
+            }
+        }
+
+        //Adds a fragment to the container and changes the toolbar title correspondingly
+        switch (fragmentID) {
+            case R.id.map_view:
+                getSupportActionBar().setTitle(getResources().getString(R.string.app_name));
+                break;
+            case R.id.events_subscribed:
+                ft.add(R.id.fragment_container, new EventsSubscribedFragment(), getResources().getString(R.string.events_sub_tag));
+                getSupportActionBar().setTitle(getResources().getString(R.string.events_subscribed));
+                break;
+            case R.id.events_nearby:
+                getSupportActionBar().setTitle(getResources().getString(R.string.events_nearby));
+                break;
+            case R.id.events_all:
+                ft.add(R.id.fragment_container, new AllEventsFragment(), getResources().getString(R.string.all_events_tag));
+                getSupportActionBar().setTitle(getResources().getString((R.string.events_all)));
+                break;
+            case R.id.test_frag:
+                ft.add(R.id.fragment_container, new BlankFragment(), "test fragment");
+                getSupportActionBar().setTitle("Testing Fragment");
+                break;
+            default:
+                break;
+        }
+
+        ft.commit();
     }
 }
