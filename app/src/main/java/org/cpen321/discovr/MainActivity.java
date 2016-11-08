@@ -45,6 +45,8 @@ import java.util.ListIterator;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener{
+    final int ALLEVENTS = 0;
+    final int SUBSCRIBEDEVENTS = 1;
 
     //Made these global as per tutorial, can be made local (?)
     NavigationView navigationView = null;
@@ -286,7 +288,7 @@ public class MainActivity extends AppCompatActivity
                 }
             }
 
-            if(((SingleEventFragment) currentFragment).isFromAllEventsFragment()) {
+            if(((SingleEventFragment) currentFragment).getPrevFragment() == ALLEVENTS) {
                 getSupportActionBar().setTitle(getResources().getString((R.string.events_all)));
                 ft.add(R.id.fragment_container, new AllEventsFragment(), getResources().getString(R.string.all_events_tag));
             }else {

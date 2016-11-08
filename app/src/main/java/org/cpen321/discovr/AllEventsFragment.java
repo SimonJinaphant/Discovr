@@ -32,8 +32,9 @@ import static org.cpen321.discovr.R.id.left;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class AllEventsFragment extends Fragment {
 
+public class AllEventsFragment extends Fragment {
+    final int ALLEVENTS = 0;
 
     public AllEventsFragment() {
         // Required empty public constructor
@@ -105,7 +106,7 @@ public class AllEventsFragment extends Fragment {
                                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
                                 //hide current fragment, will reopen when back key pressed
                                 fragment.setEvent(event);
-                                fragment.setFromAllEventsFragment(true);
+                                fragment.setPrevFragment(ALLEVENTS);
 
                                 transaction.remove(currentFrag);
                                 transaction.add(R.id.fragment_container, fragment, String.valueOf(button.getId()));

@@ -19,9 +19,12 @@ import static android.text.Spanned.SPAN_INCLUSIVE_INCLUSIVE;
 
 
 public class SingleEventFragment extends Fragment {
+    final int ALLEVENTS = 0;
+    final int SUBSCRIBEDEVENTS = 1;
 
     private EventInfo event;
-    private boolean fromAllEventsFragment;
+
+    private int PrevFragment;
 
     public SingleEventFragment() {
 
@@ -31,12 +34,12 @@ public class SingleEventFragment extends Fragment {
         this.event = event;
     }
 
-    public void setFromAllEventsFragment(boolean fromAllEvents){
-        this.fromAllEventsFragment = fromAllEvents;
+    public void setPrevFragment(int PrevFragment){
+        this.PrevFragment = PrevFragment;
     }
 
-    public boolean isFromAllEventsFragment(){
-        return this.fromAllEventsFragment;
+    public int getPrevFragment(){
+        return this.PrevFragment;
     }
 
     @Override
@@ -91,6 +94,7 @@ public class SingleEventFragment extends Fragment {
 
             return ll;
         }
+
     public String formatTime(String Time){
         String[] dateTime = Time.split("T");
         return dateTime[1].substring(0, 5);
