@@ -67,7 +67,6 @@ public class AllEventsFragment extends Fragment {
                     for(int i = 0; i < json.length(); i++){
                         JSONObject o = json.getJSONObject(i);
 
-                        final Button button = new Button(getActivity());
                         final EventInfo event = new EventInfo(o.getInt("Id"),
                                 o.getString("Name"),
                                 o.getString("Host"),
@@ -76,25 +75,8 @@ public class AllEventsFragment extends Fragment {
                                 o.getString("EndTime"),
                                 "",
                                 o.getString("Description"));
+                        final Button button = createButton(event);
 
-                        //Set ID of button = id of event
-                        button.setId(o.getInt("Id"));
-
-                        //Set button properties - gravity, allCaps, padding, backgroundColor, textColor, text
-                        button.setGravity(left);
-                        button.setAllCaps(false);
-                        button.setPadding(getResources().getDimensionPixelSize(button_margin), getResources().getDimensionPixelSize(button_margin), getResources().getDimensionPixelSize(button_margin), getResources().getDimensionPixelSize(button_margin));
-                        button.setBackground(ContextCompat.getDrawable(getContext(),R.drawable.button_press_colors));
-                        button.setTextColor(ContextCompat.getColor(getContext(), R.color.primaryTextColor));
-                        SpannableString buttonText = new SpannableString(event.getName() + "\n" + formatTime(event.getStartTime()) + " - " + formatTime(event.getEndTime()) + ", " + getDate(event.getStartTime()) + "\n" + event.getBuildingName());
-                        int index = buttonText.toString().indexOf("\n");
-                        buttonText.setSpan(new AbsoluteSizeSpan(100), 0, index, SPAN_INCLUSIVE_INCLUSIVE);
-                        buttonText.setSpan(new AbsoluteSizeSpan(60), index, buttonText.length(), SPAN_INCLUSIVE_INCLUSIVE);
-                        button.setText(buttonText);
-
-                        //Add arrow to end of button
-                        Drawable arrow = ContextCompat.getDrawable(getContext(), R.drawable.right_arrow);
-                        button.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, arrow, null);
                         ll.addView(button, lp);
 
                         //Set button's on click listener to open new fragment of that single event on top of map
@@ -108,6 +90,7 @@ public class AllEventsFragment extends Fragment {
                                 fragment.setEvent(event);
                                 fragment.setPrevFragment(ALLEVENTS);
 
+                                transaction.setCustomAnimations(R.anim.slide_in_up, R.anim.slide_out_left);
                                 transaction.remove(currentFrag);
                                 transaction.add(R.id.fragment_container, fragment, String.valueOf(button.getId()));
                                 transaction.addToBackStack(null);
@@ -136,6 +119,28 @@ public class AllEventsFragment extends Fragment {
             }
         });
         return fm;
+    }
+
+    public Button createButton(EventInfo event){
+        //Set button properties - gravity, allCaps, padding, backgroundColor, textColor, text
+        Button button =  new Button(this.getActivity());
+        button.setId(event.getID());
+        button.setGravity(left);
+        button.setAllCaps(false);
+        button.setPadding(getResources().getDimensionPixelSize(button_margin), getResources().getDimensionPixelSize(button_margin), getResources().getDimensionPixelSize(button_margin), getResources().getDimensionPixelSize(button_margin));
+        button.setBackground(ContextCompat.getDrawable(getContext(),R.drawable.button_press_colors));
+        button.setTextColor(ContextCompat.getColor(getContext(), R.color.primaryTextColor));
+        SpannableString buttonText = new SpannableString(event.getName() + "\n" + formatTime(event.getStartTime()) + " - " + formatTime(event.getEndTime()) + ", " + getDate(event.getStartTime()) + "\n" + event.getBuildingName());
+        int index = buttonText.toString().indexOf("\n");
+        buttonText.setSpan(new AbsoluteSizeSpan(100), 0, index, SPAN_INCLUSIVE_INCLUSIVE);
+        buttonText.setSpan(new AbsoluteSizeSpan(60), index, buttonText.length(), SPAN_INCLUSIVE_INCLUSIVE);
+        button.setText(buttonText);
+
+        //Add arrow to end of button
+        Drawable arrow = ContextCompat.getDrawable(getContext(), R.drawable.right_arrow);
+        button.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, arrow, null);
+
+        return button;
     }
 
     public String formatTime(String Time){
