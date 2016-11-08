@@ -285,10 +285,16 @@ public class MainActivity extends AppCompatActivity
                     ft.remove(currFrag);
                 }
             }
-            ft.add(R.id.fragment_container, new EventsSubscribedFragment(), getResources().getString(R.string.events_sub_tag));
+
+            if(((SingleEventFragment) currentFragment).isFromAllEventsFragment()) {
+                getSupportActionBar().setTitle(getResources().getString((R.string.events_all)));
+                ft.add(R.id.fragment_container, new AllEventsFragment(), getResources().getString(R.string.all_events_tag));
+            }else {
+                ft.add(R.id.fragment_container, new EventsSubscribedFragment(), getResources().getString(R.string.events_sub_tag));
+                getSupportActionBar().setTitle(getResources().getString(R.string.events_subscribed));
+            }
             ft.commit();
             Log.d("events_sub", "commited the fragment");
-            getSupportActionBar().setTitle(getResources().getString(R.string.events_subscribed));
         }else {
 
             if (manager.getBackStackEntryCount() > 0){
@@ -297,7 +303,7 @@ public class MainActivity extends AppCompatActivity
                     navigationView.getMenu().getItem(0).setChecked(true);
                 } else if (currentFragment instanceof EventsSubscribedFragment){
                     navigationView.getMenu().getItem(2).setChecked(true);
-                } else if (currentFragment instanceof EventCreateFragment) {
+                } else if (currentFragment instanceof AllEventsFragment) {
                     navigationView.getMenu().getItem(4).setChecked(true);
                 }
                 manager.popBackStack();
@@ -347,8 +353,6 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.events_nearby) {
 
         } else if (id == R.id.events_all) {
-
-        } else if (id == R.id.events_create) {
             FragmentManager fm = getSupportFragmentManager();
             FragmentTransaction ft = fm.beginTransaction();
             List<Fragment> all_frag = fm.getFragments();
@@ -359,10 +363,10 @@ public class MainActivity extends AppCompatActivity
                     ft.remove(currFrag);
                 }
             }
-            ft.add(R.id.fragment_container, new EventCreateFragment(), getResources().getString(R.string.events_create_tag));
+            ft.add(R.id.fragment_container, new AllEventsFragment(), getResources().getString(R.string.all_events_tag));
             ft.commit();
-            Log.d("events_create", "commited the fragment");
-            getSupportActionBar().setTitle(getResources().getString((R.string.events_create)));
+            Log.d("all_events", "commited the fragment");
+            getSupportActionBar().setTitle(getResources().getString((R.string.events_all)));
         } else if (id == R.id.test_frag){
             FragmentManager fm = getSupportFragmentManager();
             FragmentTransaction ft = fm.beginTransaction();
