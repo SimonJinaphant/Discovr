@@ -1,10 +1,11 @@
 package org.cpen321.discovr;
+import android.content.res.AssetManager;
+import android.util.Log;
+
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,8 +15,7 @@ import org.apache.commons.io.IOUtils;
 
 public class GeoJsonParser {
 
-	
-	public static List<String> allnames(InputStream is) throws IOException {
+	public static List<String> allnames(InputStream is) throws IOException, JSONException {
 		
 		List<String> names = new ArrayList<String>();
 		String jsonTxt = IOUtils.toString(is);
@@ -31,11 +31,10 @@ public class GeoJsonParser {
 		}
 		return names;	
 	}
-	
-	public static double[] getCoordinates(String name, InputStream is) throws IOException {
+
+	public static double[] getCoordinates(String name, InputStream is) throws IOException, JSONException {
 		//List<String> listnames = allnames(is);
-		
-		double temp[] = new double[2];
+            double temp[] = new double[2];
 		temp[0] = 0;
 		temp[1] = 0;
 			
@@ -81,8 +80,9 @@ public class GeoJsonParser {
 	return temp;
 }
 	
-	
+	/*
 	public static void main (String[] args) throws IOException {
+
 		File f = new File("./app/src/main/java/org/cpen321/discovr/buildings.geojson");
 
 		if (f.exists()) {
@@ -95,5 +95,6 @@ public class GeoJsonParser {
 		}
 		return;
 	}
+	*/
 }
 
