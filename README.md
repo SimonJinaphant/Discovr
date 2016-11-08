@@ -1,6 +1,7 @@
 # Discovr
 A personalized UBC companion app.
 
+Instructional and informational wiki: [Discovr Wiki](https://github.com/SimonJinaphant/Discovr/wiki)
 
 ### Setting up
 Before continuing make sure you have Android Studio installed and set up.
@@ -28,3 +29,5 @@ If you ran into problem with gradle try the following fix:
 5. Click `Install (n) Package(s)`
 6. Restart Android studio  
 
+### Branching and Pull Request
+Reminder! If implementing a feature, create a branch from master and develop the feature on that branch. Once the feature is completed, merge it to master through a pull request. Afterwards, delete the branch to clean up the repository. If modifying your feature, create a new branch from master instead of reviving the old feature branch.
