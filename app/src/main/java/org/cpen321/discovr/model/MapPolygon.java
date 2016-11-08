@@ -5,7 +5,7 @@ import com.mapbox.mapboxsdk.geometry.LatLng;
 import java.util.List;
 
 /**
- * Created by Simon Jinaphant on 08-Nov-2016.
+ * Model class of a drawable polygon on the MapboxMap
  */
 
 public class MapPolygon {
