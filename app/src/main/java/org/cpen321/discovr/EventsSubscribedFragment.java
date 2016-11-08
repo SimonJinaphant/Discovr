@@ -16,10 +16,13 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
+import org.cpen321.discovr.model.Course;
+
 import java.util.List;
 import static android.text.Spanned.SPAN_INCLUSIVE_INCLUSIVE;
 import static org.cpen321.discovr.R.dimen.button_margin;
 import static org.cpen321.discovr.R.id.left;
+import static org.cpen321.discovr.parser.CalendarFileParser.loadUserCourses;
 
 
 /**
@@ -46,6 +49,11 @@ public class EventsSubscribedFragment extends Fragment {
         dbh.addEvent(new EventInfo(4, "CPEN311", "ECE", "WOOD", "12:00", "1:00", "01342101", "crey"));
         dbh.addEvent(new EventInfo(5, "STAT302", "MATH", "CHEM", "11:00", "12:00", "01234", "lol"));
 */
+
+        //read from the local ical file
+        List<Course> myICalFile = loadUserCourses();
+        dbh.addCourses(myICalFile);
+
         //Get List of all events stored in DB
         List<EventInfo> allEvents = dbh.getAllEvents();
 

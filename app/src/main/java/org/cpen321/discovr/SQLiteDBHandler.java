@@ -7,8 +7,14 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import org.cpen321.discovr.model.Course;
+import org.cpen321.discovr.parser.CalendarFileParser;
+
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+
+import static org.cpen321.discovr.parser.CalendarFileParser.loadUserCourses;
 
 /**
  * Created by jacqueline on 10/28/2016.
@@ -21,6 +27,8 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
     private static final String DATABASE_NAME = "LocalEvents";
     //Table name
     private static final String TABLE_SUBSCRIBED_EVENTS = "SubscribedEvents";
+    private static final String TABLE_SUBSCRIBED_COURSES = "SubscribedCourses";
+
     //Column names in table "SubscribedEvents"
     private static final String KEY_ID = "id";
     private static final String KEY_NAME = "name";
@@ -30,6 +38,15 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
     private static final String KEY_ENDTIME = "endTime";
     private static final String KEY_LOCATION = "location";
     private static final String KEY_DETAILS = "eventDetails";
+
+    //Added column names in table "SubscribedCourses"
+    private static final String KEY_CATEGORY = "category";
+    private static final String KEY_NUMBER = "number";
+    private static final String KEY_SECTION = "section";
+    private static final String KEY_ROOM = "category";
+    private static final String KEY_START_DATE= "startDate";
+    private static final String KEY_END_DATE = "endDate";
+    private static final String KEY_DAY_OF_WEEK = "dayOfWeek";
 
     public SQLiteDBHandler (Context context){
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -48,6 +65,19 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
                 KEY_LOCATION + " TEXT," +
                 KEY_DETAILS + " TEXT" + ");";
         db.execSQL(CREATE_TABLE);
+
+        String CREATE_TABLE_COURSES = "CREATE TABLE" + TABLE_SUBSCRIBED_COURSES + "(" +
+                KEY_CATEGORY + " TEXT," +
+                KEY_NUMBER + " TEXT," +
+                KEY_SECTION + " TEXT," +
+                KEY_BUILDING + " TEXT," +
+                KEY_ROOM + " TEXT," +
+                KEY_STARTTIME + " TEXT," +
+                KEY_ENDTIME + " TEXT," +
+                KEY_START_DATE + " TEXT" +
+                KEY_END_DATE + "TEXT"+
+                KEY_DAY_OF_WEEK + "TEXT" + ")";
+        db.execSQL(CREATE_TABLE_COURSES);
     }
 
     //Creates new db if new version > old version
@@ -176,6 +206,32 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
     public void deleteEvent(int eventID){
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_SUBSCRIBED_EVENTS, KEY_ID + " = ?", new String[]{String.valueOf(eventID)});
+        db.close();
+    }
+
+    //Add new courses to the local database
+    public void addCourses(List<Course> courses){
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        for(int i = 0; i < courses.size();i++) {
+            Course myCourse = courses.get(i);
+
+            //Place values in contentValues
+            ContentValues values = new ContentValues();
+
+            values.put(KEY_NAME, myCourse.getCategory());
+            values.put(KEY_NUMBER, myCourse.getNumber());
+            values.put(KEY_SECTION, myCourse.getSection());
+            values.put(KEY_BUILDING, myCourse.getBuilding());
+            values.put(KEY_ROOM, myCourse.getRoom());
+            values.put(KEY_START_DATE, myCourse.getStartDate());
+            values.put(KEY_END_DATE, myCourse.getEndDate());
+            values.put(KEY_LOCATION, myCourse.getDayOfWeek());
+
+            //Insert new row
+            db.insert(TABLE_SUBSCRIBED_COURSES, null, values);
+        }
+        //close database connection
         db.close();
     }
 
