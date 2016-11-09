@@ -258,14 +258,13 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
         //loop through each row and add that course to the list
         if (cursor.moveToFirst()) {
             do {
-                String startDate1 = cursor.getString(7);
-                String startDate2 = cursor.getString(8);
-                SimpleDateFormat format1 = new SimpleDateFormat("yyyyMMdd");
-                SimpleDateFormat format2 = new SimpleDateFormat("yyyyMMdd");
-                Date date1 = format1.parse(startDate1);
-                Date date2 = format2.parse(startDate2);
+                String start = cursor.getString(7);
+                String end = cursor.getString(8);
+                SimpleDateFormat formatter = new SimpleDateFormat("EEE MMM dd HH:mm:SS zzz yyy");
+                Date startDate = formatter.parse(start);
+                Date endDate = formatter.parse(end);
 
-                Course course = new Course(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getLong(5), cursor.getLong(6), date1,date2,cursor.getString(9));
+                Course course = new Course(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getLong(5), cursor.getLong(6), startDate, endDate, cursor.getString(9));
                 myCourses.add(course);
             }
             while (cursor.moveToNext());
