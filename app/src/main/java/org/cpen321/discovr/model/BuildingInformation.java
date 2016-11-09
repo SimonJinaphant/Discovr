@@ -1,4 +1,4 @@
-package org.cpen321.discovr;
+package org.cpen321.discovr.model;
 
 /**
  * Created by jacqu on 11/9/2016.

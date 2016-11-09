@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import org.cpen321.discovr.model.BuildingInformation;
 import org.cpen321.discovr.model.Course;
 import org.cpen321.discovr.parser.CalendarFileParser;
 
