@@ -10,6 +10,7 @@ import java.util.List;
  */
 
 public class MapPolygon{
+
     // The name of the polygon area.
     public final String name;
 
