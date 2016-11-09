@@ -1,10 +1,11 @@
 package org.cpen321.discovr;
+import android.content.res.AssetManager;
+import android.util.Log;
+
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +14,6 @@ import org.json.*;
 import org.apache.commons.io.IOUtils;
 
 public class GeoJsonParser {
-
 
 	public static List<String> allnames(InputStream is) throws IOException, JSONException {
 
@@ -34,7 +34,6 @@ public class GeoJsonParser {
 
 	public static double[] getCoordinates(String name, InputStream is) throws IOException, JSONException {
 		//List<String> listnames = allnames(is);
-
 		double temp[] = new double[2];
 		temp[0] = 0;
 		temp[1] = 0;
@@ -79,21 +78,7 @@ public class GeoJsonParser {
 
 		//System.out.println(arr.getJSONObject(index).getJSONObject("geometry").getJSONArray("coordinates").getJSONArray(0).length());
 	return temp;
-}
+	}
 
-/*
-	public static void main (String[] args) throws IOException {
-		File f = new File("./app/src/main/java/org/cpen321/discovr/buildings.geojson");
-
-		if (f.exists()) {
-			InputStream is = new FileInputStream("./app/src/main/java/org/cpen321/discovr/buildings.geojson");
-
-			double[] arr = getCoordinates("Civil And Mechanical Engineering Building", is);
-			System.out.println(arr[0]);
-			System.out.println(arr[1]);
-
-		}
-		return;
-	} */
 }
 

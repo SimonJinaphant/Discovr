@@ -5,7 +5,10 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.AssetManager;
 import android.graphics.Color;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -24,11 +27,17 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
 
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.mapbox.mapboxsdk.MapboxAccountManager;
+import android.view.View;
 import com.mapbox.mapboxsdk.MapboxAccountManager;
 import com.mapbox.mapboxsdk.annotations.Marker;
 import com.mapbox.mapboxsdk.annotations.MarkerViewOptions;
+import com.mapbox.mapboxsdk.annotations.PolylineOptions;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.exceptions.InvalidAccessTokenException;
@@ -39,9 +48,33 @@ import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.MapboxMapOptions;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.mapboxsdk.maps.SupportMapFragment;
+import com.mapbox.services.Constants;
+import com.mapbox.services.commons.ServicesException;
+import com.mapbox.services.commons.geojson.LineString;
+import com.mapbox.services.commons.models.Position;
+import com.mapbox.services.directions.v5.DirectionsCriteria;
+import com.mapbox.services.directions.v5.MapboxDirections;
+import com.mapbox.services.directions.v5.models.DirectionsResponse;
+import com.mapbox.services.directions.v5.models.DirectionsRoute;
+import com.mapbox.services.geocoding.v5.MapboxGeocoding;
+import com.mapbox.services.geocoding.v5.models.CarmenFeature;
+import com.mapbox.services.geocoding.v5.models.GeocodingResponse;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Locale;
+
+import cz.msebera.android.httpclient.Header;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener{
@@ -57,17 +90,66 @@ public class MainActivity extends AppCompatActivity
     Location userLocation;
     LocationServices locationServices;
     FloatingActionButton fab;
-    Marker userPositionMarker;
 
     //Reference to map
     MapboxMap map;
+    Marker userPositionMarker;
+    Marker pointOfInterestMarker;
+    private DirectionsRoute currentRoute;
 
+    //Building information JSON inputstream for searching
+    InputStream is;
+
+    private List<EventInfo> AllEventsList = new ArrayList<EventInfo>();
     private static final int REQUEST_ALL_MAPBOX_PERMISSIONS = 3211;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {// Get the SearchView and set the searchable configuration
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Inflate the layout for this fragment
+
+        AsyncHttpClient client = new AsyncHttpClient();
+        client.get("http://discovrweb.azurewebsites.net/api/Events", new AsyncHttpResponseHandler() {
+            @Override
+            public void onStart() {
+                // called before request is started
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] response) {
+                String r = new String(response);
+                try {
+                    JSONArray json = new JSONArray(r);
+                    for(int i = 0; i < json.length(); i++){
+                        JSONObject o = json.getJSONObject(i);
+                        AllEventsList.add(new EventInfo(o.getInt("Id"),
+                                o.getString("Name"),
+                                o.getString("Host"),
+                                o.getString("Location"),
+                                o.getString("StartTime"),
+                                o.getString("EndTime"),
+                                "",
+                                o.getString("Description")));
+                    }
+                }
+                catch (JSONException e){
+                    throw new RuntimeException(e);
+                }
+                System.out.println(r);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] errorResponse, Throwable e) {
+                // called when response HTTP status is "4XX" (eg. 401, 403, 404)
+                System.out.println(":(");
+            }
+            @Override
+            public void onRetry(int retryNo) {
+                // called when request is retried
+            }
+        });
 
         // TODO: Refactor permission code
         String[] permissions = {
@@ -145,8 +227,8 @@ public class MainActivity extends AppCompatActivity
                 map.getMyLocationViewSettings().setForegroundTintColor(Color.parseColor("#FFB6C1"));
                 locationServices.addLocationListener(new LocationListener() {
                     @Override
-                    public void onLocationChanged(Location location){
-                        if (location != null){
+                    public void onLocationChanged(Location location) {
+                        if (location != null) {
                             Log.d("location", "User location has changed to: " + location.toString());
                             userLocation = location;
                         }
@@ -156,18 +238,20 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        //Button to focus on user location
-        fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if ((map != null) && (userLocation != null)) {
-                    Log.d("Location", "Current user location" + userLocation.toString());
-                    cameraToUser();
-                }
-            }
 
-        });
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+
+        //Button to focus on user location
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+                                   @Override
+                                   public void onClick(View view) {
+                                       Log.d("location fab", "fab clicked");
+                                       moveMapToLocation(new LatLng(userLocation));
+                                   }
+                               });
 
         //Create navigation drawer
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -184,20 +268,20 @@ public class MainActivity extends AppCompatActivity
         //Search handler to exist on onCreate
         handleIntent(getIntent());
 
-    }
 
-    /**
-     * Moves the map to user location as well as adding a marker on that position
-     */
-    private void cameraToUser(){
-        if (userPositionMarker == null){
-            MarkerViewOptions marker = new MarkerViewOptions().position(new LatLng(userLocation));
-            userPositionMarker = map.addMarker(marker);
-        } else {
-            userPositionMarker.setPosition(new LatLng(userLocation));
+        //Access the building JSON file and initialize input stream
+        AssetManager am = getAssets();
+        try {
+            is = am.open("buildings.geojson");
+        } catch (IOException e){
+            e.printStackTrace();
+            Log.d("buildings", "Cannot open file properly");
         }
-        CameraPosition position = new CameraPosition.Builder().target(new LatLng(userLocation)).zoom(17).tilt(30).build();
-        map.animateCamera(CameraUpdateFactory.newCameraPosition(position), 7000);
+
+
+
+
+
     }
 
     @Override
@@ -218,10 +302,11 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
         getMenuInflater().inflate(R.menu.toolbar_menu, menu);
+
+        //Creates the searchbar
         MenuItem searchItem = menu.findItem(R.id.action_search);
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        searchView.setIconifiedByDefault(false);
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         searchView.setOnQueryTextListener(
                 new SearchView.OnQueryTextListener() {
@@ -232,16 +317,128 @@ public class MainActivity extends AppCompatActivity
                         return true;
                     }
 
+
                     @Override
                     public boolean onQueryTextSubmit(String query){
+                        //Search is submitted
                         Log.d("search", "Text submitted: " + query);
-                        //Make map go to location
+                        try {
+                            //Workaround the "refresh" the input stream
+                            is.mark(Integer.MAX_VALUE);
+                            double[] coords = GeoJsonParser.getCoordinates(query, is); //obtains coordinates from query
+                            is.reset();
+
+                            //Failed to return values
+                            if (coords.length < 1){
+                                return false;
+                            }
+
+                            Log.d("search", "coords size: " + coords.length + " latlng: = " + coords[0] + " " +coords[1]);
+                            LatLng loc = new LatLng(coords[1], coords[0]);
+
+                            //Creates a marker on the queried location
+                            if (pointOfInterestMarker == null) {
+                                MarkerViewOptions marker = new MarkerViewOptions().position(loc);
+                                pointOfInterestMarker = map.addMarker(marker);
+                            }
+                            else {
+                                pointOfInterestMarker.setPosition(loc);
+                            }
+
+                            //Moves the camera to focus on queried location
+                            CameraPosition position = new CameraPosition.Builder().target(loc).zoom(17).tilt(30).build();
+                            Log.d("location", position.toString());
+                            map.animateCamera(CameraUpdateFactory.newCameraPosition(position), 7000);
+
+                            //Determines a route from user position to the current location
+                            Position pos = Position.fromCoordinates(loc.getLongitude(), loc.getLatitude());
+                            try{
+                                getRoute(Position.fromCoordinates(userLocation.getLongitude(), userLocation.getLatitude()), pos);
+                            } catch (ServicesException servicesException) {
+                                servicesException.printStackTrace();
+                            }
+                        } catch (Exception e){
+                            e.printStackTrace();
+                            return false;
+                        }
+
                         return true;
                     }
                 });
         return true;
     }
 
+    /**
+     * Obtain route from one position to another
+     * Obtained from: https://www.mapbox.com/android-sdk/examples/directions/
+     * @param origin the starting point
+     * @param destination the endpoint
+     * @throws ServicesException
+     */
+    private void getRoute(Position origin, Position destination) throws ServicesException {
+        MapboxDirections client = new MapboxDirections.Builder()
+                .setOrigin(origin)
+                .setDestination(destination)
+                .setProfile(DirectionsCriteria.PROFILE_CYCLING)
+                .setAccessToken(getResources().getString(R.string.mapbox_key))
+                .build();
+
+        client.enqueueCall(new Callback<DirectionsResponse>() {
+            @Override
+            public void onResponse(Call<DirectionsResponse> call, Response<DirectionsResponse> response) {
+                // You can get the generic HTTP info about the response
+                Log.d("direction", "Response code: " + response.code());
+                if (response.body() == null) {
+                    Log.e("direction", "No routes found, make sure you set the right user and access token.");
+                    return;
+                } else if (response.body().getRoutes().size() < 1) {
+                    Log.e("direction", "No routes found");
+                    return;
+                }
+
+                // Print some info about the route
+                currentRoute = response.body().getRoutes().get(0);
+                Log.d("direction", "Distance: " + currentRoute.getDistance());
+                Toast.makeText(
+                        MainActivity.this,
+                        "Route is " + currentRoute.getDistance() + " meters long.",
+                        Toast.LENGTH_SHORT).show();
+
+                // Draw the route on the map
+                drawRoute(currentRoute);
+            }
+
+            @Override
+            public void onFailure(Call<DirectionsResponse> call, Throwable throwable) {
+                Log.e("direction", "Error: " + throwable.getMessage());
+                Toast.makeText(MainActivity.this, "Error: " + throwable.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    /**
+     * Displays the route on the map
+     * Obtained from: https://www.mapbox.com/android-sdk/examples/directions/
+     * @param route
+     */
+    private void drawRoute(DirectionsRoute route) {
+        // Convert LineString coordinates into LatLng[]
+        LineString lineString = LineString.fromPolyline(route.getGeometry(), Constants.OSRM_PRECISION_V5);
+        List<Position> coordinates = lineString.getCoordinates();
+        LatLng[] points = new LatLng[coordinates.size()];
+        for (int i = 0; i < coordinates.size(); i++) {
+            points[i] = new LatLng(
+                    coordinates.get(i).getLatitude(),
+                    coordinates.get(i).getLongitude());
+        }
+
+        // Draw Points on MapView
+        map.addPolyline(new PolylineOptions()
+                .add(points)
+                .color(Color.parseColor("green"))
+                .alpha((float) 0.50)
+                .width(2));
+    }
 
     /*
         We might not need onNewIntent or handleIntent if we can handle
@@ -264,6 +461,24 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * Moves the map to user location as well as adding a marker on that position
+     */
+    private void moveMapToLocation(LatLng loc){
+        Log.d("location", "moving map");
+        if (userLocation != null) {
+            if (userPositionMarker == null) {
+                MarkerViewOptions marker = new MarkerViewOptions().position(loc);
+                userPositionMarker = map.addMarker(marker);
+            } else {
+                userPositionMarker.setPosition(loc);
+            }
+            CameraPosition position = new CameraPosition.Builder().target(loc).zoom(17).tilt(30).build();
+            Log.d("location", position.toString());
+            map.animateCamera(CameraUpdateFactory.newCameraPosition(position), 7000);
+        }
+    }
+
 
     /**
      * Overriden to handle drawer opening and closing as well as handling
@@ -273,49 +488,12 @@ public class MainActivity extends AppCompatActivity
     public void onBackPressed() {
         FragmentManager manager = getSupportFragmentManager();
         Fragment currentFragment = manager.findFragmentById(R.id.fragment_container);
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        } else if (currentFragment instanceof SingleEventFragment) {
-            FragmentTransaction ft = manager.beginTransaction();
-            List<Fragment> all_frag = manager.getFragments();
-            ListIterator<Fragment> li = all_frag.listIterator();
-            while (li.hasNext()){
-                Fragment currFrag = li.next();
-                if ((currFrag != null) && (!currFrag.equals(mapFragment))){
-                    ft.remove(currFrag);
-                }
-            }
-
-            if(((SingleEventFragment) currentFragment).getPrevFragment() == ALLEVENTS) {
-                getSupportActionBar().setTitle(getResources().getString((R.string.events_all)));
-                ft.add(R.id.fragment_container, new AllEventsFragment(), getResources().getString(R.string.all_events_tag));
-            }else {
-                ft.add(R.id.fragment_container, new EventsSubscribedFragment(), getResources().getString(R.string.events_sub_tag));
-                getSupportActionBar().setTitle(getResources().getString(R.string.events_subscribed));
-            }
-//            }else{
-//                ft.add(R.id.fragment_container, new CoursesFragment(), "Courses Fragment");
-//                getSupportActionBar().setTitle(getResources().getString(R.string.courses));
-//            }
-            ft.commit();
-            Log.d("events_sub", "commited the fragment");
-        }else {
-
-            if (manager.getBackStackEntryCount() > 0){
-
-                if (currentFragment instanceof SupportMapFragment){
-                    navigationView.getMenu().getItem(0).setChecked(true);
-                } else if (currentFragment instanceof EventsSubscribedFragment){
-                    navigationView.getMenu().getItem(2).setChecked(true);
-                } else if (currentFragment instanceof AllEventsFragment) {
-                    navigationView.getMenu().getItem(4).setChecked(true);
-                }
-                manager.popBackStack();
-            } else {
-                super.onBackPressed();
-            }
+        } else {
+            super.onBackPressed();
         }
     }
 
@@ -325,90 +503,61 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-
-        if (id == R.id.map_view) {
-            FragmentManager fm = getSupportFragmentManager();
-            FragmentTransaction ft = fm.beginTransaction();
-            List<Fragment> all_frag = fm.getFragments();
-            ListIterator<Fragment> li = all_frag.listIterator();
-            while (li.hasNext()){
-                Fragment currFrag = li.next();
-                if ((currFrag != null) && (!currFrag.equals(mapFragment))){
-                    ft.remove(currFrag);
-                }
-            }
-            getSupportActionBar().setTitle(getResources().getString(R.string.app_name));
-            ft.commit();
-
-        } else if (id == R.id.events_subscribed) {
-            FragmentManager fm = getSupportFragmentManager();
-            FragmentTransaction ft = fm.beginTransaction();
-            List<Fragment> all_frag = fm.getFragments();
-            ListIterator<Fragment> li = all_frag.listIterator();
-            while (li.hasNext()){
-                Fragment currFrag = li.next();
-                if ((currFrag != null) && (!currFrag.equals(mapFragment))){
-                    ft.remove(currFrag);
-                }
-            }
-            ft.add(R.id.fragment_container, new EventsSubscribedFragment(), getResources().getString(R.string.events_sub_tag));
-            ft.commit();
-            Log.d("events_sub", "commited the fragment");
-            getSupportActionBar().setTitle(getResources().getString(R.string.events_subscribed));
-
-        } else if (id == R.id.events_nearby) {
-
-        } else if (id == R.id.events_all) {
-            FragmentManager fm = getSupportFragmentManager();
-            FragmentTransaction ft = fm.beginTransaction();
-            List<Fragment> all_frag = fm.getFragments();
-            ListIterator<Fragment> li = all_frag.listIterator();
-            while (li.hasNext()){
-                Fragment currFrag = li.next();
-                if ((currFrag != null) && (!currFrag.equals(mapFragment))){
-                    ft.remove(currFrag);
-                }
-            }
-            ft.add(R.id.fragment_container, new AllEventsFragment(), getResources().getString(R.string.all_events_tag));
-            ft.commit();
-            Log.d("all_events", "commited the fragment");
-            getSupportActionBar().setTitle(getResources().getString((R.string.events_all)));
-        } else if (id == R.id.test_frag){
-            FragmentManager fm = getSupportFragmentManager();
-            FragmentTransaction ft = fm.beginTransaction();
-            List<Fragment> all_frag = fm.getFragments();
-            ListIterator<Fragment> li = all_frag.listIterator();
-
-            while (li.hasNext()){
-                Fragment currFrag = li.next();
-                if ((currFrag != null) && (!currFrag.equals(mapFragment))){
-                    ft.remove(currFrag);
-                }
-            }
-            ft.add(R.id.fragment_container, new BlankFragment(), "test fragment");
-            ft.commit();
-            Log.d("testing_fragment", "commited the fragment");
-            getSupportActionBar().setTitle("Testing Fragment");
-        }else if (id == R.id.courses_frag){
-            FragmentManager fm = getSupportFragmentManager();
-            FragmentTransaction ft = fm.beginTransaction();
-            List<Fragment> all_frag = fm.getFragments();
-            ListIterator<Fragment> li = all_frag.listIterator();
-
-            while (li.hasNext()){
-                Fragment currFrag = li.next();
-                if ((currFrag != null) && (!currFrag.equals(mapFragment))){
-                    ft.remove(currFrag);
-                }
-            }
-            ft.add(R.id.fragment_container, new CoursesFragment(), getResources().getString(R.string.courses));
-            ft.commit();
-            Log.d("all courses", "commited the fragment");
-            getSupportActionBar().setTitle(getResources().getString((R.string.courses)));
-        }
-
+        drawerFragmentManager(id);
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    /**
+     * Takes care of hiding and switching of fragments
+     * @param fragmentID the ID of the fragment selected
+     */
+    private void drawerFragmentManager(int fragmentID){
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        List<Fragment> all_frag = fm.getFragments();
+
+        //Remove all the fragments but the map fragment
+        ListIterator<Fragment> li = all_frag.listIterator();
+        while (li.hasNext()){
+            Fragment currFrag = li.next();
+            if ((currFrag != null) && (!currFrag.equals(mapFragment))){
+                ft.remove(currFrag);
+            }
+        }
+        Log.d("backstack", "Destroying backstack of size: " + fm.getBackStackEntryCount());
+        fm.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        Log.d("backstack", "Backstack size: " + fm.getBackStackEntryCount());
+
+        //Adds a fragment to the container and changes the toolbar title correspondingly
+        switch (fragmentID) {
+            case R.id.map_view:
+                getSupportActionBar().setTitle(getResources().getString(R.string.app_name));
+                break;
+            case R.id.events_subscribed:
+                ft.add(R.id.fragment_container, new EventsSubscribedFragment(), getResources().getString(R.string.events_sub_tag));
+                getSupportActionBar().setTitle(getResources().getString(R.string.events_subscribed));
+                break;
+            case R.id.events_nearby:
+                getSupportActionBar().setTitle(getResources().getString(R.string.events_nearby));
+                break;
+            case R.id.events_all:
+                ft.add(R.id.fragment_container, new AllEventsFragment(), getResources().getString(R.string.all_events_tag));
+                getSupportActionBar().setTitle(getResources().getString((R.string.events_all)));
+                break;
+            case R.id.test_frag:
+                ft.add(R.id.fragment_container, new BlankFragment(), "test fragment");
+                getSupportActionBar().setTitle("Testing Fragment");
+                break;
+            default:
+                break;
+        }
+
+        ft.commit();
+    }
+
+    List<EventInfo> getAllEvents(){
+        return this.AllEventsList;
     }
 }
