@@ -12,6 +12,7 @@ import java.util.List;
 import org.json.*;
 
 import org.apache.commons.io.IOUtils;
+import org.cpen321.discovr.model.MapPolygon;
 import org.cpen321.discovr.model.MapTransitStation;
 
 public class GeoJsonParser {
@@ -81,12 +82,18 @@ public class GeoJsonParser {
 		return temp;
 	}
 	
+	/**
+	 * 
+	 * @param stopnum the bus stop number
+	 * @param is InputStream from the bust stop geojson file in /assets
+	 * @return a MapTransitStation with the information for the stop number
+	 * @throws IOException
+	 */
 	public static MapTransitStation getBusStopInfo(int stopnum, InputStream is) throws IOException {
 		String name;
 		List<String> vehicles;
 		LatLng location;
 
-		
 		String jsonTxt = IOUtils.toString(is);
 		JSONObject obj = new JSONObject(jsonTxt.substring(1));
 		JSONArray arr = obj.getJSONArray("features");
@@ -114,12 +121,32 @@ public class GeoJsonParser {
 		return mapstat;
 	}
 	
+	public static List<MapPolygon> createPolygons(InputStream is) {
+		String jsonTxt = IOUtils.toString(is);
+		JSONObject obj = new JSONObject(jsonTxt.substring(1));
+		JSONArray arr = obj.getJSONArray("features");
+		JSONArray coords = new JSONArray();
+		List<MapPolygon> mappolys;
+		
+		String name;
+		List<LatLng> vertices;
+		
+		for (int i = 0; i < arr.length(); i++) {
+			name = arr.getJSONObject(i).getJSONObject("properties").getString("Name");
+			coords = arr.getJSONObject(i).getJSONObject("geometry").getJSONArray("coordinates");
+			for (int j = 0; j < coords.length(); j++) {
+				vertices.add(coords.getDouble(j));
+			}
+			mappolys.add(new MapPolygon(name, vertices));
+			vertices.clear();
+		}
+	}
 	
 	
 	
 	
 	
-	public static void main (String[] args) throws IOException {
+	/*public static void main (String[] args) throws IOException {
 
 		File f = new File("./app/src/main/java/org/cpen321/discovr/buildings.geojson");
 
@@ -132,7 +159,7 @@ public class GeoJsonParser {
 			
 		}
 		return;
-	}
+	}*/
 	
 }
 
