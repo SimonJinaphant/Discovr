@@ -85,14 +85,28 @@ public class CoursesFragment extends Fragment {
         bt.setPadding(getResources().getDimensionPixelSize(button_margin), getResources().getDimensionPixelSize(button_margin), getResources().getDimensionPixelSize(button_margin), getResources().getDimensionPixelSize(button_margin));
         bt.setBackground(ContextCompat.getDrawable(getContext(),R.drawable.button_press_colors));
         bt.setTextColor(ContextCompat.getColor(getContext(), R.color.primaryTextColor));
-        SpannableString buttonText = new SpannableString(course.getCategory()+ " " +course.getNumber()+" "+course.getSection() + "\n" + (course.getStartTime() + " - " + course.getEndTime()) + ", "  + "\n" + course.getBuilding()+course.getRoom());
+        String startTime = timeFormatter(course.getStartTime());
+        String endTime = timeFormatter(course.getEndTime());
+        SpannableString buttonText = new SpannableString(course.getCategory()+ " " +course.getNumber()+" "+course.getSection() + "\n" + (startTime+ " - " + endTime) + "\n" + course.getBuilding()+ " "+course.getRoom());
 
         //should i add startDate and endDate as well?
         //when it reaches the endDate ,then the course button automatically disappear
         int index = buttonText.toString().indexOf("\n");
-        buttonText.setSpan(new AbsoluteSizeSpan(100), 0, index, SPAN_INCLUSIVE_INCLUSIVE);
-        buttonText.setSpan(new AbsoluteSizeSpan(60), index, buttonText.length(), SPAN_INCLUSIVE_INCLUSIVE);
+        buttonText.setSpan(new AbsoluteSizeSpan(50), 0, index, SPAN_INCLUSIVE_INCLUSIVE);
+        buttonText.setSpan(new AbsoluteSizeSpan(30), index, buttonText.length(), SPAN_INCLUSIVE_INCLUSIVE);
         bt.setText(buttonText);
         return bt;
+    }
+
+    //for course time only
+    //i got this worked on my phone... but i have no idea why- -
+    private String timeFormatter(long startTime) {
+        String time = String.valueOf(startTime);
+        String[] timeArray = time.split("");
+        if (timeArray.length == 6){
+            return timeArray[0]+timeArray[1]+":"+timeArray[2]+timeArray[3];
+        }else {
+            return timeArray[0]+ timeArray[1]+timeArray[2]+":" +"00";
+        }
     }
 }
