@@ -1,13 +1,17 @@
 package org.cpen321.discovr;
 
 
+import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.text.SpannableString;
 import android.text.style.AbsoluteSizeSpan;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,74 +54,30 @@ public class AllEventsFragment extends Fragment {
         final LinearLayout ll = (LinearLayout) sv.getChildAt(0);
         final LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
-        // Inflate the layout for this fragment
-        final AsyncHttpClient client = new AsyncHttpClient();
-        client.get("http://discovrweb.azurewebsites.net/api/Events", new AsyncHttpResponseHandler() {
-            @Override
-            public void onStart() {
-                // called before request is started
-            }
+        for(final EventInfo event : ((MainActivity) this.getActivity()).getAllEvents()) {
+            final Button button = createButton(event);
+            ll.addView(button, lp);
+            //Set button's on click listener to open new fragment of that single event on top of map
+            button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    SingleEventFragment fragment = new SingleEventFragment();
+                    FragmentManager fm = getActivity().getSupportFragmentManager();
+                    Fragment currentFrag = fm.findFragmentById(R.id.fragment_container);
+                    FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                    //hide current fragment, will reopen when back key pressed
+                    fragment.setEvent(event);
+                    fragment.setPrevFragment(ALLEVENTS);
+                    Log.d("backstack", "From All Events: currFragment = " + currentFrag);
+                    transaction.remove(currentFrag);
+                    transaction.add(R.id.fragment_container, fragment, String.valueOf(button.getId()));
+                    transaction.addToBackStack(null);
+                    transaction.commit();
 
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] response) {
-
-                String r = new String(response);
-                try {
-                    JSONArray json = new JSONArray(r);
-                    for(int i = 0; i < json.length(); i++){
-                        JSONObject o = json.getJSONObject(i);
-
-                        final EventInfo event = new EventInfo(o.getInt("Id"),
-                                o.getString("Name"),
-                                o.getString("Host"),
-                                o.getString("Location"),
-                                o.getString("StartTime"),
-                                o.getString("EndTime"),
-                                "",
-                                o.getString("Description"));
-                        final Button button = createButton(event);
-
-                        ll.addView(button, lp);
-
-                        //Set button's on click listener to open new fragment of that single event on top of map
-                        button.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                SingleEventFragment fragment = new SingleEventFragment();
-                                Fragment currentFrag = getActivity().getSupportFragmentManager().findFragmentById(R.id.fragment_container);
-                                FragmentTransaction transaction = getFragmentManager().beginTransaction();
-                                //hide current fragment, will reopen when back key pressed
-                                fragment.setEvent(event);
-                                fragment.setPrevFragment(ALLEVENTS);
-
-                                transaction.setCustomAnimations(R.anim.slide_in_up, R.anim.slide_out_left);
-                                transaction.remove(currentFrag);
-                                transaction.add(R.id.fragment_container, fragment, String.valueOf(button.getId()));
-                                transaction.addToBackStack(null);
-                                transaction.commit();
-                            }
-                        });
-
-                    }
                 }
-                catch (JSONException e){
-                    throw new RuntimeException(e);
-                }
+            });
+        }
 
-
-                System.out.println(r);
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] errorResponse, Throwable e) {
-                // called when response HTTP status is "4XX" (eg. 401, 403, 404)
-                System.out.println(":(");
-            }
-            @Override
-            public void onRetry(int retryNo) {
-                // called when request is retried
-            }
-        });
         return fm;
     }
 

@@ -4,10 +4,12 @@ package org.cpen321.discovr;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.text.SpannableString;
 import android.text.style.AbsoluteSizeSpan;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -69,7 +71,9 @@ public class EventsSubscribedFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
                     SingleEventFragment fragment = new SingleEventFragment();
-                    Fragment currentFrag = getActivity().getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+                    FragmentManager fm = getActivity().getSupportFragmentManager();
+                    Fragment currentFrag = fm.findFragmentById(R.id.fragment_container);
+                    Log.d("backstack", "From Subscribed Events: currFragment = " + currentFrag);
                     FragmentTransaction transaction = getFragmentManager().beginTransaction();
                     fragment.setEvent(event);
                     fragment.setPrevFragment(SUBSCRIBEDEVENTS);
