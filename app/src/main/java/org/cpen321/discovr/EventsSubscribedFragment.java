@@ -71,8 +71,9 @@ public class EventsSubscribedFragment extends Fragment {
                     FragmentTransaction transaction = getFragmentManager().beginTransaction();
                     fragment.setEvent(event);
                     fragment.setPrevFragment(SUBSCRIBEDEVENTS);
-                    //hide current fragment, will reopen when back key pressed
 
+
+                    //hide current fragment, will reopen when back key pressed
                     transaction.setCustomAnimations(R.anim.slide_in_up, R.anim.slide_out_left);
                     transaction.remove(currentFrag);
                     transaction.add(R.id.fragment_container, fragment, String.valueOf(button.getId()));
