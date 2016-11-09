@@ -1,13 +1,17 @@
 package org.cpen321.discovr;
 
 
+import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.text.SpannableString;
 import android.text.style.AbsoluteSizeSpan;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,7 +55,7 @@ public class AllEventsFragment extends Fragment {
         final LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
         // Inflate the layout for this fragment
-        final AsyncHttpClient client = new AsyncHttpClient();
+        AsyncHttpClient client = new AsyncHttpClient();
         client.get("http://discovrweb.azurewebsites.net/api/Events", new AsyncHttpResponseHandler() {
             @Override
             public void onStart() {
@@ -60,13 +64,12 @@ public class AllEventsFragment extends Fragment {
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] response) {
-
+                Log.d("azure", "successfully connected and creating all event fragment");
                 String r = new String(response);
                 try {
                     JSONArray json = new JSONArray(r);
                     for(int i = 0; i < json.length(); i++){
                         JSONObject o = json.getJSONObject(i);
-
                         final Button button = new Button(getActivity());
                         final EventInfo event = new EventInfo(o.getInt("Id"),
                                 o.getString("Name"),
@@ -102,12 +105,13 @@ public class AllEventsFragment extends Fragment {
                             @Override
                             public void onClick(View v) {
                                 SingleEventFragment fragment = new SingleEventFragment();
-                                Fragment currentFrag = getActivity().getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+                                FragmentManager fm = getActivity().getSupportFragmentManager();
+                                Fragment currentFrag = fm.findFragmentById(R.id.fragment_container);
                                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
                                 //hide current fragment, will reopen when back key pressed
                                 fragment.setEvent(event);
                                 fragment.setPrevFragment(ALLEVENTS);
-
+                                Log.d("backstack", "From All Events: currFragment = " + currentFrag);
                                 transaction.remove(currentFrag);
                                 transaction.add(R.id.fragment_container, fragment, String.valueOf(button.getId()));
                                 transaction.addToBackStack(null);
@@ -120,8 +124,6 @@ public class AllEventsFragment extends Fragment {
                 catch (JSONException e){
                     throw new RuntimeException(e);
                 }
-
-
                 System.out.println(r);
             }
 

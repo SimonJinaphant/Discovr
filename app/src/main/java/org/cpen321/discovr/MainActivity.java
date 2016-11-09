@@ -433,45 +433,12 @@ public class MainActivity extends AppCompatActivity
     public void onBackPressed() {
         FragmentManager manager = getSupportFragmentManager();
         Fragment currentFragment = manager.findFragmentById(R.id.fragment_container);
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        } else if (currentFragment instanceof SingleEventFragment) {
-            FragmentTransaction ft = manager.beginTransaction();
-            List<Fragment> all_frag = manager.getFragments();
-            ListIterator<Fragment> li = all_frag.listIterator();
-            while (li.hasNext()){
-                Fragment currFrag = li.next();
-                if ((currFrag != null) && (!currFrag.equals(mapFragment))){
-                    ft.remove(currFrag);
-                }
-            }
-
-            if(((SingleEventFragment) currentFragment).getPrevFragment() == ALLEVENTS) {
-                getSupportActionBar().setTitle(getResources().getString((R.string.events_all)));
-                ft.add(R.id.fragment_container, new AllEventsFragment(), getResources().getString(R.string.all_events_tag));
-            }else {
-                ft.add(R.id.fragment_container, new EventsSubscribedFragment(), getResources().getString(R.string.events_sub_tag));
-                getSupportActionBar().setTitle(getResources().getString(R.string.events_subscribed));
-            }
-            ft.commit();
-            Log.d("events_sub", "commited the fragment");
-        }else {
-
-            if (manager.getBackStackEntryCount() > 0){
-
-                if (currentFragment instanceof SupportMapFragment){
-                    navigationView.getMenu().getItem(0).setChecked(true);
-                } else if (currentFragment instanceof EventsSubscribedFragment){
-                    navigationView.getMenu().getItem(2).setChecked(true);
-                } else if (currentFragment instanceof AllEventsFragment) {
-                    navigationView.getMenu().getItem(4).setChecked(true);
-                }
-                manager.popBackStack();
-            } else {
-                super.onBackPressed();
-            }
+        } else {
+            super.onBackPressed();
         }
     }
 
@@ -506,6 +473,9 @@ public class MainActivity extends AppCompatActivity
                 ft.remove(currFrag);
             }
         }
+        Log.d("backstack", "Destroying backstack of size: " + fm.getBackStackEntryCount());
+        //fm.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        Log.d("backstack", "Backstack size: " + fm.getBackStackEntryCount());
 
         //Adds a fragment to the container and changes the toolbar title correspondingly
         switch (fragmentID) {
