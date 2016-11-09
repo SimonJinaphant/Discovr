@@ -57,6 +57,7 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
     //Creates table when getReadableDatabase or getWritableDatabase is called and no DB exists
     @Override
     public void onCreate(SQLiteDatabase db){
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_SUBSCRIBED_EVENTS);
         String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_SUBSCRIBED_EVENTS + "(" +
                 KEY_ID + " INTEGER PRIMARY KEY," +
                 KEY_NAME + " TEXT," +
@@ -65,9 +66,10 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
                 KEY_STARTTIME + " TEXT," +
                 KEY_ENDTIME + " TEXT," +
                 KEY_LOCATION + " TEXT," +
-                KEY_DETAILS + " TEXT," + ")";
+                KEY_DETAILS + " TEXT" + ")";
         db.execSQL(CREATE_TABLE);
 
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_SUBSCRIBED_COURSES);
         String CREATE_TABLE_COURSES = "CREATE TABLE IF NOT EXISTS " + TABLE_SUBSCRIBED_COURSES + "(" +
                 KEY_CATEGORY + " TEXT," +
                 KEY_NUMBER + " TEXT," +
@@ -226,9 +228,12 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
             values.put(KEY_SECTION, myCourse.getSection());
             values.put(KEY_BUILDING, myCourse.getBuilding());
             values.put(KEY_ROOM, myCourse.getRoom());
+            values.put(KEY_STARTTIME, myCourse.getStartTime());
+            values.put(KEY_ENDTIME, myCourse.getEndTime());
             values.put(KEY_START_DATE, myCourse.getStartDate());
             values.put(KEY_END_DATE, myCourse.getEndDate());
             values.put(KEY_DAY_OF_WEEK , myCourse.getDayOfWeek());
+
 
             //Insert new row
             db.insert(TABLE_SUBSCRIBED_COURSES, null, values);
