@@ -51,6 +51,7 @@ public class CalendarFileParser {
             System.out.println("Unable to find a ical file, please download one off of UBC SSC.");
             return null;
         }
+        System.out.println("ICal file found :D");
 
         List<Course> courses = new ArrayList<>();
 

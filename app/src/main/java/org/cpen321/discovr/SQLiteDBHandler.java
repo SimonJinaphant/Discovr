@@ -79,9 +79,10 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
                 KEY_STARTTIME + " TEXT," +
                 KEY_ENDTIME + " TEXT," +
                 KEY_START_DATE + " TEXT," +
-                KEY_END_DATE + "TEXT," +
-                KEY_DAY_OF_WEEK + "TEXT" + ")";
+                KEY_END_DATE + " TEXT," +
+                KEY_DAY_OF_WEEK + " TEXT" + ")";
         db.execSQL(CREATE_TABLE_COURSES);
+
     }
 
     //Creates new db if new version > old version
@@ -202,7 +203,7 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
         values.put(KEY_LOCATION, event.getLocation());
         values.put(KEY_DETAILS, event.getEventDetails());
 
-        //update that row
+        //update that rowserCou
         return db.update(TABLE_SUBSCRIBED_EVENTS, values, KEY_ID + " = ?", new String[]{String.valueOf(event.getID())});
     }
 
@@ -216,14 +217,14 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
     //Add new courses to the local database
     public void addCourses(List<Course> courses){
         SQLiteDatabase db = this.getWritableDatabase();
-
+        Log.d("sql", db.toString());
         for(int i = 0; i < courses.size();i++) {
             Course myCourse = courses.get(i);
 
             //Place values in contentValues
             ContentValues values = new ContentValues();
 
-            values.put(KEY_NAME, myCourse.getCategory());
+            values.put(KEY_CATEGORY, myCourse.getCategory());
             values.put(KEY_NUMBER, myCourse.getNumber());
             values.put(KEY_SECTION, myCourse.getSection());
             values.put(KEY_BUILDING, myCourse.getBuilding());
@@ -236,7 +237,9 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
 
 
             //Insert new row
-            db.insert(TABLE_SUBSCRIBED_COURSES, null, values);
+            if (db.insert(TABLE_SUBSCRIBED_COURSES, null, values) == -1){
+                Log.d("sql", "Failed to insert the entry");
+            }
         }
         //close database connection
         db.close();
@@ -244,7 +247,7 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
 
     //add all courses
     public List<Course> getAllCourses() throws ParseException {
-        List<Course> myCourses = new ArrayList<Course>();
+        List<Course> myCourses = new ArrayList<>();
 
         //Select all rows from TABLE_SUBSCRIBED_EVENTS
         String selectQuery = "SELECT * FROM " + TABLE_SUBSCRIBED_COURSES;
