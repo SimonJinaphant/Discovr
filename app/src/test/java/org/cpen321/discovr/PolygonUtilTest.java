@@ -14,33 +14,33 @@ import static org.junit.Assert.assertEquals;
 public class PolygonUtilTest {
 
     LatLng[] polygon = {
-        new LatLng(-123.252354,49.269207),
-        new LatLng(-123.252226,49.269062),
-        new LatLng(-123.252461,49.26898),
-        new LatLng(-123.252332,49.268822),
-        new LatLng(-123.252358,49.268812),
-        new LatLng(-123.252381,49.268834),
-        new LatLng(-123.252431,49.26882),
-        new LatLng(-123.252543,49.268951),
-        new LatLng(-123.252685,49.268899),
-        new LatLng(-123.252807,49.269045)
+            new LatLng(49.269207, -123.252354),
+            new LatLng(49.269062, -123.252226),
+            new LatLng(49.26898, -123.252461),
+            new LatLng(49.268822, -123.252332),
+            new LatLng(49.268812, -123.252358),
+            new LatLng(49.268834, -123.252381),
+            new LatLng(49.26882, -123.252431),
+            new LatLng(49.268951, -123.252543),
+            new LatLng(49.268899, -123.252685),
+            new LatLng(49.269045, -123.252807)
     };
 
     @Test
     public void inPolygon() throws Exception {
-        LatLng p1 = new LatLng(-123.252498, 49.269066);
+        LatLng p1 = new LatLng(49.269066, -123.252498);
         assertEquals(true, PolygonUtil.pointInPolygon(p1, polygon));
 
-        LatLng p2 = new LatLng(-123.252367, 49.269171);
+        LatLng p2 = new LatLng(49.269171, -123.252367);
         assertEquals(true, PolygonUtil.pointInPolygon(p2, polygon));
     }
 
     @Test
     public void notInPolygon(){
-        LatLng p1 = new LatLng(-123.252933, 49.266229);
+        LatLng p1 = new LatLng(49.266229, -123.252933);
         assertEquals(false, PolygonUtil.pointInPolygon(p1, polygon));
 
-        LatLng p2 = new LatLng(-123.252707, 49.266901);
+        LatLng p2 = new LatLng(49.266901, -123.252707);
         assertEquals(false, PolygonUtil.pointInPolygon(p2, polygon));
     }
 }

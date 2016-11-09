@@ -38,6 +38,7 @@ import android.view.View;
 import com.mapbox.mapboxsdk.MapboxAccountManager;
 import com.mapbox.mapboxsdk.annotations.Marker;
 import com.mapbox.mapboxsdk.annotations.MarkerViewOptions;
+import com.mapbox.mapboxsdk.annotations.PolygonOptions;
 import com.mapbox.mapboxsdk.annotations.Polyline;
 import com.mapbox.mapboxsdk.annotations.PolylineOptions;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
@@ -75,6 +76,7 @@ import java.util.ListIterator;
 import java.util.Locale;
 
 import cz.msebera.android.httpclient.Header;
+import edu.emory.mathcs.backport.java.util.Arrays;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -224,25 +226,34 @@ public class MainActivity extends AppCompatActivity
                 mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 5000, null);
 
                 final LatLng[] polygon = {
-                        new LatLng(-123.252354,49.269207),
-                        new LatLng(-123.252226,49.269062),
-                        new LatLng(-123.252461,49.26898),
-                        new LatLng(-123.252332,49.268822),
-                        new LatLng(-123.252358,49.268812),
-                        new LatLng(-123.252381,49.268834),
-                        new LatLng(-123.252431,49.26882),
-                        new LatLng(-123.252543,49.268951),
-                        new LatLng(-123.252685,49.268899),
-                        new LatLng(-123.252807,49.269045)
+                        new LatLng(49.269207, -123.252354),
+                        new LatLng(49.269062, -123.252226),
+                        new LatLng(49.26898, -123.252461),
+                        new LatLng(49.268822, -123.252332),
+                        new LatLng(49.268812, -123.252358),
+                        new LatLng(49.268834, -123.252381),
+                        new LatLng(49.26882, -123.252431),
+                        new LatLng(49.268951, -123.252543),
+                        new LatLng(49.268899, -123.252685),
+                        new LatLng(49.269045, -123.252807)
                 };
+
+                map.addPolygon(new PolygonOptions()
+                        .addAll(Arrays.asList(polygon))
+                        .alpha(0.35f)
+                        .strokeColor(Color.parseColor("#000000"))
+                        .fillColor(Color.parseColor("#3bb2d0"))
+                );
 
                 map.setOnMapLongClickListener(new MapboxMap.OnMapLongClickListener(){
                     @Override
                     public void onMapLongClick(@NonNull LatLng point) {
                         if(PolygonUtil.pointInPolygon(point, polygon)){
-                            Toast.makeText(MainActivity.this, "We are happy!", Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(MainActivity.this, "We are happy!", Toast.LENGTH_SHORT).show();
+                            System.out.println("Click within the Annex");
                         }else{
-                            Toast.makeText(MainActivity.this, "NOOOOOOOO!", Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(MainActivity.this, "NOOOOOOOO!", Toast.LENGTH_SHORT).show();
+                            System.out.println("Click is NOT within the Annex :(");
                         }
                         //Toast.makeText(MainActivity.this, point.toString(), Toast.LENGTH_SHORT).show();
                         Log.d("mapclick", "Point: " + point.toString());
