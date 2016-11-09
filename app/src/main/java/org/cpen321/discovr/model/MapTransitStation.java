@@ -18,11 +18,18 @@ public class MapTransitStation{
 
     // All vehicles numbers that stops at this station.
     public final List<String> vehicles;
+    
+    // Name of the bus stop.
+    public final String name;
 
-    public MapTransitStation(String stationNumber, LatLng location, List<String> vehicles) {
+    // List of Strings that contain the bus number followed by the next bus times. 
+    public List<String> bustimes;
+    
+    public MapTransitStation(String stationNumber, LatLng location, List<String> vehicles, String name) {
         this.stationNumber = stationNumber;
         this.location = location;
         this.vehicles = vehicles;
+        this.name = name;
     }
 
 }

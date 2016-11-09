@@ -1,7 +1,7 @@
 package org.cpen321.discovr;
 import android.content.res.AssetManager;
 import android.util.Log;
-
+import com.mapbox.mapboxsdk.geometry.LatLng;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -12,6 +12,7 @@ import java.util.List;
 import org.json.*;
 
 import org.apache.commons.io.IOUtils;
+import org.cpen321.discovr.model.MapTransitStation;
 
 public class GeoJsonParser {
 
@@ -79,6 +80,43 @@ public class GeoJsonParser {
 		}
 		return temp;
 	}
+	
+	public static MapTransitStation getBusStopInfo(int stopnum, InputStream is) throws IOException {
+		String name;
+		List<String> vehicles;
+		LatLng location;
+
+		
+		String jsonTxt = IOUtils.toString(is);
+		JSONObject obj = new JSONObject(jsonTxt.substring(1));
+		JSONArray arr = obj.getJSONArray("features");
+		int index = -1;
+		for (int i = 0; i < arr.length(); i++) {
+			if (arr.getJSONObject(i).getJSONObject("properties").has("BusStop")) {
+				if (arr.getJSONObject(i).getJSONObject("properties").getString("BusStop").equals(stopnum)) {
+					index = i;
+					break;
+				}
+			}
+		}
+		if (index != -1) {
+			JSONObject stopprop = arr.getJSONObject(index).getJSONObject("properties");
+			JSONObject stopgeo = arr.getJSONObject(index).getJSONObject("geometry");
+			name = stopprop.getString("Name");
+			for (int j = 0; j < stopprop.getJSONArray("Bus").length(); j++) {
+				vehicles.add(stopprop.getJSONArray("Bus").getString(j));
+			}
+			location = LatLng(stopgeo.getJSONArray("coordinates").getDouble(0), stopgeo.getJSONArray("coordinates").getDouble(1));
+		}
+		MapTransitStation mapstat = MapTransitStation(stopnum, location, vehicles, name);
+		
+		
+		return mapstat;
+	}
+	
+	
+	
+	
 	
 	
 	public static void main (String[] args) throws IOException {
