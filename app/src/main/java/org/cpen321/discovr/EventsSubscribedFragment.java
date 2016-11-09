@@ -62,7 +62,7 @@ public class EventsSubscribedFragment extends Fragment {
         for(final EventInfo event : allEvents) {
 
             //formats button to be the same as the format we want in the fragment
-            final Button button = formatButton(event);
+            final Button button = createButton(event);
             //Add this button to the layout
             ll.addView(button, lp);
 
@@ -78,6 +78,8 @@ public class EventsSubscribedFragment extends Fragment {
                     fragment.setEvent(event);
                     fragment.setPrevFragment(SUBSCRIBEDEVENTS);
                     //hide current fragment, will reopen when back key pressed
+
+                    transaction.setCustomAnimations(R.anim.slide_in_up, R.anim.slide_out_left);
                     transaction.remove(currentFrag);
                     transaction.add(R.id.fragment_container, fragment, String.valueOf(button.getId()));
                     transaction.addToBackStack(null);
@@ -93,7 +95,7 @@ public class EventsSubscribedFragment extends Fragment {
         return fm;
     }
 
-    public Button formatButton (EventInfo event){
+    public Button createButton(EventInfo event){
         //Set button properties - gravity, allCaps, padding, backgroundColor, textColor, text
         Button button =  new Button(this.getActivity());
         button.setId(event.getID());

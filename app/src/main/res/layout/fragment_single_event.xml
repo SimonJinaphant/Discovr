@@ -7,8 +7,9 @@
     app:layout_scrollFlags="scroll"
     app:layout_collapseParallaxMultiplier="1.0"
     android:id="@+id/singleEventLL"
-    android:layout_height="wrap_content"
-    android:gravity="bottom"
+    android:layout_height="match_parent"
+    android:gravity="top"
+    android:layout_marginTop="450dp"
     android:background="@color/colorPrimaryDark"
     android:layout_gravity="bottom">
 
@@ -27,7 +28,8 @@
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:gravity="center_vertical"
+        android:layout_height="match_parent">
 
         <Button
             android:layout_height="96dp"

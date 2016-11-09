@@ -55,22 +55,7 @@ public class AllEventsFragment extends Fragment {
         final LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
         for(final EventInfo event : ((MainActivity) this.getActivity()).getAllEvents()) {
-            final Button button = new Button(this.getActivity());
-
-            //Set button properties - gravity, allCaps, padding, backgroundColor, textColor, text
-            button.setGravity(left);
-            button.setAllCaps(false);
-            button.setPadding(getResources().getDimensionPixelSize(button_margin), getResources().getDimensionPixelSize(button_margin), getResources().getDimensionPixelSize(button_margin), getResources().getDimensionPixelSize(button_margin));
-            button.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.button_press_colors));
-            button.setTextColor(ContextCompat.getColor(getContext(), R.color.primaryTextColor));
-            SpannableString buttonText = new SpannableString(event.getName() + "\n" + formatTime(event.getStartTime()) + " - " + formatTime(event.getEndTime()) + ", " + getDate(event.getStartTime()) + "\n" + event.getBuildingName());
-            int index = buttonText.toString().indexOf("\n");
-            buttonText.setSpan(new AbsoluteSizeSpan(100), 0, index, SPAN_INCLUSIVE_INCLUSIVE);
-            buttonText.setSpan(new AbsoluteSizeSpan(60), index, buttonText.length(), SPAN_INCLUSIVE_INCLUSIVE);
-            button.setText(buttonText);
-            //Add arrow to end of button
-            Drawable arrow = ContextCompat.getDrawable(getContext(), R.drawable.right_arrow);
-            button.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, arrow, null);
+            final Button button = createButton(event);
             ll.addView(button, lp);
             //Set button's on click listener to open new fragment of that single event on top of map
             button.setOnClickListener(new View.OnClickListener() {
@@ -88,11 +73,34 @@ public class AllEventsFragment extends Fragment {
                     transaction.add(R.id.fragment_container, fragment, String.valueOf(button.getId()));
                     transaction.addToBackStack(null);
                     transaction.commit();
+
                 }
             });
         }
 
         return fm;
+    }
+
+    public Button createButton(EventInfo event){
+        //Set button properties - gravity, allCaps, padding, backgroundColor, textColor, text
+        Button button =  new Button(this.getActivity());
+        button.setId(event.getID());
+        button.setGravity(left);
+        button.setAllCaps(false);
+        button.setPadding(getResources().getDimensionPixelSize(button_margin), getResources().getDimensionPixelSize(button_margin), getResources().getDimensionPixelSize(button_margin), getResources().getDimensionPixelSize(button_margin));
+        button.setBackground(ContextCompat.getDrawable(getContext(),R.drawable.button_press_colors));
+        button.setTextColor(ContextCompat.getColor(getContext(), R.color.primaryTextColor));
+        SpannableString buttonText = new SpannableString(event.getName() + "\n" + formatTime(event.getStartTime()) + " - " + formatTime(event.getEndTime()) + ", " + getDate(event.getStartTime()) + "\n" + event.getBuildingName());
+        int index = buttonText.toString().indexOf("\n");
+        buttonText.setSpan(new AbsoluteSizeSpan(100), 0, index, SPAN_INCLUSIVE_INCLUSIVE);
+        buttonText.setSpan(new AbsoluteSizeSpan(60), index, buttonText.length(), SPAN_INCLUSIVE_INCLUSIVE);
+        button.setText(buttonText);
+
+        //Add arrow to end of button
+        Drawable arrow = ContextCompat.getDrawable(getContext(), R.drawable.right_arrow);
+        button.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, arrow, null);
+
+        return button;
     }
 
     public String formatTime(String Time){
