@@ -14,7 +14,12 @@ import org.apache.commons.io.IOUtils;
 
 public class GeoJsonParser {
 
-	
+	/**
+	 * 
+	 * @param InputStream from the ubc buildings geojson datset in /assets
+	 * @return a List of all the names of the buildings
+	 * @throws IOException
+	 */
 	public static List<String> allnames(InputStream is) throws IOException {
 		
 		List<String> names = new ArrayList<String>();
@@ -31,21 +36,20 @@ public class GeoJsonParser {
 		}
 		return names;	
 	}
+	/**
+	 * 
+	 * @param name - name of the building
+	 * @param is - InputStream from the ubc buildings geojson datset in /assets 
+	 * @return an array of double of size 2, long / lat
+	 * @throws IOException
+	 */
 	
 	public static double[] getCoordinates(String name, InputStream is) throws IOException {
-		//List<String> listnames = allnames(is);
-		
+
 		double temp[] = new double[2];
-		temp[0] = 0;
-		temp[1] = 0;
-			
-		int index = -1;/*
-		for (int i = 0; i < listnames.size(); i++) {
-			if (listnames.get(i).equals(name)) {
-				index = i;
-			}
-		}*/
-	
+
+		int index = -1;
+		
 		String jsonTxt = IOUtils.toString(is);
 						
 		JSONObject obj = new JSONObject(jsonTxt.substring(1));
@@ -53,33 +57,31 @@ public class GeoJsonParser {
 		
 		for (int i = 0; i < arr.length(); i++) {
 			if (arr.getJSONObject(i).getJSONObject("properties").has("Name")) {
-				//System.out.println(arr.getJSONObject(i).getJSONObject("properties").getString("Name"));
-				//System.out.println(arr.getJSONObject(i).getJSONObject("properties").getString("Name").equals(name));
 				if (arr.getJSONObject(i).getJSONObject("properties").getString("Name").equals(name)) {
 					index = i;
 					break;
 				}
 			}
 		}
-		//System.out.print(index);
-		
+	
 		if (index != -1) {
 			JSONArray coords = arr.getJSONObject(index).getJSONObject("geometry").getJSONArray("coordinates").getJSONArray(0);
 			
 			for (int j = 0; j < coords.length(); j++) {
 				temp[0] += coords.getJSONArray(j).getDouble(0);
-				//System.out.println(temp[0]);
+				
 				temp[1] += coords.getJSONArray(j).getDouble(1);
-				//System.out.println(temp[1]);
+
 			}
 			temp[0] = temp[0] / coords.length();
 			temp[1] = temp[1] / coords.length();
 				
 		}
-		
-		//System.out.println(arr.getJSONObject(index).getJSONObject("geometry").getJSONArray("coordinates").getJSONArray(0).length());
-	return temp;
+		return temp;
 }
+
+	
+	
 	
 	
 	public static void main (String[] args) throws IOException {
