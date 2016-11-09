@@ -54,89 +54,44 @@ public class AllEventsFragment extends Fragment {
         final LinearLayout ll = (LinearLayout) sv.getChildAt(0);
         final LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
-        // Inflate the layout for this fragment
-        AsyncHttpClient client = new AsyncHttpClient();
-        client.get("http://discovrweb.azurewebsites.net/api/Events", new AsyncHttpResponseHandler() {
-            @Override
-            public void onStart() {
-                // called before request is started
-            }
+        for(final EventInfo event : ((MainActivity) this.getActivity()).getAllEvents()) {
+            final Button button = new Button(this.getActivity());
 
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] response) {
-                Log.d("azure", "successfully connected and creating all event fragment");
-                String r = new String(response);
-                try {
-                    JSONArray json = new JSONArray(r);
-                    for(int i = 0; i < json.length(); i++){
-                        JSONObject o = json.getJSONObject(i);
-                        final Button button = new Button(getActivity());
-                        final EventInfo event = new EventInfo(o.getInt("Id"),
-                                o.getString("Name"),
-                                o.getString("Host"),
-                                o.getString("Location"),
-                                o.getString("StartTime"),
-                                o.getString("EndTime"),
-                                "",
-                                o.getString("Description"));
-
-                        //Set ID of button = id of event
-                        button.setId(o.getInt("Id"));
-
-                        //Set button properties - gravity, allCaps, padding, backgroundColor, textColor, text
-                        button.setGravity(left);
-                        button.setAllCaps(false);
-                        button.setPadding(getResources().getDimensionPixelSize(button_margin), getResources().getDimensionPixelSize(button_margin), getResources().getDimensionPixelSize(button_margin), getResources().getDimensionPixelSize(button_margin));
-                        button.setBackground(ContextCompat.getDrawable(getContext(),R.drawable.button_press_colors));
-                        button.setTextColor(ContextCompat.getColor(getContext(), R.color.primaryTextColor));
-                        SpannableString buttonText = new SpannableString(event.getName() + "\n" + formatTime(event.getStartTime()) + " - " + formatTime(event.getEndTime()) + ", " + getDate(event.getStartTime()) + "\n" + event.getBuildingName());
-                        int index = buttonText.toString().indexOf("\n");
-                        buttonText.setSpan(new AbsoluteSizeSpan(100), 0, index, SPAN_INCLUSIVE_INCLUSIVE);
-                        buttonText.setSpan(new AbsoluteSizeSpan(60), index, buttonText.length(), SPAN_INCLUSIVE_INCLUSIVE);
-                        button.setText(buttonText);
-
-                        //Add arrow to end of button
-                        Drawable arrow = ContextCompat.getDrawable(getContext(), R.drawable.right_arrow);
-                        button.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, arrow, null);
-                        ll.addView(button, lp);
-
-                        //Set button's on click listener to open new fragment of that single event on top of map
-                        button.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                SingleEventFragment fragment = new SingleEventFragment();
-                                FragmentManager fm = getActivity().getSupportFragmentManager();
-                                Fragment currentFrag = fm.findFragmentById(R.id.fragment_container);
-                                FragmentTransaction transaction = getFragmentManager().beginTransaction();
-                                //hide current fragment, will reopen when back key pressed
-                                fragment.setEvent(event);
-                                fragment.setPrevFragment(ALLEVENTS);
-                                Log.d("backstack", "From All Events: currFragment = " + currentFrag);
-                                transaction.remove(currentFrag);
-                                transaction.add(R.id.fragment_container, fragment, String.valueOf(button.getId()));
-                                transaction.addToBackStack(null);
-                                transaction.commit();
-                            }
-                        });
-
-                    }
+            //Set button properties - gravity, allCaps, padding, backgroundColor, textColor, text
+            button.setGravity(left);
+            button.setAllCaps(false);
+            button.setPadding(getResources().getDimensionPixelSize(button_margin), getResources().getDimensionPixelSize(button_margin), getResources().getDimensionPixelSize(button_margin), getResources().getDimensionPixelSize(button_margin));
+            button.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.button_press_colors));
+            button.setTextColor(ContextCompat.getColor(getContext(), R.color.primaryTextColor));
+            SpannableString buttonText = new SpannableString(event.getName() + "\n" + formatTime(event.getStartTime()) + " - " + formatTime(event.getEndTime()) + ", " + getDate(event.getStartTime()) + "\n" + event.getBuildingName());
+            int index = buttonText.toString().indexOf("\n");
+            buttonText.setSpan(new AbsoluteSizeSpan(100), 0, index, SPAN_INCLUSIVE_INCLUSIVE);
+            buttonText.setSpan(new AbsoluteSizeSpan(60), index, buttonText.length(), SPAN_INCLUSIVE_INCLUSIVE);
+            button.setText(buttonText);
+            //Add arrow to end of button
+            Drawable arrow = ContextCompat.getDrawable(getContext(), R.drawable.right_arrow);
+            button.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, arrow, null);
+            ll.addView(button, lp);
+            //Set button's on click listener to open new fragment of that single event on top of map
+            button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    SingleEventFragment fragment = new SingleEventFragment();
+                    FragmentManager fm = getActivity().getSupportFragmentManager();
+                    Fragment currentFrag = fm.findFragmentById(R.id.fragment_container);
+                    FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                    //hide current fragment, will reopen when back key pressed
+                    fragment.setEvent(event);
+                    fragment.setPrevFragment(ALLEVENTS);
+                    Log.d("backstack", "From All Events: currFragment = " + currentFrag);
+                    transaction.remove(currentFrag);
+                    transaction.add(R.id.fragment_container, fragment, String.valueOf(button.getId()));
+                    transaction.addToBackStack(null);
+                    transaction.commit();
                 }
-                catch (JSONException e){
-                    throw new RuntimeException(e);
-                }
-                System.out.println(r);
-            }
+            });
+        }
 
-            @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] errorResponse, Throwable e) {
-                // called when response HTTP status is "4XX" (eg. 401, 403, 404)
-                System.out.println(":(");
-            }
-            @Override
-            public void onRetry(int retryNo) {
-                // called when request is retried
-            }
-        });
         return fm;
     }
 
