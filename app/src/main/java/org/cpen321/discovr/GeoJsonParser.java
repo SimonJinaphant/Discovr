@@ -12,8 +12,7 @@ import java.util.List;
 import org.json.*;
 
 import org.apache.commons.io.IOUtils;
-import org.cpen321.discovr.model.MapPolygon;
-import org.cpen321.discovr.model.MapTransitStation;
+import org.cpen321.discovr.model.*;
 
 public class GeoJsonParser {
 
@@ -85,15 +84,14 @@ public class GeoJsonParser {
 	/**
 	 * 
 	 * @param stopnum the bus stop number
-	 * @param is InputStream from the bust stop geojson file in /assets
+	 * @param is InputStream from the bus stop geojson file in /assets
 	 * @return a MapTransitStation with the information for the stop number
 	 * @throws IOException
 	 */
-	public static MapTransitStation getBusStopInfo(int stopnum, InputStream is) throws IOException {
-		String name;
-		List<String> vehicles;
-		LatLng location;
-
+	public static MapTransitStation getBusStopInfo(String stopnum, InputStream is) throws IOException {
+	
+		List<String> vehicles = new ArrayList<String>();
+	
 		String jsonTxt = IOUtils.toString(is);
 		JSONObject obj = new JSONObject(jsonTxt.substring(1));
 		JSONArray arr = obj.getJSONArray("features");
@@ -109,37 +107,39 @@ public class GeoJsonParser {
 		if (index != -1) {
 			JSONObject stopprop = arr.getJSONObject(index).getJSONObject("properties");
 			JSONObject stopgeo = arr.getJSONObject(index).getJSONObject("geometry");
-			name = stopprop.getString("Name");
+			String name = stopprop.getString("Name");
 			for (int j = 0; j < stopprop.getJSONArray("Bus").length(); j++) {
 				vehicles.add(stopprop.getJSONArray("Bus").getString(j));
 			}
-			location = LatLng(stopgeo.getJSONArray("coordinates").getDouble(0), stopgeo.getJSONArray("coordinates").getDouble(1));
+			LatLng location = new LatLng(stopgeo.getJSONArray("coordinates").getDouble(0), stopgeo.getJSONArray("coordinates").getDouble(1));
+			MapTransitStation mapstat = new MapTransitStation(stopnum, location, vehicles, name);
+			return mapstat;
 		}
-		MapTransitStation mapstat = MapTransitStation(stopnum, location, vehicles, name);
-		
-		
-		return mapstat;
+		else {
+			return null;
+		}
 	}
 	
-	public static List<MapPolygon> createPolygons(InputStream is) {
+	public static List<MapPolygon> createPolygons(InputStream is) throws IOException {
 		String jsonTxt = IOUtils.toString(is);
 		JSONObject obj = new JSONObject(jsonTxt.substring(1));
 		JSONArray arr = obj.getJSONArray("features");
-		JSONArray coords = new JSONArray();
-		List<MapPolygon> mappolys;
 		
-		String name;
-		List<LatLng> vertices;
+		
+		List<MapPolygon> mappolys = new ArrayList<MapPolygon>();
 		
 		for (int i = 0; i < arr.length(); i++) {
-			name = arr.getJSONObject(i).getJSONObject("properties").getString("Name");
-			coords = arr.getJSONObject(i).getJSONObject("geometry").getJSONArray("coordinates");
+			String name = new String(arr.getJSONObject(i).getJSONObject("properties").getString("Name"));
+			List<LatLng> vertices = new ArrayList<LatLng>();
+			JSONArray coords = arr.getJSONObject(i).getJSONObject("geometry").getJSONArray("coordinates").getJSONArray(0);
+			
 			for (int j = 0; j < coords.length(); j++) {
-				vertices.add(coords.getDouble(j));
+				LatLng coordinate = new LatLng(coords.getJSONArray(j).getDouble(0), coords.getJSONArray(j).getDouble(1));
+				vertices.add(coordinate);
 			}
 			mappolys.add(new MapPolygon(name, vertices));
-			vertices.clear();
 		}
+		return mappolys;
 	}
 	
 	
