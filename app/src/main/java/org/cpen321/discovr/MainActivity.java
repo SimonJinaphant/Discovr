@@ -295,6 +295,10 @@ public class MainActivity extends AppCompatActivity
                 ft.add(R.id.fragment_container, new EventsSubscribedFragment(), getResources().getString(R.string.events_sub_tag));
                 getSupportActionBar().setTitle(getResources().getString(R.string.events_subscribed));
             }
+//            }else{
+//                ft.add(R.id.fragment_container, new CoursesFragment(), "Courses Fragment");
+//                getSupportActionBar().setTitle(getResources().getString(R.string.courses));
+//            }
             ft.commit();
             Log.d("events_sub", "commited the fragment");
         }else {
@@ -374,6 +378,7 @@ public class MainActivity extends AppCompatActivity
             FragmentTransaction ft = fm.beginTransaction();
             List<Fragment> all_frag = fm.getFragments();
             ListIterator<Fragment> li = all_frag.listIterator();
+
             while (li.hasNext()){
                 Fragment currFrag = li.next();
                 if ((currFrag != null) && (!currFrag.equals(mapFragment))){
@@ -384,6 +389,22 @@ public class MainActivity extends AppCompatActivity
             ft.commit();
             Log.d("testing_fragment", "commited the fragment");
             getSupportActionBar().setTitle("Testing Fragment");
+        }else if (id == R.id.courses_frag){
+            FragmentManager fm = getSupportFragmentManager();
+            FragmentTransaction ft = fm.beginTransaction();
+            List<Fragment> all_frag = fm.getFragments();
+            ListIterator<Fragment> li = all_frag.listIterator();
+
+            while (li.hasNext()){
+                Fragment currFrag = li.next();
+                if ((currFrag != null) && (!currFrag.equals(mapFragment))){
+                    ft.remove(currFrag);
+                }
+            }
+            ft.add(R.id.fragment_container, new CoursesFragment(), getResources().getString(R.string.courses));
+            ft.commit();
+            Log.d("all courses", "commited the fragment");
+            getSupportActionBar().setTitle(getResources().getString((R.string.courses)));
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

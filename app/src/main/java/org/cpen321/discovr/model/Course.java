@@ -53,27 +53,27 @@ public class Course {
     }
 
     public String getBuilding() {
-        return category;
+        return building;
     }
 
     public String getRoom() {
-        return number;
+        return room;
     }
 
-    public String getStartTime() {
-        return section;
+    public long getStartTime() {
+        return startTime;
     }
 
     public long getEndTime() {
         return endTime;
     }
 
-    public Date getStartDate() {
-        return startDate;
+    public String getStartDate() {
+        return startDate.toString();
     }
 
-    public Date getEndDate() {
-        return endDate;
+    public String getEndDate() {
+        return endDate.toString();
     }
 
     public String getDayOfWeek() {

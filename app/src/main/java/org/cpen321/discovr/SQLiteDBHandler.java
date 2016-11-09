@@ -10,8 +10,10 @@ import android.util.Log;
 import org.cpen321.discovr.model.Course;
 import org.cpen321.discovr.parser.CalendarFileParser;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 import static org.cpen321.discovr.parser.CalendarFileParser.loadUserCourses;
@@ -43,7 +45,7 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
     private static final String KEY_CATEGORY = "category";
     private static final String KEY_NUMBER = "number";
     private static final String KEY_SECTION = "section";
-    private static final String KEY_ROOM = "category";
+    private static final String KEY_ROOM = "room";
     private static final String KEY_START_DATE= "startDate";
     private static final String KEY_END_DATE = "endDate";
     private static final String KEY_DAY_OF_WEEK = "dayOfWeek";
@@ -55,7 +57,7 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
     //Creates table when getReadableDatabase or getWritableDatabase is called and no DB exists
     @Override
     public void onCreate(SQLiteDatabase db){
-        String CREATE_TABLE = "CREATE TABLE " + TABLE_SUBSCRIBED_EVENTS + "(" +
+        String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_SUBSCRIBED_EVENTS + "(" +
                 KEY_ID + " INTEGER PRIMARY KEY," +
                 KEY_NAME + " TEXT," +
                 KEY_HOST + " TEXT," +
@@ -63,10 +65,10 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
                 KEY_STARTTIME + " TEXT," +
                 KEY_ENDTIME + " TEXT," +
                 KEY_LOCATION + " TEXT," +
-                KEY_DETAILS + " TEXT" + ");";
+                KEY_DETAILS + " TEXT," + ")";
         db.execSQL(CREATE_TABLE);
 
-        String CREATE_TABLE_COURSES = "CREATE TABLE" + TABLE_SUBSCRIBED_COURSES + "(" +
+        String CREATE_TABLE_COURSES = "CREATE TABLE IF NOT EXISTS " + TABLE_SUBSCRIBED_COURSES + "(" +
                 KEY_CATEGORY + " TEXT," +
                 KEY_NUMBER + " TEXT," +
                 KEY_SECTION + " TEXT," +
@@ -74,8 +76,8 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
                 KEY_ROOM + " TEXT," +
                 KEY_STARTTIME + " TEXT," +
                 KEY_ENDTIME + " TEXT," +
-                KEY_START_DATE + " TEXT" +
-                KEY_END_DATE + "TEXT"+
+                KEY_START_DATE + " TEXT," +
+                KEY_END_DATE + "TEXT," +
                 KEY_DAY_OF_WEEK + "TEXT" + ")";
         db.execSQL(CREATE_TABLE_COURSES);
     }
@@ -226,13 +228,44 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
             values.put(KEY_ROOM, myCourse.getRoom());
             values.put(KEY_START_DATE, myCourse.getStartDate());
             values.put(KEY_END_DATE, myCourse.getEndDate());
-            values.put(KEY_LOCATION, myCourse.getDayOfWeek());
+            values.put(KEY_DAY_OF_WEEK , myCourse.getDayOfWeek());
 
             //Insert new row
             db.insert(TABLE_SUBSCRIBED_COURSES, null, values);
         }
         //close database connection
         db.close();
+    }
+
+    //add all courses
+    public List<Course> getAllCourses() throws ParseException {
+        List<Course> myCourses = new ArrayList<Course>();
+
+        //Select all rows from TABLE_SUBSCRIBED_EVENTS
+        String selectQuery = "SELECT * FROM " + TABLE_SUBSCRIBED_COURSES;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        //loop through each row and add that course to the list
+        if (cursor.moveToFirst()) {
+            do {
+                String startDate1 = cursor.getString(7);
+                String startDate2 = cursor.getString(8);
+                SimpleDateFormat format1 = new SimpleDateFormat("yyyyMMdd");
+                SimpleDateFormat format2 = new SimpleDateFormat("yyyyMMdd");
+                Date date1 = format1.parse(startDate1);
+                Date date2 = format2.parse(startDate2);
+
+                Course course = new Course(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getLong(5), cursor.getLong(6), date1,date2,cursor.getString(9));
+                myCourses.add(course);
+            }
+            while (cursor.moveToNext());
+        }
+
+        //close cursor and return list of all events
+        cursor.close();
+        return  myCourses;
     }
 
 }
