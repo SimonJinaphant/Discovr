@@ -37,6 +37,7 @@ import android.view.View;
 import com.mapbox.mapboxsdk.MapboxAccountManager;
 import com.mapbox.mapboxsdk.annotations.Marker;
 import com.mapbox.mapboxsdk.annotations.MarkerViewOptions;
+import com.mapbox.mapboxsdk.annotations.Polyline;
 import com.mapbox.mapboxsdk.annotations.PolylineOptions;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
@@ -91,11 +92,12 @@ public class MainActivity extends AppCompatActivity
     LocationServices locationServices;
     FloatingActionButton fab;
 
+
     //Reference to map
     MapboxMap map;
     Marker userPositionMarker;
     Marker pointOfInterestMarker;
-    private DirectionsRoute currentRoute;
+    Polyline routeLine;
 
     //Building information JSON inputstream for searching
     InputStream is;
@@ -397,7 +399,7 @@ public class MainActivity extends AppCompatActivity
                 }
 
                 // Print some info about the route
-                currentRoute = response.body().getRoutes().get(0);
+                DirectionsRoute currentRoute = response.body().getRoutes().get(0);
                 Log.d("direction", "Distance: " + currentRoute.getDistance());
                 Toast.makeText(
                         MainActivity.this,
@@ -432,8 +434,12 @@ public class MainActivity extends AppCompatActivity
                     coordinates.get(i).getLongitude());
         }
 
+        if (routeLine != null){
+            routeLine.remove();
+        }
+
         // Draw Points on MapView
-        map.addPolyline(new PolylineOptions()
+        routeLine = map.addPolyline(new PolylineOptions()
                 .add(points)
                 .color(Color.parseColor("green"))
                 .alpha((float) 0.50)
@@ -504,8 +510,6 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
         drawerFragmentManager(id);
-
-        // Closes the drawer
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;

@@ -25,6 +25,7 @@ public class GeoJsonParser {
 	 */
 
 	public static List<String> allnames(InputStream is) throws IOException, JSONException {
+
 		List<String> names = new ArrayList<String>();
 		String jsonTxt = IOUtils.toString(is);
 		JSONObject obj = new JSONObject(jsonTxt.substring(1));
@@ -37,7 +38,7 @@ public class GeoJsonParser {
 				names.add("does not exist");
 			}
 		}
-		return names;	
+		return names;
 	}
 
 	/**
@@ -48,14 +49,15 @@ public class GeoJsonParser {
 	 * @throws IOException
 	 */
 	public static double[] getCoordinates(String name, InputStream is) throws IOException, JSONException {
+
 		double temp[] = new double[2];
 		
 		int index = -1;
 		String jsonTxt = IOUtils.toString(is);
-						
+
 		JSONObject obj = new JSONObject(jsonTxt.substring(1));
 		JSONArray arr = obj.getJSONArray("features");
-		
+
 		for (int i = 0; i < arr.length(); i++) {
 			if (arr.getJSONObject(i).getJSONObject("properties").has("Name")) {
 				if (arr.getJSONObject(i).getJSONObject("properties").getString("Name").equals(name)) {
@@ -64,10 +66,10 @@ public class GeoJsonParser {
 				}
 			}
 		}
-	
+
 		if (index != -1) {
 			JSONArray coords = arr.getJSONObject(index).getJSONObject("geometry").getJSONArray("coordinates").getJSONArray(0);
-			
+
 			for (int j = 0; j < coords.length(); j++) {
 				temp[0] += coords.getJSONArray(j).getDouble(0);
 				
@@ -76,8 +78,9 @@ public class GeoJsonParser {
 			}
 			temp[0] = temp[0] / coords.length();
 			temp[1] = temp[1] / coords.length();
-				
+
 		}
+
 		return temp;
 	}
 	
@@ -141,11 +144,8 @@ public class GeoJsonParser {
 		}
 		return mappolys;
 	}
-	
-	
-	
-	
-	
+}
+		
 	/*public static void main (String[] args) throws IOException {
 
 		File f = new File("./app/src/main/java/org/cpen321/discovr/buildings.geojson");
@@ -161,5 +161,5 @@ public class GeoJsonParser {
 		return;
 	}*/
 	
-}
+
 

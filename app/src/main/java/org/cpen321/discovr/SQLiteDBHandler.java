@@ -7,8 +7,16 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import org.cpen321.discovr.model.Course;
+import org.cpen321.discovr.parser.CalendarFileParser;
+
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
+import java.text.SimpleDateFormat;
 import java.util.List;
+
+import static org.cpen321.discovr.parser.CalendarFileParser.loadUserCourses;
 
 /**
  * Created by jacqueline on 10/28/2016.
@@ -21,6 +29,8 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
     private static final String DATABASE_NAME = "LocalEvents";
     //Table name
     private static final String TABLE_SUBSCRIBED_EVENTS = "SubscribedEvents";
+    private static final String TABLE_SUBSCRIBED_COURSES = "SubscribedCourses";
+
     //Column names in table "SubscribedEvents"
     private static final String KEY_ID = "id";
     private static final String KEY_NAME = "name";
@@ -31,6 +41,15 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
     private static final String KEY_LOCATION = "location";
     private static final String KEY_DETAILS = "eventDetails";
 
+    //Added column names in table "SubscribedCourses"
+    private static final String KEY_CATEGORY = "category";
+    private static final String KEY_NUMBER = "number";
+    private static final String KEY_SECTION = "section";
+    private static final String KEY_ROOM = "room";
+    private static final String KEY_START_DATE= "startDate";
+    private static final String KEY_END_DATE = "endDate";
+    private static final String KEY_DAY_OF_WEEK = "dayOfWeek";
+
     public SQLiteDBHandler (Context context){
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -38,7 +57,8 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
     //Creates table when getReadableDatabase or getWritableDatabase is called and no DB exists
     @Override
     public void onCreate(SQLiteDatabase db){
-        String CREATE_TABLE = "CREATE TABLE " + TABLE_SUBSCRIBED_EVENTS + "(" +
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_SUBSCRIBED_EVENTS);
+        String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_SUBSCRIBED_EVENTS + "(" +
                 KEY_ID + " INTEGER PRIMARY KEY," +
                 KEY_NAME + " TEXT," +
                 KEY_HOST + " TEXT," +
@@ -46,8 +66,23 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
                 KEY_STARTTIME + " TEXT," +
                 KEY_ENDTIME + " TEXT," +
                 KEY_LOCATION + " TEXT," +
-                KEY_DETAILS + " TEXT" + ");";
+                KEY_DETAILS + " TEXT" + ")";
         db.execSQL(CREATE_TABLE);
+
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_SUBSCRIBED_COURSES);
+        String CREATE_TABLE_COURSES = "CREATE TABLE IF NOT EXISTS " + TABLE_SUBSCRIBED_COURSES + "(" +
+                KEY_CATEGORY + " TEXT," +
+                KEY_NUMBER + " TEXT," +
+                KEY_SECTION + " TEXT," +
+                KEY_BUILDING + " TEXT," +
+                KEY_ROOM + " TEXT," +
+                KEY_STARTTIME + " TEXT," +
+                KEY_ENDTIME + " TEXT," +
+                KEY_START_DATE + " TEXT," +
+                KEY_END_DATE + " TEXT," +
+                KEY_DAY_OF_WEEK + " TEXT" + ")";
+        db.execSQL(CREATE_TABLE_COURSES);
+
     }
 
     //Creates new db if new version > old version
@@ -168,7 +203,7 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
         values.put(KEY_LOCATION, event.getLocation());
         values.put(KEY_DETAILS, event.getEventDetails());
 
-        //update that row
+        //update that rowserCou
         return db.update(TABLE_SUBSCRIBED_EVENTS, values, KEY_ID + " = ?", new String[]{String.valueOf(event.getID())});
     }
 
@@ -177,6 +212,67 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_SUBSCRIBED_EVENTS, KEY_ID + " = ?", new String[]{String.valueOf(eventID)});
         db.close();
+    }
+
+    //Add new courses to the local database
+    public void addCourses(List<Course> courses){
+        SQLiteDatabase db = this.getWritableDatabase();
+        Log.d("sql", db.toString());
+        for(int i = 0; i < courses.size();i++) {
+            Course myCourse = courses.get(i);
+
+            //Place values in contentValues
+            ContentValues values = new ContentValues();
+
+            values.put(KEY_CATEGORY, myCourse.getCategory());
+            values.put(KEY_NUMBER, myCourse.getNumber());
+            values.put(KEY_SECTION, myCourse.getSection());
+            values.put(KEY_BUILDING, myCourse.getBuilding());
+            values.put(KEY_ROOM, myCourse.getRoom());
+            values.put(KEY_STARTTIME, myCourse.getStartTime());
+            values.put(KEY_ENDTIME, myCourse.getEndTime());
+            values.put(KEY_START_DATE, myCourse.getStartDate());
+            values.put(KEY_END_DATE, myCourse.getEndDate());
+            values.put(KEY_DAY_OF_WEEK , myCourse.getDayOfWeek());
+
+
+            //Insert new row
+            if (db.insert(TABLE_SUBSCRIBED_COURSES, null, values) == -1){
+                Log.d("sql", "Failed to insert the entry");
+            }
+        }
+        //close database connection
+        db.close();
+    }
+
+    //add all courses
+    public List<Course> getAllCourses() throws ParseException {
+        List<Course> myCourses = new ArrayList<>();
+
+        //Select all rows from TABLE_SUBSCRIBED_EVENTS
+        String selectQuery = "SELECT * FROM " + TABLE_SUBSCRIBED_COURSES;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        //loop through each row and add that course to the list
+        if (cursor.moveToFirst()) {
+            do {
+                String start = cursor.getString(7);
+                String end = cursor.getString(8);
+                SimpleDateFormat formatter = new SimpleDateFormat("EEE MMM dd HH:mm:SS zzz yyy");
+                Date startDate = formatter.parse(start);
+                Date endDate = formatter.parse(end);
+
+                Course course = new Course(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getLong(5), cursor.getLong(6), startDate, endDate, cursor.getString(9));
+                myCourses.add(course);
+            }
+            while (cursor.moveToNext());
+        }
+
+        //close cursor and return list of all events
+        cursor.close();
+        return  myCourses;
     }
 
 }

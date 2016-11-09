@@ -7,6 +7,7 @@ import java.util.Date;
  */
 
 public class Course {
+    //public final int id;
     public final String category;
     public final String number;
     public final String section;
@@ -22,10 +23,11 @@ public class Course {
 
     public final String dayOfWeek;
 
-    public Course(String category, String number, String section,
+    public Course( String category, String number, String section,
                   String building, String room, long startTime, long endTime,
                   Date startDate, Date endDate, String dayOfWeek) {
 
+        //this.id = id;
         this.category = category;
         this.number = number;
         this.section = section;
@@ -38,4 +40,43 @@ public class Course {
         this.dayOfWeek = dayOfWeek;
     }
 
+    public String getCategory() {
+        return category;
+    }
+
+    public String getNumber() {
+        return number;
+    }
+
+    public String getSection() {
+        return section;
+    }
+
+    public String getBuilding() {
+        return building;
+    }
+
+    public String getRoom() {
+        return room;
+    }
+
+    public long getStartTime() {
+        return startTime;
+    }
+
+    public long getEndTime() {
+        return endTime;
+    }
+
+    public String getStartDate() {
+        return startDate.toString();
+    }
+
+    public String getEndDate() {
+        return endDate.toString();
+    }
+
+    public String getDayOfWeek() {
+        return dayOfWeek;
+    }
 }
