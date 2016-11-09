@@ -16,7 +16,48 @@ import org.cpen321.discovr.model.*;
 
 public class GeoJsonParser {
 
-
+	public static List<BuildingInformation> getBuildings(InputStream is) throws IOException {
+		String jsonTxt = IOUtils.toString(is);
+		JSONObject obj = new JSONObject(jsonTxt.substring(1));
+		JSONArray arr = obj.getJSONArray("features");
+		List<BuildingInformation> allBuildings;
+		for (int i = 0; i < arr.length(); i++) {
+			JSONObject currprops = arr.getJSONObject(i).getJSONObject("properties");
+			JSONArray currcoords = arr.getJSONObject(i).getJSONObject("geometry").getJSONArray("coordinates").getJSONArray(0);
+			
+			if (currprops.has("Name")) {
+				String name = new String(currprops.getString("Name"));	
+			}
+			if (currprops.has("Code")) {
+				String code = new String(currprops.getString("Code"));	
+			}
+			if (currprops.has("Address")) {
+				String address = new String(currprops.getString("Address"));
+			}
+			if (currprops.has("Hours")) {
+				String hours = new String(currprops.getString("Hours"));	
+			}
+			StringBuilder coords = new StringBuilder();
+			for (int j = 0; j < currcoords.length(); j++) {
+				coords.append(currcoords.getJSONArray(j).getString(0));
+				coords.append(",");
+				coords.append(currcoords.getJSONArray(j).getString(1));
+				coords.append("%");
+			}
+			allBuildings.add(BuildingInformation(name, code, address, hours, coords));
+		}
+		
+		
+		
+		
+		
+		return null;
+	}
+	
+	
+	
+	
+	
 	/**
 	 * 
 	 * @param InputStream from the ubc buildings geojson datset in /assets

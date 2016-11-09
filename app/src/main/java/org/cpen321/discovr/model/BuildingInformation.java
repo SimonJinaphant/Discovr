@@ -5,11 +5,11 @@ package org.cpen321.discovr.model;
  */
 
 public class BuildingInformation {
-    private String name;
-    private String code;
-    private String address;
-    private String hours;
-    private String coordinates;
+    private final String name;
+    private final String code;
+    private final String address;
+    private final String hours;
+    private final String coordinates;
 
     BuildingInformation(String name, String code, String address, String hours, String coordinates){
         this.name = name;
