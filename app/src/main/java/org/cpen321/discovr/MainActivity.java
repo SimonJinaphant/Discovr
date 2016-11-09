@@ -11,6 +11,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
@@ -61,6 +62,7 @@ import com.mapbox.services.geocoding.v5.MapboxGeocoding;
 import com.mapbox.services.geocoding.v5.models.CarmenFeature;
 import com.mapbox.services.geocoding.v5.models.GeocodingResponse;
 
+import org.cpen321.discovr.utility.PolygonUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -221,6 +223,31 @@ public class MainActivity extends AppCompatActivity
 
                 mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 5000, null);
 
+                final LatLng[] polygon = {
+                        new LatLng(-123.252354,49.269207),
+                        new LatLng(-123.252226,49.269062),
+                        new LatLng(-123.252461,49.26898),
+                        new LatLng(-123.252332,49.268822),
+                        new LatLng(-123.252358,49.268812),
+                        new LatLng(-123.252381,49.268834),
+                        new LatLng(-123.252431,49.26882),
+                        new LatLng(-123.252543,49.268951),
+                        new LatLng(-123.252685,49.268899),
+                        new LatLng(-123.252807,49.269045)
+                };
+
+                map.setOnMapLongClickListener(new MapboxMap.OnMapLongClickListener(){
+                    @Override
+                    public void onMapLongClick(@NonNull LatLng point) {
+                        if(PolygonUtil.pointInPolygon(point, polygon)){
+                            Toast.makeText(MainActivity.this, "We are happy!", Toast.LENGTH_SHORT).show();
+                        }else{
+                            Toast.makeText(MainActivity.this, "NOOOOOOOO!", Toast.LENGTH_SHORT).show();
+                        }
+                        //Toast.makeText(MainActivity.this, point.toString(), Toast.LENGTH_SHORT).show();
+                        Log.d("mapclick", "Point: " + point.toString());
+                    }
+                } );
 
                 //Get user location and [enable user location layer (BUGGED)]
                 userLocation = locationServices.getLastLocation();

@@ -14,17 +14,16 @@ import static org.junit.Assert.assertEquals;
 public class PolygonUtilTest {
 
     LatLng[] polygon = {
-            new LatLng(-123.252354,49.269207)
-            ,new LatLng(-123.252226,49.269062)
-            ,new LatLng(-123.252461,49.26898)
-            ,new LatLng(-123.252332,49.268822)
-            ,new LatLng(-123.252358,49.268812)
-            ,new LatLng(-123.252381,49.268834)
-            ,new LatLng(-123.252431,49.26882)
-            ,new LatLng(-123.252543,49.268951)
-            ,new LatLng(-123.252685,49.268899)
-            ,new LatLng(-123.252807,49.269045)
-
+        new LatLng(-123.252354,49.269207),
+        new LatLng(-123.252226,49.269062),
+        new LatLng(-123.252461,49.26898),
+        new LatLng(-123.252332,49.268822),
+        new LatLng(-123.252358,49.268812),
+        new LatLng(-123.252381,49.268834),
+        new LatLng(-123.252431,49.26882),
+        new LatLng(-123.252543,49.268951),
+        new LatLng(-123.252685,49.268899),
+        new LatLng(-123.252807,49.269045)
     };
 
     @Test
