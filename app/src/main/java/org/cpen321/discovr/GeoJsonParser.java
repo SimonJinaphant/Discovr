@@ -1,10 +1,11 @@
 package org.cpen321.discovr;
+import android.content.res.AssetManager;
+import android.util.Log;
+
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,14 +15,15 @@ import org.apache.commons.io.IOUtils;
 
 public class GeoJsonParser {
 
+
 	/**
 	 * 
 	 * @param InputStream from the ubc buildings geojson datset in /assets
 	 * @return a List of all the names of the buildings
-	 * @throws IOException
+	 * @throws IOException, JSONException
 	 */
-	public static List<String> allnames(InputStream is) throws IOException {
-		
+
+	public static List<String> allnames(InputStream is) throws IOException, JSONException {
 		List<String> names = new ArrayList<String>();
 		String jsonTxt = IOUtils.toString(is);
 		JSONObject obj = new JSONObject(jsonTxt.substring(1));
@@ -36,6 +38,7 @@ public class GeoJsonParser {
 		}
 		return names;	
 	}
+
 	/**
 	 * 
 	 * @param name - name of the building
@@ -43,13 +46,10 @@ public class GeoJsonParser {
 	 * @return an array of double of size 2, long / lat
 	 * @throws IOException
 	 */
-	
-	public static double[] getCoordinates(String name, InputStream is) throws IOException {
-
+	public static double[] getCoordinates(String name, InputStream is) throws IOException, JSONException {
 		double temp[] = new double[2];
-
-		int index = -1;
 		
+		int index = -1;
 		String jsonTxt = IOUtils.toString(is);
 						
 		JSONObject obj = new JSONObject(jsonTxt.substring(1));
@@ -78,13 +78,11 @@ public class GeoJsonParser {
 				
 		}
 		return temp;
-}
-
-	
-	
+	}
 	
 	
 	public static void main (String[] args) throws IOException {
+
 		File f = new File("./app/src/main/java/org/cpen321/discovr/buildings.geojson");
 
 		if (f.exists()) {
@@ -97,5 +95,6 @@ public class GeoJsonParser {
 		}
 		return;
 	}
+	
 }
 
