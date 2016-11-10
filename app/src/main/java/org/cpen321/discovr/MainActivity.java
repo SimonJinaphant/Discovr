@@ -85,9 +85,6 @@ public class MainActivity extends AppCompatActivity
             mapFragment = (MapViewFragment) getSupportFragmentManager().findFragmentByTag("com.mapbox.map");
         }
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
         //Create navigation drawer
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
