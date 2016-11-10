@@ -109,6 +109,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {// Get the SearchView and set the searchable configuration
         super.onCreate(savedInstanceState);
+/*
         List<BuildingInformation> blist = GeoJsonParser.getBuildings(is);        
         SQLiteDBHandler dbh = new SQLiteDBHandler(this);
         
@@ -117,7 +118,8 @@ public class MainActivity extends AppCompatActivity
         		dbh.addBuilding(bi);
         	}
         }
-        
+        	
+*/
         setContentView(R.layout.activity_main);
 
         // Inflate the layout for this fragment
