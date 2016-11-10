@@ -36,18 +36,14 @@ public class SingleBuildingFragment extends Fragment {
         LinearLayout build = (LinearLayout) inflater.inflate(R.layout.fragment_single_building, container, false);
 
         TextView BuildingInfo = (TextView) build.findViewById(R.id.buildinginfo);
-        SpannableString titleText = new SpannableString("Macleod");
-        int index = titleText.toString().indexOf("\n");
-        titleText.setSpan(new AbsoluteSizeSpan(100), 0, index, SPAN_INCLUSIVE_INCLUSIVE);
-        titleText.setSpan(new AbsoluteSizeSpan(50), index, titleText.length(), SPAN_INCLUSIVE_INCLUSIVE);
-        BuildingInfo.setText(titleText);
+        BuildingInfo.setText("Building Details");
 
         TextView BuildingDetails = (TextView) build.findViewById(R.id.buildingdetails);
         BuildingDetails.setText(
-                "Name: " + "Macleod" + "\n"
-                        + "Code: " + "MCLD" + "\n"
-                        + "Hours: " + "6:00am-6:00pm"
-                        + "\n" + "Address: " + "UBC ...."
+                "Name: " + building.name + "\n"
+                        + "Code: " + building.code + "\n"
+                        + "Hours: " + building.hours
+                        + "\n" + "Address: " + building.address
         );
 
         return build;
