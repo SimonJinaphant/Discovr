@@ -63,6 +63,7 @@ import com.mapbox.services.geocoding.v5.MapboxGeocoding;
 import com.mapbox.services.geocoding.v5.models.CarmenFeature;
 import com.mapbox.services.geocoding.v5.models.GeocodingResponse;
 
+import org.cpen321.discovr.model.MapPolygon;
 import org.cpen321.discovr.utility.PolygonUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -108,6 +109,7 @@ public class MainActivity extends AppCompatActivity
 
     private List<EventInfo> AllEventsList = new ArrayList<EventInfo>();
     private static final int REQUEST_ALL_MAPBOX_PERMISSIONS = 3211;
+    List<MapPolygon> constructions = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {// Get the SearchView and set the searchable configuration
@@ -225,36 +227,33 @@ public class MainActivity extends AppCompatActivity
 
                 mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 5000, null);
 
-                final LatLng[] polygon = {
-                        new LatLng(49.269207, -123.252354),
-                        new LatLng(49.269062, -123.252226),
-                        new LatLng(49.26898, -123.252461),
-                        new LatLng(49.268822, -123.252332),
-                        new LatLng(49.268812, -123.252358),
-                        new LatLng(49.268834, -123.252381),
-                        new LatLng(49.26882, -123.252431),
-                        new LatLng(49.268951, -123.252543),
-                        new LatLng(49.268899, -123.252685),
-                        new LatLng(49.269045, -123.252807)
-                };
-
-                map.addPolygon(new PolygonOptions()
-                        .addAll(Arrays.asList(polygon))
-                        .alpha(0.35f)
-                        .strokeColor(Color.parseColor("#000000"))
-                        .fillColor(Color.parseColor("#3bb2d0"))
-                );
+                try {
+                    constructions = GeoJsonParser.parsePolygons(getResources().getAssets().open("construction.geojson"));
+                    for(MapPolygon construction : constructions){
+                        map.addPolygon(new PolygonOptions()
+                                .addAll(construction.vertices)
+                                .alpha(0.35f)
+                                .strokeColor(Color.parseColor("#000000"))
+                                .fillColor(Color.parseColor("#3bb2d0"))
+                        );
+                    }
+                }catch (Exception e){
+                    System.out.println(e);
+                    System.out.println("Shit something went wrong.");
+                }
 
                 map.setOnMapLongClickListener(new MapboxMap.OnMapLongClickListener(){
                     @Override
                     public void onMapLongClick(@NonNull LatLng point) {
-                        if(PolygonUtil.pointInPolygon(point, polygon)){
-                            //Toast.makeText(MainActivity.this, "We are happy!", Toast.LENGTH_SHORT).show();
-                            System.out.println("Click within the Annex");
-                        }else{
-                            //Toast.makeText(MainActivity.this, "NOOOOOOOO!", Toast.LENGTH_SHORT).show();
-                            System.out.println("Click is NOT within the Annex :(");
+                        for(MapPolygon p : constructions){
+                            LatLng[] vertices = p.vertices.toArray(new LatLng[p.vertices.size()]);
+                            if(PolygonUtil.pointInPolygon(point, vertices)){
+                                //Toast.makeText(MainActivity.this, "We are happy!", Toast.LENGTH_SHORT).show();
+                                System.out.println("Click within "+p.name);
+
+                            }
                         }
+
                         //Toast.makeText(MainActivity.this, point.toString(), Toast.LENGTH_SHORT).show();
                         Log.d("mapclick", "Point: " + point.toString());
                     }
