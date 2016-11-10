@@ -556,6 +556,10 @@ public class MainActivity extends AppCompatActivity
                 ft.add(R.id.fragment_container, new BlankFragment(), "test fragment");
                 getSupportActionBar().setTitle("Testing Fragment");
                 break;
+            case R.id.courses_frag:
+                ft.add(R.id.fragment_container, new CoursesFragment(), "All Courses");
+                getSupportActionBar().setTitle("List All Courses");
+                break;
             default:
                 break;
         }

@@ -18,6 +18,7 @@ import android.text.style.AbsoluteSizeSpan;
 import org.cpen321.discovr.model.Course;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 
 import android.widget.Button;
@@ -44,9 +45,10 @@ public class CoursesFragment extends Fragment {
 
         //read from the local ical file --
         // question : am I adding the courses as long as i open this page???
-        List<Course> myICalFile = loadUserCourses();
-        dbh.addCourses(myICalFile);
-        //log.e("error", "it hits this line...");
+        List<Course> rawCourses = loadUserCourses();
+        //Deal with the course duplicates here
+       // List<Course> myCourses = removeDuplicates(rawCourses);
+        dbh.addCourses(rawCourses);
 
         // Inflate the layout for this fragment
         final FrameLayout fm = (FrameLayout) inflater.inflate(R.layout.fragment_courses, container, false);
@@ -57,10 +59,10 @@ public class CoursesFragment extends Fragment {
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
         try {
-            List<Course> myCourses = dbh.getAllCourses();
+            List<Course> courseList = dbh.getAllCourses();
 
             //Add new button for each course in DB
-            for(Course course : myCourses){
+            for(Course course : courseList){
                 //formats button to be the same as the format we want in the fragment
                 final Button button = createCourseButton(course);
                 //Add this button to the layout
@@ -109,4 +111,31 @@ public class CoursesFragment extends Fragment {
             return timeArray[0]+ timeArray[1]+timeArray[2]+":" +"00";
         }
     }
+
+//    //remove duplicates method
+//    private List<Course> removeDuplicates(List<Course> rawCourses) {
+//
+//        List<Course> result = new ArrayList<Course>();
+//        List<String> myStrings = new ArrayList<String>();
+//        for (int i = 0; i < rawCourses.size(); i++){
+//            String rTitle = rawCourses.get(i).getCategory()+rawCourses.get(i).getNumber()+rawCourses.get(i).getSection();
+//            if (result.isEmpty()) {
+//                result.add(rawCourses.get(i));
+//                myStrings.add(rTitle);
+//            }else {
+//                for (int j = 0; j < result.size(); j++){
+//                    String nTitle = result.get(j).getCategory()+result.get(j).getNumber()+result.get(j).getSection();
+//                    if (myStrings.contains(nTitle)){
+//                        //String dow = result.get(j).getDayOfWeek();
+//                        result.get(j).setDayOfWeek("/"+rawCourses.get(i).getDayOfWeek());
+//                        break;
+//                    }else{
+//                        myStrings.add(rTitle);
+//                        result.add(rawCourses.get(i));
+//                    }
+//                }
+//            }
+//        }
+//        return result;
+//    }
 }

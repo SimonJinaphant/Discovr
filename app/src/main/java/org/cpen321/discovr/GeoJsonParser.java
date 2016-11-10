@@ -91,7 +91,7 @@ public class GeoJsonParser {
 	 * @return a MapTransitStation with the information for the stop number
 	 * @throws IOException
 	 */
-	public static MapTransitStation getBusStopInfo(String stopnum, InputStream is) throws IOException {
+	public static MapTransitStation getBusStopInfo(String stopnum, InputStream is) throws IOException,JSONException {
 	
 		List<String> vehicles = new ArrayList<String>();
 	
@@ -123,7 +123,7 @@ public class GeoJsonParser {
 		}
 	}
 	
-	public static List<MapPolygon> createPolygons(InputStream is) throws IOException {
+	public static List<MapPolygon> createPolygons(InputStream is) throws IOException,JSONException {
 		String jsonTxt = IOUtils.toString(is);
 		JSONObject obj = new JSONObject(jsonTxt.substring(1));
 		JSONArray arr = obj.getJSONArray("features");
