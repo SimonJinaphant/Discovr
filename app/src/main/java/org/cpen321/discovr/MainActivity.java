@@ -61,7 +61,7 @@ import com.mapbox.services.geocoding.v5.MapboxGeocoding;
 import com.mapbox.services.geocoding.v5.models.CarmenFeature;
 import com.mapbox.services.geocoding.v5.models.GeocodingResponse;
 
-import org.cpen321.discovr.model.BuildingInformation;
+//import org.cpen321.discovr.model.BuildingInformation;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
