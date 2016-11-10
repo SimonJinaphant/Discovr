@@ -221,7 +221,7 @@ public class MainActivity extends AppCompatActivity
                 CameraPosition cameraPosition = new CameraPosition.Builder()
                         .target(mapboxMap.getCameraPosition().target)
                         .bearing(mapboxMap.getCameraPosition().bearing)
-                        .tilt(50)
+                        .tilt(0)
                         .zoom(16)
                         .build();
 
@@ -250,7 +250,7 @@ public class MainActivity extends AppCompatActivity
                             if(PolygonUtil.pointInPolygon(point, vertices)){
                                 //Toast.makeText(MainActivity.this, "We are happy!", Toast.LENGTH_SHORT).show();
                                 System.out.println("Click within "+p.name);
-
+                                break;
                             }
                         }
 
