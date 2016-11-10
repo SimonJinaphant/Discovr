@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -26,10 +27,13 @@ import android.view.MenuItem;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.mapbox.mapboxsdk.MapboxAccountManager;
+import com.mapbox.mapboxsdk.annotations.PolygonOptions;
 import com.mapbox.mapboxsdk.exceptions.InvalidAccessTokenException;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.services.commons.ServicesException;
 import com.mapbox.services.commons.models.Position;
+
+import org.cpen321.discovr.model.Building;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -67,10 +71,13 @@ public class MainActivity extends AppCompatActivity
         setUpEventsClient();
         obtainPermissions();
 
+
+
         if (savedInstanceState == null) {
             // Create fragment
             final FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             mapFragment = new MapViewFragment();
+            initializeBuildingPolygons();
             // Add map fragment to parent container
             transaction.add(R.id.fragment_container, mapFragment, "com.mapbox.map");
             transaction.commit();
@@ -98,6 +105,7 @@ public class MainActivity extends AppCompatActivity
 
         //Access the building JSON file and initialize input stream
         initInputStream();
+
 
     }
 
@@ -148,7 +156,18 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-
+    /**
+     * Populates the map with the polygons
+     */
+    private void initializeBuildingPolygons() {
+        // Load the buildings from the buildings.geojson file and draw a polygon outline for each building.
+        try {
+            List<Building> buildings = GeoJsonParser.parseBuildings(getResources().getAssets().open("buildings.geojson"));
+            mapFragment.setBuildings(buildings);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
     /**
      * Sets up the client for getting event information from the events database
      */

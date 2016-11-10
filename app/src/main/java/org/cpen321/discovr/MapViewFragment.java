@@ -4,6 +4,7 @@ package org.cpen321.discovr;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -16,6 +17,7 @@ import android.widget.Toast;
 
 import com.mapbox.mapboxsdk.annotations.Marker;
 import com.mapbox.mapboxsdk.annotations.MarkerViewOptions;
+import com.mapbox.mapboxsdk.annotations.PolygonOptions;
 import com.mapbox.mapboxsdk.annotations.Polyline;
 import com.mapbox.mapboxsdk.annotations.PolylineOptions;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
@@ -35,6 +37,9 @@ import com.mapbox.services.directions.v5.DirectionsCriteria;
 import com.mapbox.services.directions.v5.MapboxDirections;
 import com.mapbox.services.directions.v5.models.DirectionsResponse;
 import com.mapbox.services.directions.v5.models.DirectionsRoute;
+
+import org.cpen321.discovr.model.Building;
+import org.cpen321.discovr.utility.PolygonUtil;
 
 import java.util.List;
 
@@ -56,7 +61,7 @@ public class MapViewFragment extends Fragment {
     LocationServices locationServices;
     Location userLocation;
     Polyline routeLine;
-
+    List<Building> buildings;
 
     public MapViewFragment() {
         // Required empty public constructor
@@ -101,8 +106,34 @@ public class MapViewFragment extends Fragment {
 
                 map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 5000);
                 map.setMyLocationEnabled(true);
+                //Polygon callback on touch
+                // Implement an onclick which cycles through all buildings and attempt to match a single LatLng point
+// into a polygon based on the above algorithm.
+                map.setOnMapLongClickListener(new MapboxMap.OnMapLongClickListener(){
+                    @Override
+                    public void onMapLongClick(@NonNull LatLng point) {
+                        for(Building b : buildings){
+                            LatLng[] vertices = b.coordinates.toArray(new LatLng[b.coordinates.size()]);
+                            if(PolygonUtil.pointInPolygon(point, vertices)){
+                                Toast.makeText(getActivity(), "You pressed on "+b.name, Toast.LENGTH_SHORT).show();
+                                break;
+                            }
+                        }
+                    }
+                } );
+
+                for (Building building : buildings) {
+                    map.addPolygon(new PolygonOptions()
+                            .addAll(building.coordinates)
+                            .alpha(0.35f)
+                            .strokeColor(Color.parseColor("#000000"))
+                            .fillColor(Color.parseColor("#3bb2d0"))
+                    );
+                }
+
             }
         });
+
 
 
         //Initializes button to focus on user location
@@ -118,6 +149,14 @@ public class MapViewFragment extends Fragment {
         });
 
         return view;
+    }
+
+    /**
+     * Initializes the list of buildings associated with the map
+     * @param buildings
+     */
+    public void setBuildings(List<Building> buildings){
+        this.buildings = buildings;
     }
 
     /**
