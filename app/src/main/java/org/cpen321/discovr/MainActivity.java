@@ -61,6 +61,7 @@ import com.mapbox.services.geocoding.v5.MapboxGeocoding;
 import com.mapbox.services.geocoding.v5.models.CarmenFeature;
 import com.mapbox.services.geocoding.v5.models.GeocodingResponse;
 
+import org.cpen321.discovr.model.BuildingInformation;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -108,13 +109,15 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {// Get the SearchView and set the searchable configuration
         super.onCreate(savedInstanceState);
-        GeoJsonParser gsp = new GeoJsonParser();
+        List<BuildingInformation> blist = GeoJsonParser.getBuildings(is);        
         SQLiteDBHandler dbh = new SQLiteDBHandler(this);
-
-        if(dbh.getEventCount() == 0){
-            dbh.addEvent();
+        
+        if (dbh.getBuildingCount() != 0){
+        	for (BuildingInformation bi : blist) {
+        		dbh.addBuilding(bi);
+        	}
         }
-
+        
         setContentView(R.layout.activity_main);
 
         // Inflate the layout for this fragment
