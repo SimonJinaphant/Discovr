@@ -63,6 +63,7 @@ import com.mapbox.services.geocoding.v5.MapboxGeocoding;
 import com.mapbox.services.geocoding.v5.models.CarmenFeature;
 import com.mapbox.services.geocoding.v5.models.GeocodingResponse;
 
+import org.cpen321.discovr.model.Building;
 import org.cpen321.discovr.model.MapPolygon;
 import org.cpen321.discovr.utility.PolygonUtil;
 import org.json.JSONArray;
@@ -109,7 +110,7 @@ public class MainActivity extends AppCompatActivity
 
     private List<EventInfo> AllEventsList = new ArrayList<EventInfo>();
     private static final int REQUEST_ALL_MAPBOX_PERMISSIONS = 3211;
-    List<MapPolygon> constructions = null;
+    List<Building> buildings = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {// Get the SearchView and set the searchable configuration
@@ -226,38 +227,6 @@ public class MainActivity extends AppCompatActivity
                         .build();
 
                 mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 5000, null);
-
-                try {
-                    constructions = GeoJsonParser.parsePolygons(getResources().getAssets().open("construction.geojson"));
-                    for(MapPolygon construction : constructions){
-                        map.addPolygon(new PolygonOptions()
-                                .addAll(construction.vertices)
-                                .alpha(0.35f)
-                                .strokeColor(Color.parseColor("#000000"))
-                                .fillColor(Color.parseColor("#3bb2d0"))
-                        );
-                    }
-                }catch (Exception e){
-                    System.out.println(e);
-                    System.out.println("Shit something went wrong.");
-                }
-
-                map.setOnMapLongClickListener(new MapboxMap.OnMapLongClickListener(){
-                    @Override
-                    public void onMapLongClick(@NonNull LatLng point) {
-                        for(MapPolygon p : constructions){
-                            LatLng[] vertices = p.vertices.toArray(new LatLng[p.vertices.size()]);
-                            if(PolygonUtil.pointInPolygon(point, vertices)){
-                                //Toast.makeText(MainActivity.this, "We are happy!", Toast.LENGTH_SHORT).show();
-                                System.out.println("Click within "+p.name);
-                                break;
-                            }
-                        }
-
-                        //Toast.makeText(MainActivity.this, point.toString(), Toast.LENGTH_SHORT).show();
-                        Log.d("mapclick", "Point: " + point.toString());
-                    }
-                } );
 
                 //Get user location and [enable user location layer (BUGGED)]
                 userLocation = locationServices.getLastLocation();
