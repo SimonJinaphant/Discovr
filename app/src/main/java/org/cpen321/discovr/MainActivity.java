@@ -381,9 +381,16 @@ public class MainActivity extends AppCompatActivity
                 ft.add(R.id.fragment_container, new EventsSubscribedFragment(), getResources().getString(R.string.events_sub_tag));
                 getSupportActionBar().setTitle(getResources().getString(R.string.events_subscribed));
                 break;
+            case R.id.events_nearby:
+                getSupportActionBar().setTitle(getResources().getString(R.string.events_nearby));
+                break;
             case R.id.events_all:
                 ft.add(R.id.fragment_container, new AllEventsFragment(), getResources().getString(R.string.all_events_tag));
                 getSupportActionBar().setTitle(getResources().getString((R.string.events_all)));
+                break;
+            case R.id.test_frag:
+                ft.add(R.id.fragment_container, new BlankFragment(), "test fragment");
+                getSupportActionBar().setTitle("Testing Fragment");
                 break;
             case R.id.courses_frag:
                 ft.add(R.id.fragment_container, new CoursesFragment(), getResources().getString(R.string.courses));

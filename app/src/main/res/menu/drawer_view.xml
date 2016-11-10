@@ -13,6 +13,11 @@
             android:layout_height="wrap_content" />
 
         <item
+            android:id="@+id/events_nearby"
+            android:title="@string/events_nearby"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <item
             android:id="@+id/events_subscribed"
             android:title="@string/events_subscribed"
             android:layout_width="wrap_content"
@@ -24,8 +29,20 @@
             android:layout_height="wrap_content" />
 
         <item
+            android:id="@+id/events_create"
+            android:title="@string/events_create"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <item
             android:id="@+id/courses_frag"
             android:title="@string/courses"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <item
+            android:id="@+id/test_frag"
+            android:title="Test fragment"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
