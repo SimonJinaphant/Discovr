@@ -7,7 +7,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import org.cpen321.discovr.model.BuildingInformation;
 import org.cpen321.discovr.model.Course;
 import org.cpen321.discovr.parser.CalendarFileParser;
 
@@ -42,14 +41,6 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
     private static final String KEY_LOCATION = "location";
     private static final String KEY_DETAILS = "eventDetails";
 
-
-    private static final String TABLE_BUILDING_INFO = "BuildingInformation";
-    private static final String KEY_BUILDING_NAME = "buildingName";
-    private static final String KEY_CODE = "buildingCode";
-    private static final String KEY_ADDRESS = "buildingAddress";
-    private static final String KEY_HOURS = "buildingHours";
-    private static final String KEY_COORDINATES = "buildingCoordinates";
-
     //Added column names in table "SubscribedCourses"
     private static final String KEY_CATEGORY = "category";
     private static final String KEY_NUMBER = "number";
@@ -59,7 +50,6 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
     private static final String KEY_END_DATE = "endDate";
     private static final String KEY_DAY_OF_WEEK = "dayOfWeek";
 
-
     public SQLiteDBHandler (Context context){
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -67,12 +57,8 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
     //Creates table when getReadableDatabase or getWritableDatabase is called and no DB exists
     @Override
     public void onCreate(SQLiteDatabase db){
-
-        String CREATE_SUBSCRIBED_EVENTS_TABLE = "CREATE TABLE IF NOT EXISTS" + TABLE_SUBSCRIBED_EVENTS + "(" +
-
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_SUBSCRIBED_EVENTS);
         String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_SUBSCRIBED_EVENTS + "(" +
-
                 KEY_ID + " INTEGER PRIMARY KEY," +
                 KEY_NAME + " TEXT," +
                 KEY_HOST + " TEXT," +
@@ -80,17 +66,8 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
                 KEY_STARTTIME + " TEXT," +
                 KEY_ENDTIME + " TEXT," +
                 KEY_LOCATION + " TEXT," +
-
-                KEY_DETAILS + " TEXT" + ");";
-        db.execSQL(CREATE_SUBSCRIBED_EVENTS_TABLE);
-
-        String CREATE_BUILDING_TABLE = "CREATE TABLE IF NOT EXISTS" + TABLE_BUILDING_INFO + "(" +
-                KEY_BUILDING_NAME + " TEXT," +
-                KEY_CODE + " TEXT," +
-                KEY_ADDRESS + " TEXT," +
-                KEY_HOURS + " TEXT," +
-                KEY_COORDINATES + " TEXT" + ");";
-        db.execSQL(CREATE_BUILDING_TABLE);
+                KEY_DETAILS + " TEXT" + ")";
+        db.execSQL(CREATE_TABLE);
 
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_SUBSCRIBED_COURSES);
         String CREATE_TABLE_COURSES = "CREATE TABLE IF NOT EXISTS " + TABLE_SUBSCRIBED_COURSES + "(" +
@@ -106,7 +83,6 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
                 KEY_DAY_OF_WEEK + " TEXT" + ")";
         db.execSQL(CREATE_TABLE_COURSES);
 
-
     }
 
     //Creates new db if new version > old version
@@ -114,7 +90,6 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion){
         //Drop older tables if they existed
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_SUBSCRIBED_EVENTS);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_BUILDING_INFO);
         //Recreate table
         onCreate(db);
     }
@@ -139,52 +114,6 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
 
         //close database connection
         db.close();
-    }
-
-    public void addBuilding(BuildingInformation bi){
-        SQLiteDatabase db = this.getWritableDatabase();
-
-        //Place values in contentValues
-        ContentValues values = new ContentValues();
-        values.put(KEY_BUILDING_NAME, bi.getName());
-        values.put(KEY_HOURS, bi.getHours());
-        values.put(KEY_ADDRESS, bi.getAddress());
-        values.put(KEY_CODE, bi.getCode());
-        values.put(KEY_COORDINATES, bi.getCoordinates());
-
-        //Insert new row
-        db.insert(TABLE_BUILDING_INFO, null, values);
-
-        //close database connection
-        db.close();
-    }
-
-    //Get one specific builidng based on name
-    public BuildingInformation getBuildingByCode(String code){
-        SQLiteDatabase db = this.getReadableDatabase();
-        BuildingInformation bi = null;
-        //Select all rows from TABLE_SUBSCRIBED_EVENTS where key_ID = id
-        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_BUILDING_INFO + " WHERE " + KEY_CODE + " = ? ", new String[]{"%"+code+"%"} );
-        if (cursor.getCount() != 0) {
-            cursor.moveToFirst();
-            bi = new BuildingInformation(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4));
-        }
-        return bi;
-    }
-
-    public List<BuildingInformation> searchBuildings(String searchString){
-        SQLiteDatabase db = this.getReadableDatabase();
-        List<BuildingInformation> bi = new ArrayList<>();
-        //Select all rows from TABLE_SUBSCRIBED_EVENTS where key_ID = id
-        String query = "SELECT * FROM " + TABLE_BUILDING_INFO + " WHERE " + KEY_BUILDING_NAME
-                + " LIKE ? OR " + KEY_CODE + " LIKE ?";
-
-        Cursor cursor = db.rawQuery(query, new String[]{"%" + searchString + "%", "%" + searchString + "%"});
-        if (cursor.getCount() != 0) {
-            cursor.moveToFirst();
-            bi.add(new BuildingInformation(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4)));
-        }
-        return bi;
     }
 
     //Get one specific event based on ID
@@ -252,16 +181,6 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
     //Get count of all events in user's database
     public int getEventCount(){
         String query = "SELECT * FROM " + TABLE_SUBSCRIBED_EVENTS;
-        SQLiteDatabase db = this.getReadableDatabase();
-
-        Cursor cursor = db.rawQuery(query, null);
-        cursor.close();
-
-        return cursor.getCount();
-    }
-
-    public int getBuildingCount(){
-        String query = "SELECT * FROM " + TABLE_BUILDING_INFO;
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.rawQuery(query, null);
