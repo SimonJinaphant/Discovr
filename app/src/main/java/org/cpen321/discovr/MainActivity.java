@@ -114,13 +114,6 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {// Get the SearchView and set the searchable configuration
         super.onCreate(savedInstanceState);
-        GeoJsonParser gsp = new GeoJsonParser();
-        SQLiteDBHandler dbh = new SQLiteDBHandler(this);
-
-        if(dbh.getEventCount() == 0){
-            dbh.addEvent();
-        }
-
         setContentView(R.layout.activity_main);
 
         // Inflate the layout for this fragment
