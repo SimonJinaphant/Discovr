@@ -30,17 +30,6 @@ import com.mapbox.mapboxsdk.exceptions.InvalidAccessTokenException;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.services.commons.ServicesException;
 import com.mapbox.services.commons.models.Position;
-<<<<<<< HEAD
-import com.mapbox.services.directions.v5.DirectionsCriteria;
-import com.mapbox.services.directions.v5.MapboxDirections;
-import com.mapbox.services.directions.v5.models.DirectionsResponse;
-import com.mapbox.services.directions.v5.models.DirectionsRoute;
-import com.mapbox.services.geocoding.v5.MapboxGeocoding;
-import com.mapbox.services.geocoding.v5.models.CarmenFeature;
-import com.mapbox.services.geocoding.v5.models.GeocodingResponse;
-
-//import org.cpen321.discovr.model.BuildingInformation;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -70,60 +59,6 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {// Get the SearchView and set the searchable configuration
         super.onCreate(savedInstanceState);
-
-        /*List<BuildingInformation> blist = GeoJsonParser.getBuildings(is);        
-        SQLiteDBHandler dbh = new SQLiteDBHandler(this);
-        
-        if (dbh.getBuildingCount() != 0){
-        	for (BuildingInformation bi : blist) {
-        		dbh.addBuilding(bi);
-        	}
-        }*/
-        
-        setContentView(R.layout.activity_main);
-
-        // Inflate the layout for this fragment
-
-        AsyncHttpClient client = new AsyncHttpClient();
-        client.get("http://discovrweb.azurewebsites.net/api/Events", new AsyncHttpResponseHandler() {
-            @Override
-            public void onStart() {
-                // called before request is started
-            }
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] response) {
-                String r = new String(response);
-                try {
-                    JSONArray json = new JSONArray(r);
-                    for(int i = 0; i < json.length(); i++){
-                        JSONObject o = json.getJSONObject(i);
-                        AllEventsList.add(new EventInfo(o.getInt("Id"),
-                                o.getString("Name"),
-                                o.getString("Host"),
-                                o.getString("Location"),
-                                o.getString("StartTime"),
-                                o.getString("EndTime"),
-                                "",
-                                o.getString("Description")));
-                    }
-                }
-                catch (JSONException e){
-                    throw new RuntimeException(e);
-                }
-                System.out.println(r);
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] errorResponse, Throwable e) {
-                // called when response HTTP status is "4XX" (eg. 401, 403, 404)
-                System.out.println(":(");
-            }
-            @Override
-            public void onRetry(int retryNo) {
-                // called when request is retried
-            }
-        });
 
         //Inflate the container
         setContentView(R.layout.activity_main);

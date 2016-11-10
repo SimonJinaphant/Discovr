@@ -1,9 +1,15 @@
 package org.cpen321.discovr;
 
+import android.util.Log;
+
 import com.mapbox.mapboxsdk.geometry.LatLng;
 
 import org.apache.commons.io.IOUtils;
+
 import org.cpen321.discovr.model.BuildingInformation;
+
+import org.cpen321.discovr.model.Building;
+
 import org.cpen321.discovr.model.MapPolygon;
 import org.cpen321.discovr.model.MapTransitStation;
 import org.json.JSONArray;
@@ -16,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.PriorityQueue;
 
 public class GeoJsonParser {
 
@@ -191,6 +198,53 @@ public class GeoJsonParser {
         return stations;
     }
 
+
+	/**
+	 * Parse a geojson file to extract MapBox building objects from it.
+	 * @param fileStream - A input file stream of the .geojson file.
+	 * @return - A list of Buildings
+	 * @throws IOException
+	 * @throws JSONException
+	 */
+	public static List<Building> parseBuildings(InputStream fileStream) throws IOException, JSONException {
+		JSONArray jsonFeatures = new JSONObject(IOUtils.toString(fileStream)).getJSONArray("features");
+		List<Building> buildings = new ArrayList<>();
+
+		for (int i = 0; i < jsonFeatures.length(); i++) {
+			JSONObject jsonBuilding = jsonFeatures.getJSONObject(i).getJSONObject("properties");
+
+			if(!jsonBuilding.has("Name")){
+				Log.e("GeoParser", "There seems to be a nameless entry at index "+i);
+				System.out.println(jsonBuilding);
+				continue;
+			}
+			String name = jsonBuilding.getString("Name");
+			String code = jsonBuilding.has("Code") ? jsonBuilding.getString("Code") : null;
+			String address = jsonBuilding.has("Address") ? jsonBuilding.getString("Address") : null;
+			String hours = jsonBuilding.has("Hours") ? jsonBuilding.getString("Hours") : null;
+
+			List<LatLng> coordinates = new ArrayList<>();
+			JSONArray jsonCoordinates = jsonFeatures.getJSONObject(i).getJSONObject("geometry").getJSONArray("coordinates").getJSONArray(0);
+			if(jsonCoordinates.length() > 18){
+				continue;
+			}
+			for (int j = 0; j < jsonCoordinates.length()-1; j++) {
+				JSONArray latLng = jsonCoordinates.getJSONArray(j);
+
+				// .geojson files typically store LatLng in order of [longitude, latitude]
+				LatLng coordinate = new LatLng(latLng.getDouble(1), latLng.getDouble(0));
+
+				coordinates.add(coordinate);
+			}
+			System.out.println(coordinates.size());
+			buildings.add(new Building(name, code, address, hours, coordinates));
+
+		}
+
+		return buildings;
+	}
+}
+
 	/*public static void main (String[] args) throws IOException {
 
 		File f = new File("./app/src/main/assets/buildings.geojson");
@@ -209,6 +263,6 @@ public class GeoJsonParser {
 		}
 		return;
 	}*/
-}
+
 
 
