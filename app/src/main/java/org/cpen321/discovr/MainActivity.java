@@ -124,8 +124,6 @@ public class MainActivity extends AppCompatActivity
                 // called when request is retried
             }
         });
-=======
->>>>>>> 810348c04495fcc81b413e1c868b6a5aeb258e88
 
         //Inflate the container
         setContentView(R.layout.activity_main);
