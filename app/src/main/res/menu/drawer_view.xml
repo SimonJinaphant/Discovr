@@ -23,12 +23,6 @@
             android:layout_height="wrap_content" />
 
         <item
-            android:id="@+id/events_create"
-            android:title="@string/events_create"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <item
             android:id="@+id/courses_frag"
             android:title="@string/courses"
             android:layout_width="wrap_content"
