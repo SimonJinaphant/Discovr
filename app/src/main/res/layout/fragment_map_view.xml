@@ -5,9 +5,15 @@
     tools:context="org.cpen321.discovr.MapViewFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <ImageView
+    <com.mapbox.mapboxsdk.maps.MapView
+        android:id="@+id/mapview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:src="@drawable/map_view"/>
+        android:layout_height="match_parent" />
+
+    <android.support.design.widget.FloatingActionButton android:id="@+id/fab"
+        android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end" android:layout_margin="@dimen/fab_margin"
+        android:src="@drawable/my_location"
+        android:backgroundTint="@color/colorPrimary"/>
 
 </FrameLayout>
