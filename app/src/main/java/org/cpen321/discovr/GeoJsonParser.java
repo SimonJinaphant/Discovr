@@ -3,12 +3,15 @@ package org.cpen321.discovr;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 
 import org.apache.commons.io.IOUtils;
+import org.cpen321.discovr.model.BuildingInformation;
 import org.cpen321.discovr.model.MapPolygon;
 import org.cpen321.discovr.model.MapTransitStation;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -20,43 +23,40 @@ public class GeoJsonParser {
 		String jsonTxt = IOUtils.toString(is);
 		JSONObject obj = new JSONObject(jsonTxt.substring(1));
 		JSONArray arr = obj.getJSONArray("features");
-		List<BuildingInformation> allBuildings;
+		List<BuildingInformation> allBuildings = new ArrayList<BuildingInformation>();
 		for (int i = 0; i < arr.length(); i++) {
 			JSONObject currprops = arr.getJSONObject(i).getJSONObject("properties");
 			JSONArray currcoords = arr.getJSONObject(i).getJSONObject("geometry").getJSONArray("coordinates").getJSONArray(0);
+			StringBuilder name = new StringBuilder();
+			StringBuilder code = new StringBuilder();
+			StringBuilder address = new StringBuilder();
+			StringBuilder hours = new StringBuilder();
+			StringBuilder coords = new StringBuilder();
 			
 			if (currprops.has("Name")) {
-				String name = new String(currprops.getString("Name"));	
+				name.append(currprops.getString("Name"));	
 			}
 			if (currprops.has("Code")) {
-				String code = new String(currprops.getString("Code"));	
+				code.append(currprops.getString("Code"));	
 			}
 			if (currprops.has("Address")) {
-				String address = new String(currprops.getString("Address"));
+				address.append(currprops.getString("Address"));
 			}
 			if (currprops.has("Hours")) {
-				String hours = new String(currprops.getString("Hours"));	
+				hours.append(currprops.getString("Hours"));	
 			}
-			StringBuilder coords = new StringBuilder();
+			
 			for (int j = 0; j < currcoords.length(); j++) {
-				coords.append(currcoords.getJSONArray(j).getString(0));
+				coords.append(String.valueOf(currcoords.getJSONArray(j).getDouble(0)));
 				coords.append(",");
-				coords.append(currcoords.getJSONArray(j).getString(1));
-				coords.append("%");
+				coords.append(String.valueOf(currcoords.getJSONArray(j).getDouble(1)));
+				coords.append("%^");
 			}
-			allBuildings.add(BuildingInformation(name, code, address, hours, coords));
+			BuildingInformation b = new BuildingInformation(name.toString(), code.toString(), address.toString(), hours.toString(), coords.toString());
+			allBuildings.add(b);
 		}
-		
-		
-		
-		
-		
-		return null;
+		return allBuildings;
 	}
-	
-	
-	
-	
 	
 	/**
 	 *
@@ -190,21 +190,25 @@ public class GeoJsonParser {
         }
         return stations;
     }
-}
+
 	/*public static void main (String[] args) throws IOException {
 
-		File f = new File("./app/src/main/java/org/cpen321/discovr/buildings.geojson");
-
+		File f = new File("./app/src/main/assets/buildings.geojson");
+		
 		if (f.exists()) {
-			InputStream is = new FileInputStream("./app/src/main/java/org/cpen321/discovr/buildings.geojson");
-
-			double[] arr = getCoordinates("Civil And Mechanical Engineering Building", is);
-			System.out.println(arr[0]);
-			System.out.println(arr[1]);
-
+			InputStream is = new FileInputStream("./app/src/main/assets/buildings.geojson");
+			List<BuildingInformation> list = getBuildings(is);
+			for (BuildingInformation b : list) {
+				//System.out.println(b.getName() + " - " + b.getCode() + " - " + b.getHours() + " - " + b.getAddress());
+				System.out.println(b.getCoordinates());
+				
+			}
+			
+			
+			
 		}
 		return;
 	}*/
-
+}
 
 

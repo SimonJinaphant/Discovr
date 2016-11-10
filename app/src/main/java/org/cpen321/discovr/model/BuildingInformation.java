@@ -11,7 +11,7 @@ public class BuildingInformation {
     private final String hours;
     private final String coordinates;
 
-    BuildingInformation(String name, String code, String address, String hours, String coordinates){
+    public BuildingInformation(String name, String code, String address, String hours, String coordinates){
         this.name = name;
         this.code = code;
         this.address = address;
