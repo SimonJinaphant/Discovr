@@ -26,7 +26,7 @@ public class Building {
         for (String l : stringLatLng){
             String[] temp = l.split(",");
             double latitude = Double.parseDouble(temp[0]);
-            double longtitude = double.parseDouble(temp[1]);
+            double longtitude = Double.parseDouble(temp[1]);
             LatLng addL = new LatLng(latitude, longtitude);
             this.coordinates.add(addL);
 
@@ -38,6 +38,8 @@ public class Building {
         for (LatLng l : coordinates){
             c = c + l.toString() + "%^";
         }
+
+        return c;
     }
 
 }
