@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import org.cpen321.discovr.model.Building;
 import org.cpen321.discovr.model.Course;
 import org.cpen321.discovr.parser.CalendarFileParser;
 
@@ -30,6 +31,7 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
     //Table name
     private static final String TABLE_SUBSCRIBED_EVENTS = "SubscribedEvents";
     private static final String TABLE_SUBSCRIBED_COURSES = "SubscribedCourses";
+    private static final String TABLE_BUILDINGS = "Buildings";
 
     //Column names in table "SubscribedEvents"
     private static final String KEY_ID = "id";
@@ -50,38 +52,55 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
     private static final String KEY_END_DATE = "endDate";
     private static final String KEY_DAY_OF_WEEK = "dayOfWeek";
 
+    //Column names int table of building
+    private static final String KEY_BLDG_NAME = "BuildingName";
+    private static final String KEY_BLDG_CODE = "BuildingCode";
+    private static final String KEY_BLDG_ADDRESS = "BuildingAddress";
+    private static final String KEY_BLDG_HOURS = "BuildingHours";
+    private static final String KEY_BLDG_COORDINATES = "BuildingCoordinates";
+
+
+    public static final String CREATE_TABLE_SUBBED_EVENTS = "CREATE TABLE " + TABLE_SUBSCRIBED_EVENTS + "(" +
+            KEY_ID + " INTEGER PRIMARY KEY," +
+            KEY_NAME + " TEXT," +
+            KEY_HOST + " TEXT," +
+            KEY_BUILDING + " TEXT," +
+            KEY_STARTTIME + " TEXT," +
+            KEY_ENDTIME + " TEXT," +
+            KEY_LOCATION + " TEXT," +
+            KEY_DETAILS + " TEXT" + ")";
+
+    public static final String CREATE_TABLE_COURSES = "CREATE TABLE " + TABLE_SUBSCRIBED_COURSES + "(" +
+            KEY_CATEGORY + " TEXT," +
+            KEY_NUMBER + " TEXT," +
+            KEY_SECTION + " TEXT," +
+            KEY_BUILDING + " TEXT," +
+            KEY_ROOM + " TEXT," +
+            KEY_STARTTIME + " TEXT," +
+            KEY_ENDTIME + " TEXT," +
+            KEY_START_DATE + " TEXT," +
+            KEY_END_DATE + " TEXT," +
+            KEY_DAY_OF_WEEK + " TEXT" + ")";
+
+    public static final String CREATE_TABLE_BUILDINGS = "CREATE TABLE " + TABLE_BUILDINGS + "(" +
+            KEY_BLDG_NAME+ " TEXT," +
+            KEY_BLDG_CODE + " TEXT," +
+            KEY_BLDG_ADDRESS + " TEXT," +
+            KEY_BLDG_HOURS + " TEXT," +
+            KEY_BLDG_COORDINATES + " TEXT" + ")";
+
+
     public SQLiteDBHandler (Context context){
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
     //Creates table when getReadableDatabase or getWritableDatabase is called and no DB exists
     @Override
-    public void onCreate(SQLiteDatabase db){
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_SUBSCRIBED_EVENTS);
-        String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_SUBSCRIBED_EVENTS + "(" +
-                KEY_ID + " INTEGER PRIMARY KEY," +
-                KEY_NAME + " TEXT," +
-                KEY_HOST + " TEXT," +
-                KEY_BUILDING + " TEXT," +
-                KEY_STARTTIME + " TEXT," +
-                KEY_ENDTIME + " TEXT," +
-                KEY_LOCATION + " TEXT," +
-                KEY_DETAILS + " TEXT" + ")";
-        db.execSQL(CREATE_TABLE);
 
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_SUBSCRIBED_COURSES);
-        String CREATE_TABLE_COURSES = "CREATE TABLE IF NOT EXISTS " + TABLE_SUBSCRIBED_COURSES + "(" +
-                KEY_CATEGORY + " TEXT," +
-                KEY_NUMBER + " TEXT," +
-                KEY_SECTION + " TEXT," +
-                KEY_BUILDING + " TEXT," +
-                KEY_ROOM + " TEXT," +
-                KEY_STARTTIME + " TEXT," +
-                KEY_ENDTIME + " TEXT," +
-                KEY_START_DATE + " TEXT," +
-                KEY_END_DATE + " TEXT," +
-                KEY_DAY_OF_WEEK + " TEXT" + ")";
+    public void onCreate(SQLiteDatabase db){
+        db.execSQL(CREATE_TABLE_SUBBED_EVENTS);
         db.execSQL(CREATE_TABLE_COURSES);
+        db.execSQL(CREATE_TABLE_BUILDINGS);
 
     }
 
@@ -90,9 +109,22 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion){
         //Drop older tables if they existed
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_SUBSCRIBED_EVENTS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_SUBSCRIBED_COURSES);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_BUILDINGS);
         //Recreate table
         onCreate(db);
     }
+
+    /*
+    The following implements these events for the EventsTable:
+    addEvent(EventInfo);
+    getEvent(int id);
+    getEventBySearch(String query);
+    getAllEvents();
+    getEventCounts();
+    UpdateEvent(EventInfo);
+    deleteEvent(int id);
+     */
 
     //Adds new event to database
     public void addEvent(EventInfo data){
@@ -214,6 +246,13 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
         db.close();
     }
 
+    /*
+    The following creates these methods for the SUBSCRIBED_COURSES_TABLE
+    addCourses(List<Course> courses>);
+    getAllCourses();
+
+     */
+
     //Add new courses to the local database
     public void addCourses(List<Course> courses){
         SQLiteDatabase db = this.getWritableDatabase();
@@ -245,11 +284,11 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
         db.close();
     }
 
-    //add all courses
+    //get all courses
     public List<Course> getAllCourses() throws ParseException {
         List<Course> myCourses = new ArrayList<>();
 
-        //Select all rows from TABLE_SUBSCRIBED_EVENTS
+        //Select all rows from TABLE_SUBSCRIBED_COURSES
         String selectQuery = "SELECT * FROM " + TABLE_SUBSCRIBED_COURSES;
 
         SQLiteDatabase db = this.getReadableDatabase();
@@ -270,10 +309,47 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
             while (cursor.moveToNext());
         }
 
-        //close cursor and return list of all events
+        //close cursor and return list of all courses
         cursor.close();
         return  myCourses;
     }
 
+
+    /*
+    The following allows these methods for the TABLE_BUILDiNGS
+    addBuilding(Building);
+    getBuildiing(String name);
+     */
+    //Adds single building to database
+    public void addBuilding(Building bldg){
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        //Place values in contentValues
+        ContentValues values = new ContentValues();
+        values.put(KEY_BLDG_NAME, bldg.name);
+        values.put(KEY_BLDG_CODE, bldg.code);
+        values.put(KEY_BLDG_ADDRESS, bldg.address);
+        values.put(KEY_BLDG_COORDINATES, bldg.getCoordinates());
+        values.put(KEY_BLDG_HOURS, bldg.hours);
+
+        //Insert new row
+        db.insert(TABLE_BUILDINGS, null, values);
+
+        //close database connection
+        db.close();
+    }
+
+    //Get one specific event based on ID
+    public Building getBuildingByCode(String code){
+        SQLiteDatabase db = this.getReadableDatabase();
+        Building bldg = null;
+        //Select all rows from TABLE_BUILDING where KEY_BLDG_CODE is code
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_BUILDINGS + " WHERE " + KEY_BLDG_CODE + " = ? ", new String[]{code} );
+        if (cursor.getCount() != 0) {
+            cursor.moveToFirst();
+            bldg = new Building(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4));
+        }
+        return bldg;
+    }
 }
 
