@@ -14,7 +14,7 @@
         android:background="#2F3040">
 
         <LinearLayout
-            android:id="@+id/LL1"
+            android:id="@+id/LL1_ALLEVENTS"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">

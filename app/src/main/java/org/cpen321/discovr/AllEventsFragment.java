@@ -31,6 +31,7 @@ import cz.msebera.android.httpclient.Header;
 
 import static android.text.Spanned.SPAN_INCLUSIVE_INCLUSIVE;
 import static org.cpen321.discovr.R.dimen.button_margin;
+import static org.cpen321.discovr.R.id.LL1_ALLEVENTS;
 import static org.cpen321.discovr.R.id.left;
 
 /**
@@ -49,9 +50,8 @@ public class AllEventsFragment extends Fragment {
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
         final FrameLayout fm = (FrameLayout) inflater.inflate(R.layout.fragment_all_event, container, false);
-        ScrollView sv = (ScrollView) fm.getChildAt(0);
         //Get linearlayour and layoutParams for new button
-        final LinearLayout ll = (LinearLayout) sv.getChildAt(0);
+        final LinearLayout ll = (LinearLayout) this.getActivity().findViewById(LL1_ALLEVENTS);
         final LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
         for(final EventInfo event : ((MainActivity) this.getActivity()).getAllEvents()) {
