@@ -202,9 +202,9 @@ public class GeoJsonParser {
 
 			List<LatLng> coordinates = new ArrayList<>();
 			JSONArray jsonCoordinates = jsonFeatures.getJSONObject(i).getJSONObject("geometry").getJSONArray("coordinates").getJSONArray(0);
-			if(jsonCoordinates.length() > 18){
-				continue;
-			}
+		//	if(jsonCoordinates.length() > 18){
+		//		continue;
+		//	}
 			for (int j = 0; j < jsonCoordinates.length()-1; j++) {
 				JSONArray latLng = jsonCoordinates.getJSONArray(j);
 

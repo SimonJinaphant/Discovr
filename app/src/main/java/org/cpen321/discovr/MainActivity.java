@@ -293,27 +293,8 @@ public class MainActivity extends AppCompatActivity
                             }
 
                             Log.d("search", loc.toString());
+                            moveMap(loc);
 
-                            //Creates a marker on the queried location
-                            mapFragment.movePointOfInterestMarker(loc);
-
-                            //Moves the camera to focus on queried location
-                            mapFragment.moveMapToLocation(loc);
-
-                            //Determines a route from user position to the current location
-                            Position destination = Position.fromCoordinates(loc.getLongitude(), loc.getLatitude());
-
-                            Location userLoc = mapFragment.getUserLocation();
-                            if (userLoc == null){
-                                Log.d("search", "User location not found, route not calculated");
-                                return false;
-                            }
-                            Position origin = Position.fromCoordinates(userLoc.getLongitude(), userLoc.getLatitude());
-                            try{
-                                mapFragment.getRoute(origin, destination);
-                            } catch (ServicesException servicesException) {
-                                servicesException.printStackTrace();
-                            }
                         } catch (Exception e){
                             e.printStackTrace();
                             return false;
@@ -325,6 +306,28 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    public void moveMap(LatLng loc){
+        //Creates a marker on the queried location
+        mapFragment.movePointOfInterestMarker(loc);
+
+        //Moves the camera to focus on queried location
+        mapFragment.moveMapToLocation(loc);
+
+        //Determines a route from user position to the current location
+        Position destination = Position.fromCoordinates(loc.getLongitude(), loc.getLatitude());
+
+        Location userLoc = mapFragment.getUserLocation();
+        if (userLoc == null){
+            Log.d("search", "User location not found, route not calculated");
+            return;
+        }
+        Position origin = Position.fromCoordinates(userLoc.getLongitude(), userLoc.getLatitude());
+        try{
+            mapFragment.getRoute(origin, destination);
+        } catch (ServicesException servicesException) {
+            servicesException.printStackTrace();
+        }
+    }
 
 
 

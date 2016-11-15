@@ -14,6 +14,8 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.mapbox.mapboxsdk.geometry.LatLng;
+
 import org.cpen321.discovr.model.Building;
 
 import static android.text.Spanned.SPAN_INCLUSIVE_INCLUSIVE;
@@ -50,7 +52,12 @@ public class SingleEventFragment extends Fragment {
         //Inflate fragment from xml file
         LinearLayout ll = (LinearLayout) inflater.inflate(R.layout.fragment_single_event, container, false);
 
-        //Get tag of current fragment, which is the the event ID
+        Building bldg = dbh.getBuildingByCode(event.getBuildingName());
+        LatLng loc;
+        if(bldg!=null){
+            loc = GeoJsonParser.getCoordinates(bldg.getAllCoordinates());
+            ((MainActivity) this.getActivity()).moveMap(loc);
+        }
 
         //Get textView inside of linearlayout and set text
         TextView tv = (TextView) ll.getChildAt(0);
