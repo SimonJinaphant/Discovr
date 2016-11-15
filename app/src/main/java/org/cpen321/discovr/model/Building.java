@@ -1,5 +1,6 @@
 package org.cpen321.discovr.model;
 
+
 import android.util.Log;
 import android.widget.LinearLayout;
 
@@ -44,6 +45,7 @@ public class Building {
         this.hours = hours;
         this.coordinates = coordinates;
     }
+
 
     public String getCoordinatesAsString(){
         String c = "";
