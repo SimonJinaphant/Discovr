@@ -60,9 +60,7 @@ public class AllEventsFragment extends Fragment {
 
 
         SQLiteDBHandler dbh =new SQLiteDBHandler(this.getActivity());
-        List<Building> bldgs = dbh.getAllBuildings();
-        for (Building b: bldgs)
-            Log.d("has building: ", b.name + " " + b.code);
+
         for(final EventInfo event : ((MainActivity) this.getActivity()).getAllEvents()) {
             final Button button = createButton(event);
             ll.addView(button, lp);
