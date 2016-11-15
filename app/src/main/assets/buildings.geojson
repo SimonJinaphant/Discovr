@@ -6,7 +6,9 @@
         "Name": "Civil And Mechanical Engineering Building",
         "Code": "CEME",
         "Address": "6250 Applied Science Lane",
-        "Hours": "Monday-Friday 07:00-23:00, Saturday/Sunday - 08:00 - 23:00 Holidays - Closed"
+        "Hours": "Monday-Friday 07:00-23:00, Saturday/Sunday - 08:00 - 23:00 Holidays - Closed",
+        "isFood": 0,
+        "isLibrary": 0
       },
       "geometry": {
         "coordinates": [
@@ -1681,6 +1683,40 @@
     {
       "type": "Feature",
       "properties": {
+        "isLibrary": 0
+      },
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -123.24247,
+              49.262226
+            ],
+            [
+              -123.242016,
+              49.261671
+            ],
+            [
+              -123.243625,
+              49.261089
+            ],
+            [
+              -123.244098,
+              49.261683
+            ],
+            [
+              -123.24247,
+              49.262226
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "id": "2b86274e5f51a0e50949919810970ec9"
+    },
+    {
+      "type": "Feature",
+      "properties": {
         "Name": "The Nest",
         "isFood": 1
       },
@@ -1862,7 +1898,9 @@
     },
     {
       "type": "Feature",
-      "properties": {},
+      "properties": {
+        "Name": "Old Fire Hall"
+      },
       "geometry": {
         "coordinates": [
           [
@@ -2531,7 +2569,7 @@
     {
       "type": "Feature",
       "properties": {
-        "Name": "Buchanan Builidng Block D",
+        "Name": "Buchanan Building Block D",
         "Code": "BUCH D",
         "Address": "1866 Main Mall",
         "Hours": "Monday-Friday 07:30-22:00, Saturday 07:30-22:00, Sunday Closed"
@@ -3911,7 +3949,8 @@
       "type": "Feature",
       "properties": {
         "Name": "B.C. Binning Studio",
-        "Address": "6373 University Boulevard"
+        "Address": "6373 University Boulevard",
+        "isLibrary": 0
       },
       "geometry": {
         "coordinates": [
@@ -7198,7 +7237,7 @@
       "type": "Feature",
       "properties": {
         "Name": "David Strangway Building",
-        "isFood": 1
+        "isFood": "1"
       },
       "geometry": {
         "coordinates": [
@@ -7283,7 +7322,9 @@
     },
     {
       "type": "Feature",
-      "properties": {},
+      "properties": {
+        "Name": "Old Auditorium"
+      },
       "geometry": {
         "coordinates": [
           [
@@ -7821,7 +7862,8 @@
         "Name": "Leonard S. Klinck Building (CSCI)",
         "Code": "LSK",
         "Address": "6356 Agricultural Road",
-        "Hours": "Monday-Friday 07:00-20:00, Saturday/Sunday/Holidays - Closed"
+        "Hours": "Monday-Friday 07:00-20:00, Saturday/Sunday/Holidays - Closed",
+        "isLibrary": 0
       },
       "geometry": {
         "coordinates": [
@@ -8368,7 +8410,9 @@
     },
     {
       "type": "Feature",
-      "properties": {},
+      "properties": {
+        "Name": "Power House"
+      },
       "geometry": {
         "coordinates": [
           [
@@ -8556,7 +8600,8 @@
         "Name": "Neville Scarfe Building",
         "Code": "SCRF",
         "Address": "2125 Main Mall",
-        "Hours": "Mon.-Thur. 07:30-22:00, Fri. 07:30-18:00, Sat. 08:30-18:00, Sun. 08:00-18:00 Holidays - Closed"
+        "Hours": "Mon.-Thur. 07:30-22:00, Fri. 07:30-18:00, Sat. 08:30-18:00, Sun. 08:00-18:00 Holidays - Closed",
+        "isLibrary": 0
       },
       "geometry": {
         "coordinates": [
@@ -8777,7 +8822,8 @@
         "Name": "Biological Sciences",
         "Code": "BIOL",
         "Address": "6270 University Boulevard",
-        "Hours": "Monday-Friday 07:00-1900, Saturday/Sunday/Holidays - Closed"
+        "Hours": "Monday-Friday 07:00-1900, Saturday/Sunday/Holidays - Closed",
+        "isLibrary": 0
       },
       "geometry": {
         "coordinates": [
@@ -10224,7 +10270,8 @@
       "properties": {
         "Name": "Dorothy Somerset Studios",
         "Code": "DSOM",
-        "Address": "6361 University Blvd"
+        "Address": "6361 University Blvd",
+        "isLibrary": 0
       },
       "geometry": {
         "coordinates": [
@@ -11451,7 +11498,7 @@
     {
       "type": "Feature",
       "properties": {
-        "Name": "Buchanan Builidng Block C",
+        "Name": "Buchanan Building Block C",
         "Code": "BUCH C",
         "Address": "1866 Main Mall"
       },
@@ -11594,9 +11641,77 @@
     {
       "type": "Feature",
       "properties": {
+        "isLibrary": 0,
+        "Name": "Hillel House"
+      },
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -123.251414,
+              49.268802
+            ],
+            [
+              -123.251156,
+              49.268492
+            ],
+            [
+              -123.251258,
+              49.268458
+            ],
+            [
+              -123.251279,
+              49.268484
+            ],
+            [
+              -123.251303,
+              49.268476
+            ],
+            [
+              -123.251338,
+              49.268526
+            ],
+            [
+              -123.251321,
+              49.26853
+            ],
+            [
+              -123.251413,
+              49.268635
+            ],
+            [
+              -123.251429,
+              49.268629
+            ],
+            [
+              -123.251497,
+              49.268711
+            ],
+            [
+              -123.251419,
+              49.268736
+            ],
+            [
+              -123.251446,
+              49.268794
+            ],
+            [
+              -123.251414,
+              49.268802
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "id": "fd35a4a146598709833b9a8d864a16fd"
+    },
+    {
+      "type": "Feature",
+      "properties": {
         "Name": "Bookstore",
         "Address": "6200 University Boulevard",
-        "Hours": "Monday-Tuesday 9:30-17:30, Wednesday 9:30-19:00, Thursday-Friday 9:30-17:30, Saturday 11:00-17:00, Sunday Closed"
+        "Hours": "Monday-Tuesday 9:30-17:30, Wednesday 9:30-19:00, Thursday-Friday 9:30-17:30, Saturday 11:00-17:00, Sunday Closed",
+        "isFood": 0
       },
       "geometry": {
         "coordinates": [
