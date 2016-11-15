@@ -21,8 +21,8 @@ import android.widget.ScrollView;
 import java.util.List;
 import static android.text.Spanned.SPAN_INCLUSIVE_INCLUSIVE;
 import static org.cpen321.discovr.R.dimen.button_margin;
+import static org.cpen321.discovr.R.id.LL1;
 import static org.cpen321.discovr.R.id.left;
-
 
 /**
  * A simple {@link Fragment} subclass.
@@ -41,19 +41,13 @@ public class EventsSubscribedFragment extends Fragment {
 
         //Get DBHandler for this activity
         SQLiteDBHandler dbh = new SQLiteDBHandler(this.getActivity());
-/*
-        dbh.addEvent(new EventInfo(6, "CPEN321", "ECE", "DEMPSTER", "12:30", "2:00", "010010101", "yaaaaay 43204g jseogj 49tu2309irwoj fa029ti 20934i tjgreaif9o23jta0gspei gj 90aw tj02atira90po ut09fair ji3a2okjtkg9a0 urtjop2iat 934airkf 0"));
-        dbh.addEvent(new EventInfo(2, "CPSC221", "CPSC", "DEMPSTER", "8:00", "9:30", "05435101", "wooooo"));
-        dbh.addEvent(new EventInfo(3, "ELEC221", "ECE", "HEBB", "2:00", "3:00", "043630101", "fck"));
-        dbh.addEvent(new EventInfo(4, "CPEN311", "ECE", "WOOD", "12:00", "1:00", "01342101", "crey"));
-        dbh.addEvent(new EventInfo(5, "STAT302", "MATH", "CHEM", "11:00", "12:00", "01234", "lol"));
-*/
+
         //Get List of all events stored in DB
         List<EventInfo> allEvents = dbh.getAllEvents();
 
         // Inflate the layout for this fragment
         final FrameLayout fm = (FrameLayout) inflater.inflate(R.layout.fragment_events_subscribed, container, false);
-        ScrollView sv = (ScrollView) fm.getChildAt(0);
+        final ScrollView sv = (ScrollView) fm.getChildAt(0);
         //Get linearlayour and layoutParams for new button
         LinearLayout ll = (LinearLayout) sv.getChildAt(0);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -77,8 +71,9 @@ public class EventsSubscribedFragment extends Fragment {
                     FragmentTransaction transaction = getFragmentManager().beginTransaction();
                     fragment.setEvent(event);
                     fragment.setPrevFragment(SUBSCRIBEDEVENTS);
-                    //hide current fragment, will reopen when back key pressed
 
+
+                    //hide current fragment, will reopen when back key pressed
                     transaction.setCustomAnimations(R.anim.slide_in_up, R.anim.slide_out_left);
                     transaction.remove(currentFrag);
                     transaction.add(R.id.fragment_container, fragment, String.valueOf(button.getId()));
@@ -86,8 +81,6 @@ public class EventsSubscribedFragment extends Fragment {
                     transaction.commit();
                 }
             });
-
-
             //Add new button to linearlayout with all properties set above and layour params
 
         }
@@ -118,6 +111,7 @@ public class EventsSubscribedFragment extends Fragment {
     }
 
     public String formatTime(String Time){
+        Log.d("Got this time", Time);
         String[] dateTime = Time.split("T");
         return dateTime[1].substring(0, 5);
     }

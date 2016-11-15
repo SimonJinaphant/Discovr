@@ -41,9 +41,9 @@ public class SingleBuildingFragment extends Fragment {
         TextView BuildingDetails = (TextView) build.findViewById(R.id.buildingdetails);
         BuildingDetails.setText(
                 "Name: " + building.name + "\n"
-                        + "Code: " + building.code + "\n"
-                        + "Hours: " + building.hours
-                        + "\n" + "Address: " + building.address
+                        + getCode(building)+ "\n"
+                        + getTime(building) + "\n"
+                        + "Address: " + getAddress(building)
         );
 
         return build;
@@ -51,6 +51,35 @@ public class SingleBuildingFragment extends Fragment {
     }
 
 
+    String getTime(Building building){
+        String time = "";
+        if(building.hours != null){
+
+            time = "Hours:" + building.hours;
+        }
+
+        return time;
+    }
+
+    String getAddress(Building building){
+        String address = "";
+        if(building.address != null){
+
+            address = "Address:" + building.address;
+        }
+
+        return address;
+    }
+
+    String getCode(Building building){
+        String code = "";
+        if(building.code != null){
+
+            code = "Code:" + building.code;
+        }
+
+        return code;
+    }
 
 
 
