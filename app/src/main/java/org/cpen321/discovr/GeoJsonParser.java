@@ -28,7 +28,7 @@ public class GeoJsonParser {
 	 * @throws IOException, JSONException
 	 */
 
-	public static List<String> allnames(InputStream is) throws IOException, JSONException {
+	public static List<String> allnames(InputStream is) {
 
 		List<String> names = new ArrayList<String>();
 		String jsonTxt = IOUtils.toString(is);
