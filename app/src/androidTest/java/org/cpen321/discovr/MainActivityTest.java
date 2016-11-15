@@ -58,6 +58,10 @@ public class MainActivityTest{
 
 
     //TODO: Create test opening all fragment elements
+    // Current method of testing fragment existence is by
+    // checking the title of the toolbar since there is no
+    // actual way to check for the fragment within the view
+    // :(
 
 
     // Title checking code credit: http://blog.sqisland.com/2015/05/espresso-match-toolbar-title.html
@@ -105,18 +109,63 @@ public class MainActivityTest{
 
 
     // 3. Open up all events
+    @Test
+    public void testAllEvents(){
+        onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
+        onView(withText(R.string.events_all)).perform(click());
+        //Check whether the right title shows up
+        CharSequence title = InstrumentationRegistry.getTargetContext().getString(R.string.events_all);
+        matchToolbarTitle(title);
+        //TODO: Check for fragment existence
+    }
 
     // 4. Open up course list
+    @Test
+    public void testCourseList(){
+        onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
+        onView(withText(R.string.courses)).perform(click());
+        //Check whether the right title shows up
+        CharSequence title = InstrumentationRegistry.getTargetContext().getString(R.string.courses);
+        matchToolbarTitle(title);
+        //TODO: Check for fragment existence
+    }
 
 
 
     // TODO: Testing fragment switching
-    // 5. Open up Subscribed Events Fragment, then open up view map fragment
+    // 5. Open up Subscribed Events Fragment, then open up course list
+    @Test
+    public void testFragmentSwitch(){
+        onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
+        onView(withText(R.string.events_subscribed)).perform(click());
+        //Check whether the right title shows up
+        CharSequence title = InstrumentationRegistry.getTargetContext().getString(R.string.events_subscribed);
+        matchToolbarTitle(title);
+        onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
+        onView(withText(R.string.courses)).perform(click());
+        //Check whether the right title shows up
+        CharSequence title2 = InstrumentationRegistry.getTargetContext().getString(R.string.courses);
+        matchToolbarTitle(title2);
+    }
 
 
     // TODO: Testing proper back button behaviour
     // 6. Open up subscribed events, pressing back
     //      - assert we are back in the map view page
+    @Test
+    public void backFragmentBackNavigation(){
+        onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
+        onView(withText(R.string.events_subscribed)).perform(click());
+        //Check whether the right title shows up
+        CharSequence title = InstrumentationRegistry.getTargetContext().getString(R.string.events_subscribed);
+        matchToolbarTitle(title);
+        pressBack();
+        //Check whether the right title shows up
+        CharSequence title2 = InstrumentationRegistry.getTargetContext().getString(R.string.app_name);
+        matchToolbarTitle(title2);
+    }
+
+    // TODO: Determine way to organize tests
 
     @Test
     public void testSearchBarExistance(){
