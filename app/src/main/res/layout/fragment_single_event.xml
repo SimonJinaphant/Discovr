@@ -29,6 +29,7 @@
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:gravity="center_vertical"
+        android:id="@+id/singleEventLL2"
         android:layout_height="match_parent">
 
         <Button
