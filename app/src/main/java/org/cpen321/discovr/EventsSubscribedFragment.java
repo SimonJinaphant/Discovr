@@ -21,6 +21,7 @@ import android.widget.ScrollView;
 import java.util.List;
 import static android.text.Spanned.SPAN_INCLUSIVE_INCLUSIVE;
 import static org.cpen321.discovr.R.dimen.button_margin;
+import static org.cpen321.discovr.R.id.LL1;
 import static org.cpen321.discovr.R.id.left;
 
 /**
@@ -46,8 +47,7 @@ public class EventsSubscribedFragment extends Fragment {
 
         // Inflate the layout for this fragment
         final FrameLayout fm = (FrameLayout) inflater.inflate(R.layout.fragment_events_subscribed, container, false);
-        ScrollView sv = (ScrollView) fm.getChildAt(0);
-
+        final ScrollView sv = (ScrollView) fm.getChildAt(0);
         //Get linearlayour and layoutParams for new button
         LinearLayout ll = (LinearLayout) sv.getChildAt(0);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
