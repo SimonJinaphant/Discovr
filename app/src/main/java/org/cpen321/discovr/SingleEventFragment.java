@@ -3,7 +3,6 @@ package org.cpen321.discovr;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.AbsoluteSizeSpan;
 import android.util.Log;
@@ -15,11 +14,9 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import org.cpen321.discovr.model.Building;
+
 import static android.text.Spanned.SPAN_INCLUSIVE_INCLUSIVE;
-import static org.cpen321.discovr.R.id.singleEventLL2;
-import static org.cpen321.discovr.R.id.subscribeButton;
-import static org.cpen321.discovr.R.id.textView_event_info;
-import static org.cpen321.discovr.R.id.textView_event_name;
 
 
 public class SingleEventFragment extends Fragment {
@@ -56,17 +53,23 @@ public class SingleEventFragment extends Fragment {
         //Get tag of current fragment, which is the the event ID
 
         //Get textView inside of linearlayout and set text
-        TextView tv = (TextView) this.getActivity().findViewById(textView_event_name);
+        TextView tv = (TextView) ll.getChildAt(0);
+
         SpannableString titleText = new SpannableString(event.getName() + "\nHosted by " + event.getHostName());
         int index = titleText.toString().indexOf("\n");
         titleText.setSpan(new AbsoluteSizeSpan(100), 0, index, SPAN_INCLUSIVE_INCLUSIVE);
         titleText.setSpan(new AbsoluteSizeSpan(50), index, titleText.length(), SPAN_INCLUSIVE_INCLUSIVE);
         tv.setText(titleText);
 
+        Building bldgInfo = dbh.getBuildingByCode(event.getBuildingName());
+        if (bldgInfo != null)
+            Log.d("Got info: ", bldgInfo.getCoordinatesAsString() + " " + bldgInfo.address );
         //Get second linear layout and change button background and textView w eventDetails
-        LinearLayout ll2 = (LinearLayout) this.getActivity().findViewById(singleEventLL2);
-        final Button subscribedButton = (Button) this.getActivity().findViewById(subscribeButton);
-        TextView eventDetails = (TextView) this.getActivity().findViewById(textView_event_info);
+        LinearLayout ll2 = (LinearLayout) ll.getChildAt(1);
+        final Button subscribedButton = (Button) ll2.getChildAt(0);
+        ScrollView sv = (ScrollView) ll2.getChildAt(1);
+        TextView eventDetails = (TextView)sv.getChildAt(0);
+
             eventDetails.setText(
                     "Location: " + event.getBuildingName() + "\n"
                             + "Time: " + formatTime(event.getStartTime()) + " - " + formatTime(event.getEndTime()) + "\n"

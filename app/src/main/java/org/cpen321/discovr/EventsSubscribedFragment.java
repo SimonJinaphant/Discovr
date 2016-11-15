@@ -47,9 +47,9 @@ public class EventsSubscribedFragment extends Fragment {
 
         // Inflate the layout for this fragment
         final FrameLayout fm = (FrameLayout) inflater.inflate(R.layout.fragment_events_subscribed, container, false);
-
+        final ScrollView sv = (ScrollView) fm.getChildAt(0);
         //Get linearlayour and layoutParams for new button
-        LinearLayout ll = (LinearLayout) this.getActivity().findViewById(LL1);
+        LinearLayout ll = (LinearLayout) sv.getChildAt(0);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
         //Add new button for each event in DB

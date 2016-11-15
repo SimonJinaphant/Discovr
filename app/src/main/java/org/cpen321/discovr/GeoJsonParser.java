@@ -23,7 +23,7 @@ public class GeoJsonParser {
 
 	/**
 	 *
-	 * @param InputStream from the ubc buildings geojson datset in /assets
+	 * @param is from the ubc buildings geojson datset in /assets
 	 * @return a List of all the names of the buildings
 	 * @throws IOException, JSONException
 	 */
@@ -86,6 +86,27 @@ public class GeoJsonParser {
 		}
 
 		return temp;
+	}
+
+	/**
+	 *
+	 * @param allCoordinates - list of all latlngs
+	 * @return an array of double of size 2, long / lat
+	 */
+	public static LatLng getCoordinates(List<LatLng> allCoordinates) {
+
+		double temp[] = new double[2];
+		double latitude=0;
+		double longtitude=0;
+		for(int i = 0; i < allCoordinates.size(); i++){
+				latitude += allCoordinates.get(i).getLatitude();
+				longtitude += allCoordinates.get(i).getLongitude();
+		}
+
+		latitude /= allCoordinates.size();
+		longtitude /= allCoordinates.size();
+
+		return new LatLng(latitude, longtitude);
 	}
 
     /**
@@ -206,7 +227,7 @@ public class GeoJsonParser {
 		if (f.exists()) {
 			InputStream is = new FileInputStream("./app/src/main/java/org/cpen321/discovr/buildings.geojson");
 
-			double[] arr = getCoordinates("Civil And Mechanical Engineering Building", is);
+			double[] arr = getCoordinatesAsString("Civil And Mechanical Engineering Building", is);
 			System.out.println(arr[0]);
 			System.out.println(arr[1]);
 

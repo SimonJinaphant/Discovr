@@ -23,9 +23,12 @@ import android.widget.ScrollView;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 
+import org.cpen321.discovr.model.Building;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
 
@@ -50,10 +53,16 @@ public class AllEventsFragment extends Fragment {
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
         final FrameLayout fm = (FrameLayout) inflater.inflate(R.layout.fragment_all_event, container, false);
+        final ScrollView sv = (ScrollView) fm.getChildAt(0);
         //Get linearlayour and layoutParams for new button
-        final LinearLayout ll = (LinearLayout) this.getActivity().findViewById(LL1_ALLEVENTS);
+        final LinearLayout ll = (LinearLayout) sv.getChildAt(0);
         final LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
+
+        SQLiteDBHandler dbh =new SQLiteDBHandler(this.getActivity());
+        List<Building> bldgs = dbh.getAllBuildings();
+        for (Building b: bldgs)
+            Log.d("has building: ", b.name + " " + b.code);
         for(final EventInfo event : ((MainActivity) this.getActivity()).getAllEvents()) {
             final Button button = createButton(event);
             ll.addView(button, lp);

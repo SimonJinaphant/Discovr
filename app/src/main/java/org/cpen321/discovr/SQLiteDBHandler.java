@@ -9,15 +9,12 @@ import android.util.Log;
 
 import org.cpen321.discovr.model.Building;
 import org.cpen321.discovr.model.Course;
-import org.cpen321.discovr.parser.CalendarFileParser;
 
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.text.SimpleDateFormat;
 import java.util.List;
-
-import static org.cpen321.discovr.parser.CalendarFileParser.loadUserCourses;
 
 /**
  * Created by jacqueline on 10/28/2016.
@@ -207,6 +204,7 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
 
         //close cursor and return list of all events
         cursor.close();
+        db.close();
         return eventList;
     }
 
@@ -319,6 +317,7 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
     The following allows these methods for the TABLE_BUILDiNGS
     addBuilding(Building);
     getBuildiing(String name);
+    getBuildingCount();
      */
     //Adds single building to database
     public void addBuilding(Building bldg){
@@ -329,12 +328,11 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
         values.put(KEY_BLDG_NAME, bldg.name);
         values.put(KEY_BLDG_CODE, bldg.code);
         values.put(KEY_BLDG_ADDRESS, bldg.address);
-        values.put(KEY_BLDG_COORDINATES, bldg.getCoordinates());
+        values.put(KEY_BLDG_COORDINATES, bldg.getCoordinatesAsString());
         values.put(KEY_BLDG_HOURS, bldg.hours);
 
         //Insert new row
         db.insert(TABLE_BUILDINGS, null, values);
-
         //close database connection
         db.close();
     }
@@ -342,14 +340,50 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
     //Get one specific event based on ID
     public Building getBuildingByCode(String code){
         SQLiteDatabase db = this.getReadableDatabase();
+        code = "%" + code.replaceAll("[^A-Za-z]", "") + "%";
+        Log.d("Searching for: ", code);
         Building bldg = null;
+
         //Select all rows from TABLE_BUILDING where KEY_BLDG_CODE is code
-        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_BUILDINGS + " WHERE " + KEY_BLDG_CODE + " = ? ", new String[]{code} );
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_BUILDINGS + " WHERE " + KEY_BLDG_CODE + " LIKE ? OR " + KEY_BLDG_NAME + " LIKE ?", new String[]{code, code} );;
         if (cursor.getCount() != 0) {
             cursor.moveToFirst();
             bldg = new Building(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4));
         }
         return bldg;
+    }
+
+    public int getBuildingCount(){
+        String query = "SELECT * FROM " + TABLE_BUILDINGS;
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.rawQuery(query, null);
+        cursor.close();
+
+        return cursor.getCount();
+    }
+    public List<Building> getAllBuildings() {
+        List<Building> bldgs = new ArrayList<Building>();
+
+        //Select all rows from TABLE_SUBSCRIBED_EVENTS
+        String selectQuery = "SELECT * FROM " + TABLE_BUILDINGS;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        //loop through each row and add that event to the list
+        if (cursor.moveToFirst()) {
+            do {
+                Building bldg = new Building(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4));
+                bldgs.add(bldg);
+            }
+            while (cursor.moveToNext());
+        }
+
+        //close cursor and return list of all events
+        cursor.close();
+        db.close();
+        return bldgs;
     }
 }
 

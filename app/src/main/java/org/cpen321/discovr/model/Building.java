@@ -1,9 +1,11 @@
 package org.cpen321.discovr.model;
 
+import android.util.Log;
 import android.widget.LinearLayout;
 
 import com.mapbox.mapboxsdk.geometry.LatLng;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -15,31 +17,44 @@ public class Building {
     public String code;
     public String address;
     public String hours;
-    public List<LatLng> coordinates;
+    private List<LatLng> coordinates = new ArrayList<LatLng>();
 
     public Building(String name, String code, String address, String hours, String coordinates){
         this.name = name;
         this.code = code;
         this.address = address;
         this.hours = hours;
-        String[] stringLatLng = coordinates.split("%^");
-        for (String l : stringLatLng){
-            String[] temp = l.split(",");
-            double latitude = Double.parseDouble(temp[0]);
-            double longtitude = Double.parseDouble(temp[1]);
-            LatLng addL = new LatLng(latitude, longtitude);
-            this.coordinates.add(addL);
+        if(coordinates != null) {
+            String[] stringLatLng = coordinates.split("%");
 
+            for (int i = 0; i < stringLatLng.length; i++) {
+                String[] temp = stringLatLng[i].split(",");
+                Double latitude = Double.parseDouble(temp[0]);
+                Double longtitude = Double.parseDouble(temp[1]);
+                LatLng addL = new LatLng(latitude, longtitude);
+                this.coordinates.add(addL);
+            }
         }
     }
 
-    public String getCoordinates(){
+    public Building(String name, String code, String address, String hours, List<LatLng> coordinates){
+        this.name = name;
+        this.code = code;
+        this.address = address;
+        this.hours = hours;
+        this.coordinates = coordinates;
+    }
+
+    public String getCoordinatesAsString(){
         String c = "";
         for (LatLng l : coordinates){
-            c = c + l.toString() + "%^";
-        }
+            c = c + String.valueOf(l.getLatitude()) + "," + String.valueOf(l.getLongitude()) + "%";
 
-        return c;
+        }
+        return c.substring(0, c.length()-1);
     }
 
+    public List<LatLng> getAllCoordinates(){
+        return this.coordinates;
+    }
 }
