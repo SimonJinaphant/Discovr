@@ -4,7 +4,12 @@ android {
     compileSdkVersion 24
     buildToolsVersion "24.0.3"
     lintOptions {
-        abortOnError false
+        // set to true to turn off analysis progress reporting by lint
+        quiet true
+        // if true, stop the gradle build if errors are found
+        abortOnError true
+        // if true, only report errors
+        ignoreWarnings true
     }
     defaultConfig {
         applicationId "org.cpen321.discovr"
