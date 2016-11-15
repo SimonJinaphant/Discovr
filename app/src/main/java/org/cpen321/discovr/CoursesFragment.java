@@ -112,30 +112,30 @@ public class CoursesFragment extends Fragment {
         }
     }
 
-//    //remove duplicates method
-//    private List<Course> removeDuplicates(List<Course> rawCourses) {
-//
-//        List<Course> result = new ArrayList<Course>();
-//        List<String> myStrings = new ArrayList<String>();
-//        for (int i = 0; i < rawCourses.size(); i++){
-//            String rTitle = rawCourses.get(i).getCategory()+rawCourses.get(i).getNumber()+rawCourses.get(i).getSection();
-//            if (result.isEmpty()) {
-//                result.add(rawCourses.get(i));
-//                myStrings.add(rTitle);
-//            }else {
-//                for (int j = 0; j < result.size(); j++){
-//                    String nTitle = result.get(j).getCategory()+result.get(j).getNumber()+result.get(j).getSection();
-//                    if (myStrings.contains(nTitle)){
-//                        //String dow = result.get(j).getDayOfWeek();
-//                        result.get(j).setDayOfWeek("/"+rawCourses.get(i).getDayOfWeek());
-//                        break;
-//                    }else{
-//                        myStrings.add(rTitle);
-//                        result.add(rawCourses.get(i));
-//                    }
-//                }
-//            }
-//        }
-//        return result;
-//    }
+    //remove duplicates method
+    private List<Course> removeDuplicates(List<Course> rawCourses) {
+
+        List<Course> result = new ArrayList<Course>();
+        //List<String> myStrings = new ArrayList<String>();
+        for (int i = 0; i < rawCourses.size(); i++){
+            String rTitle = rawCourses.get(i).getCategory()+rawCourses.get(i).getNumber()+rawCourses.get(i).getSection();
+            if (result.isEmpty()) {
+                result.add(rawCourses.get(i));
+                //myStrings.add(rTitle);
+            }else {
+                for (int j = 0; j < result.size(); j++){
+                    String nTitle = result.get(j).getCategory()+result.get(j).getNumber()+result.get(j).getSection();
+                    if (rTitle.equals(nTitle)){
+                        //String dow = result.get(j).getDayOfWeek();
+                        result.get(j).setDayOfWeek("/"+rawCourses.get(i).getDayOfWeek());
+                        break;
+                    }else{
+                        //myStrings.add(rTitle);
+                        result.add(rawCourses.get(i));
+                    }
+                }
+            }
+        }
+        return result;
+    }
 }
