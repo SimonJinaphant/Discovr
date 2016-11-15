@@ -107,7 +107,7 @@ public class CoursesFragment extends Fragment {
         if (timeArray.length == 6){
             return timeArray[0]+timeArray[1]+":"+timeArray[2]+timeArray[3];
         }else {
-            return timeArray[0]+ timeArray[1]+timeArray[2]+":" +"00";
+            return timeArray[0]+ timeArray[1]+timeArray[2]+":" +timeArray[3]+timeArray[4];
         }
     }
 
