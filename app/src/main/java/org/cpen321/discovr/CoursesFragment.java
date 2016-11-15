@@ -43,12 +43,11 @@ public class CoursesFragment extends Fragment {
         //Get DBHandler for this activity
         SQLiteDBHandler dbh = new SQLiteDBHandler(this.getActivity());
 
-        //read from the local ical file --
-        // question : am I adding the courses as long as i open this page???
+        //read from the local ical file
         List<Course> rawCourses = loadUserCourses();
         //Deal with the course duplicates here
-       // List<Course> myCourses = removeDuplicates(rawCourses);
-        dbh.addCourses(rawCourses);
+        List<Course> myCourses = removeDuplicates(rawCourses);
+        dbh.addCourses(myCourses);
 
         // Inflate the layout for this fragment
         final FrameLayout fm = (FrameLayout) inflater.inflate(R.layout.fragment_courses, container, false);
@@ -117,8 +116,10 @@ public class CoursesFragment extends Fragment {
 
         List<Course> result = new ArrayList<Course>();
         //List<String> myStrings = new ArrayList<String>();
+
         for (int i = 0; i < rawCourses.size(); i++){
             String rTitle = rawCourses.get(i).getCategory()+rawCourses.get(i).getNumber()+rawCourses.get(i).getSection();
+            label:
             if (result.isEmpty()) {
                 result.add(rawCourses.get(i));
                 //myStrings.add(rTitle);
@@ -127,13 +128,11 @@ public class CoursesFragment extends Fragment {
                     String nTitle = result.get(j).getCategory()+result.get(j).getNumber()+result.get(j).getSection();
                     if (rTitle.equals(nTitle)){
                         //String dow = result.get(j).getDayOfWeek();
-                        result.get(j).setDayOfWeek("/"+rawCourses.get(i).getDayOfWeek());
-                        break;
-                    }else{
-                        //myStrings.add(rTitle);
-                        result.add(rawCourses.get(i));
+                        result.get(j).setDayOfWeek(result.get(j).getDayOfWeek()+"/"+rawCourses.get(i).getDayOfWeek());
+                        break label;
                     }
                 }
+                result.add(rawCourses.get(i));
             }
         }
         return result;
