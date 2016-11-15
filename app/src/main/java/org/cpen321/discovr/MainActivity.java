@@ -272,6 +272,12 @@ public class MainActivity extends AppCompatActivity
                     @Override
                     public boolean onQueryTextSubmit(String query){
                         //Search is submitted
+
+                        // Closes the keyboard
+                        InputMethodManager inputMethodManager = (InputMethodManager)
+                                getSystemService(Context.INPUT_METHOD_SERVICE);
+                        inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+
                         Log.d("search", "Text submitted: " + query);
                         try {
                             //Workaround the "refresh" the input stream
