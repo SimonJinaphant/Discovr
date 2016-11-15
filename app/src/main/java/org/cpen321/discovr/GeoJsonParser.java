@@ -182,6 +182,7 @@ public class GeoJsonParser {
 	 * @throws IOException
 	 * @throws JSONException
 	 */
+
 	public static List<Building> parseBuildings(InputStream fileStream) throws IOException, JSONException {
 		JSONArray jsonFeatures = new JSONObject(IOUtils.toString(fileStream)).getJSONArray("features");
 		List<Building> buildings = new ArrayList<>();

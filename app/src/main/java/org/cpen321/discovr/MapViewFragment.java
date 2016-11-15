@@ -104,7 +104,7 @@ public class MapViewFragment extends Fragment {
                         .zoom(16)
                         .build();
 
-                map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 5000);
+                map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 3000);
                 map.setMyLocationEnabled(true);
                 //Polygon callback on touch
                 // Implement an onclick which cycles through all buildings and attempt to match a single LatLng point
