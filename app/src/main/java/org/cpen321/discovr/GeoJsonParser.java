@@ -5,13 +5,19 @@ import android.util.Log;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 
 import org.apache.commons.io.IOUtils;
+
+import org.cpen321.discovr.model.BuildingInformation;
+
 import org.cpen321.discovr.model.Building;
+
 import org.cpen321.discovr.model.MapPolygon;
 import org.cpen321.discovr.model.MapTransitStation;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -20,7 +26,45 @@ import java.util.PriorityQueue;
 
 public class GeoJsonParser {
 
-
+	public static List<BuildingInformation> getBuildings(InputStream is) throws IOException {
+		String jsonTxt = IOUtils.toString(is);
+		JSONObject obj = new JSONObject(jsonTxt.substring(1));
+		JSONArray arr = obj.getJSONArray("features");
+		List<BuildingInformation> allBuildings = new ArrayList<BuildingInformation>();
+		for (int i = 0; i < arr.length(); i++) {
+			JSONObject currprops = arr.getJSONObject(i).getJSONObject("properties");
+			JSONArray currcoords = arr.getJSONObject(i).getJSONObject("geometry").getJSONArray("coordinates").getJSONArray(0);
+			StringBuilder name = new StringBuilder();
+			StringBuilder code = new StringBuilder();
+			StringBuilder address = new StringBuilder();
+			StringBuilder hours = new StringBuilder();
+			StringBuilder coords = new StringBuilder();
+			
+			if (currprops.has("Name")) {
+				name.append(currprops.getString("Name"));	
+			}
+			if (currprops.has("Code")) {
+				code.append(currprops.getString("Code"));	
+			}
+			if (currprops.has("Address")) {
+				address.append(currprops.getString("Address"));
+			}
+			if (currprops.has("Hours")) {
+				hours.append(currprops.getString("Hours"));	
+			}
+			
+			for (int j = 0; j < currcoords.length(); j++) {
+				coords.append(String.valueOf(currcoords.getJSONArray(j).getDouble(0)));
+				coords.append(",");
+				coords.append(String.valueOf(currcoords.getJSONArray(j).getDouble(1)));
+				coords.append("%^");
+			}
+			BuildingInformation b = new BuildingInformation(name.toString(), code.toString(), address.toString(), hours.toString(), coords.toString());
+			allBuildings.add(b);
+		}
+		return allBuildings;
+	}
+	
 	/**
 	 *
 	 * @param InputStream from the ubc buildings geojson datset in /assets
@@ -154,6 +198,7 @@ public class GeoJsonParser {
         return stations;
     }
 
+
 	/**
 	 * Parse a geojson file to extract MapBox building objects from it.
 	 * @param fileStream - A input file stream of the .geojson file.
@@ -200,17 +245,22 @@ public class GeoJsonParser {
 		return buildings;
 	}
 }
+
 	/*public static void main (String[] args) throws IOException {
 
-		File f = new File("./app/src/main/java/org/cpen321/discovr/buildings.geojson");
-
+		File f = new File("./app/src/main/assets/buildings.geojson");
+		
 		if (f.exists()) {
-			InputStream is = new FileInputStream("./app/src/main/java/org/cpen321/discovr/buildings.geojson");
-
-			double[] arr = getCoordinates("Civil And Mechanical Engineering Building", is);
-			System.out.println(arr[0]);
-			System.out.println(arr[1]);
-
+			InputStream is = new FileInputStream("./app/src/main/assets/buildings.geojson");
+			List<BuildingInformation> list = getBuildings(is);
+			for (BuildingInformation b : list) {
+				//System.out.println(b.getName() + " - " + b.getCode() + " - " + b.getHours() + " - " + b.getAddress());
+				System.out.println(b.getCoordinates());
+				
+			}
+			
+			
+			
 		}
 		return;
 	}*/
