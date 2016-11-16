@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener{
     final int ALLEVENTS = 0;
     final int SUBSCRIBEDEVENTS = 1;
-
+    SQLiteDBHandler dbh = new SQLiteDBHandler(this);
     //Made these global as per tutorial, can be made local (?)
     NavigationView navigationView = null;
     Toolbar toolbar = null;
@@ -182,6 +182,11 @@ public class MainActivity extends AppCompatActivity
         try {
             List<Building> buildings = GeoJsonParser.parseBuildings(getResources().getAssets().open("buildings.geojson"));
             mapFragment.setBuildings(buildings);
+
+            for (Building bldg : buildings) {
+                    dbh.addBuilding(bldg);
+            }
+
         } catch (Exception e) {
             System.out.println(e);
         }
@@ -278,38 +283,18 @@ public class MainActivity extends AppCompatActivity
                         Log.d("search", "Text submitted: " + query);
                         try {
                             //Workaround the "refresh" the input stream
-                            is.mark(Integer.MAX_VALUE);
-                            double[] coords = GeoJsonParser.getCoordinates(query, is); //obtains coordinates from query
-                            is.reset();
+                            //is.mark(Integer.MAX_VALUE);
+                            LatLng loc = GeoJsonParser.getCoordinates(dbh.getBuildingByCode(query).getAllCoordinates()); //obtains coordinates from query
+                           // is.reset();
 
                             //Failed to return values
-                            if (coords.length < 1){
+                            if (loc == null){
                                 return false;
                             }
 
-                            Log.d("search", "coords size: " + coords.length + " latlng: = " + coords[0] + " " +coords[1]);
-                            LatLng loc = new LatLng(coords[1], coords[0]);
+                            Log.d("search", loc.toString());
+                            moveMap(loc);
 
-                            //Creates a marker on the queried location
-                            mapFragment.movePointOfInterestMarker(loc);
-
-                            //Moves the camera to focus on queried location
-                            mapFragment.moveMapToLocation(loc);
-
-                            //Determines a route from user position to the current location
-                            Position destination = Position.fromCoordinates(loc.getLongitude(), loc.getLatitude());
-
-                            Location userLoc = mapFragment.getUserLocation();
-                            if (userLoc == null){
-                                Log.d("search", "User location not found, route not calculated");
-                                return false;
-                            }
-                            Position origin = Position.fromCoordinates(userLoc.getLongitude(), userLoc.getLatitude());
-                            try{
-                                mapFragment.getRoute(origin, destination);
-                            } catch (ServicesException servicesException) {
-                                servicesException.printStackTrace();
-                            }
                         } catch (Exception e){
                             e.printStackTrace();
                             return false;
@@ -321,6 +306,28 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    public void moveMap(LatLng loc){
+        //Creates a marker on the queried location
+        mapFragment.movePointOfInterestMarker(loc);
+
+        //Moves the camera to focus on queried location
+        mapFragment.moveMapToLocation(loc);
+
+        //Determines a route from user position to the current location
+        Position destination = Position.fromCoordinates(loc.getLongitude(), loc.getLatitude());
+
+        Location userLoc = mapFragment.getUserLocation();
+        if (userLoc == null){
+            Log.d("search", "User location not found, route not calculated");
+            return;
+        }
+        Position origin = Position.fromCoordinates(userLoc.getLongitude(), userLoc.getLatitude());
+        try{
+            mapFragment.getRoute(origin, destination);
+        } catch (ServicesException servicesException) {
+            servicesException.printStackTrace();
+        }
+    }
 
 
 
@@ -413,7 +420,7 @@ public class MainActivity extends AppCompatActivity
                 getSupportActionBar().setTitle(getResources().getString((R.string.events_all)));
                 break;
             case R.id.test_frag:
-                ft.add(R.id.fragment_container, new BlankFragment(), "test fragment");
+                ft.add(R.id.fragment_container, new SingleBuildingFragment(), "test fragment");
                 getSupportActionBar().setTitle("Testing Fragment");
                 break;
             case R.id.courses_frag:
