@@ -56,9 +56,7 @@ public class MainActivity extends AppCompatActivity
     NavigationView navigationView = null;
     Toolbar toolbar = null;
     MapViewFragment mapFragment;
-
-    //Building information JSON inputstream for searching
-    InputStream is;
+    EventClientManager ecm;
 
     private List<EventInfo> AllEventsList = new ArrayList<EventInfo>();
     private static final int REQUEST_ALL_MAPBOX_PERMISSIONS = 3211;
@@ -71,10 +69,10 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         //Preparing app functionalities
-        setUpEventsClient();
         obtainPermissions();
 
-
+        //Setting up the client manager
+        ecm = new EventClientManager();
 
         if (savedInstanceState == null) {
             // Create fragment
@@ -118,26 +116,6 @@ public class MainActivity extends AppCompatActivity
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        //Search handler to exist on onCreate
-        handleIntent(getIntent());
-
-        //Access the building JSON file and initialize input stream
-        initInputStream();
-
-
-    }
-
-    /**
-     * Initializes the input stream for searching
-     */
-    void initInputStream(){
-        AssetManager am = getAssets();
-        try {
-            is = am.open("buildings.geojson");
-        } catch (IOException e){
-            e.printStackTrace();
-            Log.d("buildings", "Cannot open file properly");
-        }
 
     }
 
@@ -171,7 +149,15 @@ public class MainActivity extends AppCompatActivity
         } catch (InvalidAccessTokenException e) {
             System.err.println("Invalid access token: " + e);
         }
+    }
 
+    /**
+     * Wrapper function for the Event Client Manager
+     * @return
+     */
+    public List<EventInfo> getAllEvents(){
+        ecm.updateEventsList();
+        return ecm.getAllEvents();
     }
 
     /**
@@ -191,51 +177,7 @@ public class MainActivity extends AppCompatActivity
             System.out.println(e);
         }
     }
-    /**
-     * Sets up the client for getting event information from the events database
-     */
-    void setUpEventsClient(){
-        AsyncHttpClient client = new AsyncHttpClient();
-        client.get("http://discovrweb.azurewebsites.net/api/Events", new AsyncHttpResponseHandler() {
-            @Override
-            public void onStart() {
-                // called before request is started
-            }
 
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] response) {
-                String r = new String(response);
-                try {
-                    JSONArray json = new JSONArray(r);
-                    for(int i = 0; i < json.length(); i++){
-                        JSONObject o = json.getJSONObject(i);
-                        AllEventsList.add(new EventInfo(o.getInt("Id"),
-                                o.getString("Name"),
-                                o.getString("Host"),
-                                o.getString("Location"),
-                                o.getString("StartTime"),
-                                o.getString("EndTime"),
-                                "",
-                                o.getString("Description")));
-                    }
-                }
-                catch (JSONException e){
-                    throw new RuntimeException(e);
-                }
-                System.out.println(r);
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] errorResponse, Throwable e) {
-                // called when response HTTP status is "4XX" (eg. 401, 403, 404)
-                System.out.println(":(");
-            }
-            @Override
-            public void onRetry(int retryNo) {
-                // called when request is retried
-            }
-        });
-    }
 
     @Override
     protected void onStart() {
@@ -329,30 +271,6 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-
-
-    /*
-        We might not need onNewIntent or handleIntent if we can handle
-        the map search within the onQueryTexListener class on the
-        onCreateOptionsMenu() method. If we decide to go down that path delete
-        the onNewIntent() and handleIntent() methods below as well as the call
-        to handleIntent() within the method onCreate()
-     */
-    @Override
-    protected void onNewIntent(Intent intent){
-        setIntent(intent);
-        handleIntent(intent);
-    }
-
-    private void handleIntent(Intent intent){
-        if (Intent.ACTION_SEARCH.equals(intent.getAction())){
-            String query = intent.getStringExtra(SearchManager.QUERY);
-            Log.d("search", "Search intent with: " + query);
-            //Do something with query such as searching for it in database
-        }
-    }
-
-
     /**
      * Overriden to handle drawer opening and closing as well as handling
      * navigation item selection on backpress
@@ -434,7 +352,4 @@ public class MainActivity extends AppCompatActivity
         ft.commit();
     }
 
-    List<EventInfo> getAllEvents(){
-        return this.AllEventsList;
-    }
 }
