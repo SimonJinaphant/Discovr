@@ -15,7 +15,7 @@ import java.util.List;
 import cz.msebera.android.httpclient.Header;
 
 /**
- * Created by valerian on 11/16/16.
+ * This class provides a list of all the events
  */
 
 public class EventClientManager {
@@ -35,6 +35,7 @@ public class EventClientManager {
     public List<EventInfo> getAllEvents(){
         return AllEvents;
     }
+
 
     /**
      * Sets up the client for getting event information from the events database

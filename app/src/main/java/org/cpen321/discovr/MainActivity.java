@@ -52,9 +52,6 @@ public class MainActivity extends AppCompatActivity
     final int ALLEVENTS = 0;
     final int SUBSCRIBEDEVENTS = 1;
     SQLiteDBHandler dbh = new SQLiteDBHandler(this);
-    //Made these global as per tutorial, can be made local (?)
-    NavigationView navigationView = null;
-    Toolbar toolbar = null;
     MapViewFragment mapFragment;
     EventClientManager ecm;
 
@@ -87,7 +84,7 @@ public class MainActivity extends AppCompatActivity
         }
 
         //Create navigation drawer
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -113,7 +110,7 @@ public class MainActivity extends AppCompatActivity
         };
         drawer.addDrawerListener(toggle);
         toggle.syncState();
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
 
@@ -224,10 +221,7 @@ public class MainActivity extends AppCompatActivity
 
                         Log.d("search", "Text submitted: " + query);
                         try {
-                            //Workaround the "refresh" the input stream
-                            //is.mark(Integer.MAX_VALUE);
                             LatLng loc = GeoJsonParser.getCoordinates(dbh.getBuildingByCode(query).getAllCoordinates()); //obtains coordinates from query
-                           // is.reset();
 
                             //Failed to return values
                             if (loc == null){
