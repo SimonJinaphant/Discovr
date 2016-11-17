@@ -48,7 +48,6 @@ public class AllEventsFragment extends Fragment {
         // Required empty public constructor
     }
 
-
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
