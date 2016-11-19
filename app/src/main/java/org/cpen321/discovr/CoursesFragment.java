@@ -42,12 +42,18 @@ public class CoursesFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater,  ViewGroup container,  Bundle savedInstanceState) {
         //Get DBHandler for this activity
         SQLiteDBHandler dbh = new SQLiteDBHandler(this.getActivity());
-
-        //read from the local ical file
-        List<Course> rawCourses = loadUserCourses();
-        //Deal with the course duplicates here
-        List<Course> myCourses = removeDuplicates(rawCourses);
-        dbh.addCourses(myCourses);
+        try {
+            List<Course> flag = dbh.getAllCourses();
+            if(flag.isEmpty()){
+                //load from local ical files
+                List<Course> rawCourses = loadUserCourses();
+                //Deal with the course duplicates here
+                List<Course> myCourses = removeDuplicates(rawCourses);
+                dbh.addCourses(myCourses);
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
         // Inflate the layout for this fragment
         final FrameLayout fm = (FrameLayout) inflater.inflate(R.layout.fragment_courses, container, false);
@@ -66,9 +72,6 @@ public class CoursesFragment extends Fragment {
                 final Button button = createCourseButton(course);
                 //Add this button to the layout
                 ll.addView(button, lp);
-
-                //add onClick listener here
-
             }
         } catch (ParseException e) {
             e.printStackTrace();
