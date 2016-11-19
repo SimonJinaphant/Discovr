@@ -8,6 +8,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -113,9 +115,15 @@ public class MapViewFragment extends Fragment {
                     @Override
                     public void onMapLongClick(@NonNull LatLng point) {
                         for(Building b : buildings){
-                            LatLng[] vertices = b.coordinates.toArray(new LatLng[b.coordinates.size()]);
+                            LatLng[] vertices = b.getAllCoordinates().toArray(new LatLng[b.getAllCoordinates().size()]);
                             if(PolygonUtil.pointInPolygon(point, vertices)){
-                                Toast.makeText(getActivity(), "You pressed on "+b.name, Toast.LENGTH_SHORT).show();
+                                //Toast.makeText(getActivity(), "You pressed on "+b.name, Toast.LENGTH_SHORT).show()
+                                SingleBuildingFragment buildingFrag = new SingleBuildingFragment();
+                                buildingFrag.setBuilding(b);
+                                FragmentManager fm = getActivity().getSupportFragmentManager();
+                                FragmentTransaction ft = fm.beginTransaction();
+                                ft.add(R.id.fragment_container, buildingFrag);
+                                ft.commit();
                                 break;
                             }
                         }
@@ -124,7 +132,7 @@ public class MapViewFragment extends Fragment {
 
                 for (Building building : buildings) {
                     map.addPolygon(new PolygonOptions()
-                            .addAll(building.coordinates)
+                            .addAll(building.getAllCoordinates())
                             .alpha(0.35f)
                             .strokeColor(Color.parseColor("#000000"))
                             .fillColor(Color.parseColor("#3bb2d0"))
