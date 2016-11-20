@@ -303,19 +303,7 @@ public class MainActivity extends AppCompatActivity
                     @Override
                     public boolean onMarkerClick(@NonNull Marker marker) {
                         if (marker.getTitle() != null){
-                            SQLiteDBHandler dbh = new SQLiteDBHandler(getApplicationContext());
-                            EventInfo event = dbh.getEvent(Integer.parseInt(marker.getTitle()));
-                            SingleEventFragment fragment = new SingleEventFragment();
-                            fragment.setEvent(event);
-                            FragmentManager fm = getSupportFragmentManager();
-                            Fragment currentFrag = fm.findFragmentById(R.id.fragment_container);
-                            Log.d("backstack", "From Subscribed Events: currFragment = " + currentFrag);
-                            FragmentTransaction transaction = fm.beginTransaction();
-                            fragment.setEvent(event);
-                            //hide current fragment, will reopen when back key pressed
-                            transaction.add(R.id.fragment_container, fragment, marker.getTitle());
-                            transaction.addToBackStack(null);
-                            transaction.commit();
+                            mapFragment.createEventPanel(Integer.parseInt(marker.getTitle()));
                             return true;
                         }
                         return false;
@@ -324,6 +312,14 @@ public class MainActivity extends AppCompatActivity
 
             }
         }
+    }
+
+    /**
+     * Getter for the event client manager
+     * @return
+     */
+    public EventClientManager getEventClientManager(){
+        return ecm;
     }
 
 

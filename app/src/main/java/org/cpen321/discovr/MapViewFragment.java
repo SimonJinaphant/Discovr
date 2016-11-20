@@ -41,6 +41,7 @@ import com.mapbox.services.directions.v5.models.DirectionsResponse;
 import com.mapbox.services.directions.v5.models.DirectionsRoute;
 
 import org.cpen321.discovr.model.Building;
+import org.cpen321.discovr.model.EventInfo;
 import org.cpen321.discovr.utility.PolygonUtil;
 
 import java.util.List;
@@ -341,6 +342,22 @@ public class MapViewFragment extends Fragment {
     public Marker addMarker(LatLng loc){
         MarkerViewOptions marker = new MarkerViewOptions().position(loc);
         return map.addMarker(marker);
+    }
+
+    public void createEventPanel(int eventID){
+        EventClientManager ecm = ((MainActivity)getActivity()).getEventClientManager();
+        EventInfo event = ecm.findEvent(eventID);
+        SingleEventFragment fragment = new SingleEventFragment();
+        fragment.setEvent(event);
+        FragmentManager fm = getActivity().getSupportFragmentManager();
+        Fragment currentFrag = fm.findFragmentById(R.id.fragment_container);
+        Log.d("backstack", "From Subscribed Events: currFragment = " + currentFrag);
+        FragmentTransaction transaction = fm.beginTransaction();
+        fragment.setEvent(event);
+        //hide current fragment, will reopen when back key pressed
+        transaction.add(R.id.fragment_container, fragment, String.valueOf(eventID));
+        transaction.addToBackStack(null);
+        transaction.commit();
     }
 
     /**

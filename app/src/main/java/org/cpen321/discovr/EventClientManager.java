@@ -79,6 +79,17 @@ public class EventClientManager {
         return c.getTime();
     }
 
+    public EventInfo findEvent(int eventID){
+        ListIterator<EventInfo> li = AllEvents.listIterator();
+        while (li.hasNext()){
+            EventInfo event = li.next();
+            if (event.getID() == eventID){
+                return event;
+            }
+        }
+        return null;
+    }
+
 
     /**
      * Sorts the event list from earliest to latest
