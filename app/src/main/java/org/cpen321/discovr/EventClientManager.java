@@ -32,7 +32,7 @@ public class EventClientManager {
 
     EventClientManager(){
         AllEvents = new ArrayList<>();
-        setUpEventsClient();
+        updateEventsList();
     }
 
     public void updateEventsList(){
@@ -64,7 +64,7 @@ public class EventClientManager {
         }
     }
 
-    private Date addOneDay(Date date){
+    public static Date addOneDay(Date date){
         Calendar c = Calendar.getInstance();
         c.setTime(date);
         c.add(Calendar.DATE, 1);
