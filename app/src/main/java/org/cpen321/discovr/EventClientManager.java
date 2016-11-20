@@ -5,12 +5,19 @@ import android.util.Log;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 
+import org.cpen321.discovr.model.EventInfo;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
+import java.util.ListIterator;
 
 import cz.msebera.android.httpclient.Header;
 
@@ -24,8 +31,8 @@ public class EventClientManager {
 
 
     EventClientManager(){
-        setUpEventsClient();
         AllEvents = new ArrayList<>();
+        setUpEventsClient();
     }
 
     public void updateEventsList(){
@@ -33,7 +40,63 @@ public class EventClientManager {
     }
 
     public List<EventInfo> getAllEvents(){
+        List<EventInfo> events = new ArrayList<>(AllEvents);
+        pruneList(events);
         return AllEvents;
+    }
+
+    public List<EventInfo> getUpcomingEvents(){
+        List<EventInfo> events = new ArrayList<>(AllEvents);
+        sortList(events);
+        pruneList(events);
+        upcomingEventFilter(events);
+        return events;
+    }
+
+    private void upcomingEventFilter(List<EventInfo> events){
+        Date tomorrow = addOneDay(new Date());
+        ListIterator<EventInfo> li = events.listIterator();
+        while (li.hasNext()){
+            EventInfo ei = li.next();
+            if (ei.getEndTime().after(tomorrow)){
+                li.remove();
+            }
+        }
+    }
+
+    private Date addOneDay(Date date){
+        Calendar c = Calendar.getInstance();
+        c.setTime(date);
+        c.add(Calendar.DATE, 1);
+        return c.getTime();
+    }
+
+
+    /**
+     * Sorts the event list from earliest to latest
+     */
+    private void sortList(List<EventInfo> events) {
+        Collections.sort(events, new Comparator<EventInfo>() {
+            @Override
+            public int compare(EventInfo o1, EventInfo o2) {
+                return o1.getStartTime().compareTo(o2.getStartTime());
+            }
+        });
+
+    }
+
+    /**
+     * Sorts and removes all events before the current Time period
+     */
+    private void pruneList(List<EventInfo> events){
+        sortList(events);
+        ListIterator<EventInfo> li = events.listIterator();
+        while (li.hasNext()) {
+            EventInfo event = li.next();
+            if (event.getEndTime().before(new Date())){
+                li.remove();
+            }
+        }
     }
 
 
@@ -62,7 +125,6 @@ public class EventClientManager {
                                 o.getString("Location"),
                                 o.getString("StartTime"),
                                 o.getString("EndTime"),
-                                "",
                                 o.getString("Description")));
                     }
                 }
@@ -85,5 +147,4 @@ public class EventClientManager {
             }
         });
     }
-
 }

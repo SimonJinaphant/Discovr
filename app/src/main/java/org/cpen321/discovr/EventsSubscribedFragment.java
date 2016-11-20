@@ -18,10 +18,11 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
+import org.cpen321.discovr.model.EventInfo;
+
 import java.util.List;
 import static android.text.Spanned.SPAN_INCLUSIVE_INCLUSIVE;
 import static org.cpen321.discovr.R.dimen.button_margin;
-import static org.cpen321.discovr.R.id.LL1;
 import static org.cpen321.discovr.R.id.left;
 
 /**
@@ -97,7 +98,7 @@ public class EventsSubscribedFragment extends Fragment {
         button.setPadding(getResources().getDimensionPixelSize(button_margin), getResources().getDimensionPixelSize(button_margin), getResources().getDimensionPixelSize(button_margin), getResources().getDimensionPixelSize(button_margin));
         button.setBackground(ContextCompat.getDrawable(getContext(),R.drawable.button_press_colors));
         button.setTextColor(ContextCompat.getColor(getContext(), R.color.primaryTextColor));
-        SpannableString buttonText = new SpannableString(event.getName() + "\n" + formatTime(event.getStartTime()) + " - " + formatTime(event.getEndTime()) + ", " + getDate(event.getStartTime()) + "\n" + event.getBuildingName());
+        SpannableString buttonText = new SpannableString(event.getName() + "\n" + EventInfo.getTimeString(event.getStartTime()) + " - " + EventInfo.getTimeString(event.getEndTime()) + ", " + EventInfo.getDateString(event.getStartTime()) + "\n" + event.getBuildingName());
         int index = buttonText.toString().indexOf("\n");
         buttonText.setSpan(new AbsoluteSizeSpan(100), 0, index, SPAN_INCLUSIVE_INCLUSIVE);
         buttonText.setSpan(new AbsoluteSizeSpan(60), index, buttonText.length(), SPAN_INCLUSIVE_INCLUSIVE);
@@ -110,15 +111,6 @@ public class EventsSubscribedFragment extends Fragment {
         return button;
     }
 
-    public String formatTime(String Time){
-        Log.d("Got this time", Time);
-        String[] dateTime = Time.split("T");
-        return dateTime[1].substring(0, 5);
-    }
 
-    public String getDate(String Time){
-        String[] dateTime = Time.split("T");
-        return dateTime[0];
-    }
 
 }

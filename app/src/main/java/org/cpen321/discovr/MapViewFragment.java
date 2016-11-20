@@ -44,6 +44,7 @@ import org.cpen321.discovr.model.Building;
 import org.cpen321.discovr.utility.PolygonUtil;
 
 import java.util.List;
+import java.util.ListIterator;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -330,6 +331,26 @@ public class MapViewFragment extends Fragment {
         if (pointOfInterestMarker != null){
             pointOfInterestMarker.remove();
             pointOfInterestMarker = null;
+        }
+    }
+
+    /**
+     * Adds a marker to the map
+     * @param loc
+     */
+    public void addMarker(LatLng loc){
+        MarkerViewOptions marker = new MarkerViewOptions().position(loc);
+        map.addMarker(marker);
+    }
+
+    /**
+     * Clears all markers on the map
+     */
+    public void clearMarkers(){
+        List<Marker> markerList = map.getMarkers();
+        ListIterator<Marker> li = markerList.listIterator();
+        while (li.hasNext()){
+            li.next().remove();
         }
     }
 

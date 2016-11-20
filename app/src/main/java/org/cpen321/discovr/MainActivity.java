@@ -3,10 +3,7 @@ package org.cpen321.discovr;
 import android.Manifest;
 import android.app.SearchManager;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.AssetManager;
-import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -27,25 +24,18 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
-import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.mapbox.mapboxsdk.MapboxAccountManager;
-import com.mapbox.mapboxsdk.annotations.PolygonOptions;
 import com.mapbox.mapboxsdk.exceptions.InvalidAccessTokenException;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.services.commons.ServicesException;
 import com.mapbox.services.commons.models.Position;
 
 import org.cpen321.discovr.model.Building;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import java.io.IOException;
-import java.io.InputStream;
+import org.cpen321.discovr.model.EventInfo;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
-import cz.msebera.android.httpclient.Header;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener{
@@ -295,6 +285,15 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
+     * Plots upcoming events on the map
+     */
+    private void plotUpcomingEventsOnMap(){
+        List<EventInfo> upcomingEvents = ecm.getUpcomingEvents();
+
+    }
+
+
+    /**
      * Takes care of hiding and switching of fragments
      * @param fragmentID the ID of the fragment selected
      */
@@ -326,6 +325,7 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.events_nearby:
                 getSupportActionBar().setTitle(getResources().getString(R.string.events_nearby));
+                plotUpcomingEventsOnMap();
                 break;
             case R.id.events_all:
                 ft.add(R.id.fragment_container, new AllEventsFragment(), getResources().getString(R.string.all_events_tag));
