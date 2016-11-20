@@ -95,7 +95,7 @@ public class CoursesFragment extends Fragment {
                         //add notification here
                         new AlertDialog.Builder(this.getActivity())
                                 .setTitle(course.getCategory()+" "+course.getNumber()+" "+course.getSection()+" will start in 10 mins")
-                                .setMessage(":->")
+                                .setMessage(course.getEndDate())
                                 .show();
                     }
                 }
