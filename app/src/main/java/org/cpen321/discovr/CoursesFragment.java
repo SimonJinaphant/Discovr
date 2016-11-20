@@ -1,8 +1,8 @@
 package org.cpen321.discovr;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 
 import android.view.LayoutInflater;
@@ -23,7 +23,6 @@ import java.util.List;
 
 import android.widget.Button;
 import static android.text.Spanned.SPAN_INCLUSIVE_INCLUSIVE;
-import static com.loopj.android.http.AsyncHttpClient.log;
 import static org.cpen321.discovr.R.dimen.button_margin;
 import static org.cpen321.discovr.R.id.left;
 
@@ -58,21 +57,32 @@ public class CoursesFragment extends Fragment {
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
         try {
+            //get course object from local database
             List<Course> courseList = dbh.getAllCourses();
+            //get week_of_day for each stored course
+            List<String> weekOfDayList = new ArrayList<String>();
+            //get startTime for each stored course
+            List<Long> startTimeList = new ArrayList<Long>();
 
             //Add new button for each course in DB
             for(Course course : courseList){
                 //formats button to be the same as the format we want in the fragment
                 final Button button = createCourseButton(course);
+                weekOfDayList.add(course.getDayOfWeek());
+                startTimeList.add(course.getStartTime());
                 //Add this button to the layout
                 ll.addView(button, lp);
-
-                //add onClick listener here
 
             }
         } catch (ParseException e) {
             e.printStackTrace();
         }
+        //add notification here
+        new AlertDialog.Builder(this.getActivity())
+                .setTitle("testing")
+                .setMessage(":->")
+                .show();
+
         return fm;
     }
 
