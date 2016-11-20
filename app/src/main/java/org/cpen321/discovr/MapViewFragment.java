@@ -338,9 +338,9 @@ public class MapViewFragment extends Fragment {
      * Adds a marker to the map
      * @param loc
      */
-    public void addMarker(LatLng loc){
+    public Marker addMarker(LatLng loc){
         MarkerViewOptions marker = new MarkerViewOptions().position(loc);
-        map.addMarker(marker);
+        return map.addMarker(marker);
     }
 
     /**

@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -25,8 +26,10 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
 import com.mapbox.mapboxsdk.MapboxAccountManager;
+import com.mapbox.mapboxsdk.annotations.Marker;
 import com.mapbox.mapboxsdk.exceptions.InvalidAccessTokenException;
 import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.services.commons.ServicesException;
 import com.mapbox.services.commons.models.Position;
 
@@ -289,7 +292,36 @@ public class MainActivity extends AppCompatActivity
      */
     private void plotUpcomingEventsOnMap(){
         List<EventInfo> upcomingEvents = ecm.getUpcomingEvents();
+        ListIterator<EventInfo> li = upcomingEvents.listIterator();
+        while (li.hasNext()){
+            final EventInfo event = li.next();
+            Building bldg = dbh.getBuildingByCode(event.getBuildingName());
+            if (bldg != null) {
+                LatLng loc = GeoJsonParser.getCoordinates(bldg.getAllCoordinates());
+                mapFragment.addMarker(loc).setTitle(String.valueOf(event.getID()));
+                mapFragment.getMap().setOnMarkerClickListener(new MapboxMap.OnMarkerClickListener(){
+                    @Override
+                    public boolean onMarkerClick(@NonNull Marker marker) {
+                        if (marker.getTitle() != null){
+                            SingleEventFragment fragment = new SingleEventFragment();
+                            FragmentManager fm = getSupportFragmentManager();
+                            Fragment currentFrag = fm.findFragmentById(R.id.fragment_container);
+                            Log.d("backstack", "From Subscribed Events: currFragment = " + currentFrag);
+                            FragmentTransaction transaction = fm.beginTransaction();
+                            fragment.setEvent(event);
 
+                            //hide current fragment, will reopen when back key pressed
+                            transaction.add(R.id.fragment_container, fragment, marker.getTitle());
+                            transaction.addToBackStack(null);
+                            transaction.commit();
+                            return true;
+                        }
+                        return false;
+                    }
+                });
+
+            }
+        }
     }
 
 

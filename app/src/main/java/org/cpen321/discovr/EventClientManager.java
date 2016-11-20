@@ -35,9 +35,18 @@ public class EventClientManager {
         updateEventsList();
     }
 
+    /**
+     * Constructor with a list of events
+     * @param events
+     */
+    EventClientManager(List<EventInfo> events){
+        AllEvents = new ArrayList<>(events);
+    }
+
     public void updateEventsList(){
         setUpEventsClient();
     }
+
 
     public List<EventInfo> getAllEvents(){
         List<EventInfo> events = new ArrayList<>(AllEvents);
@@ -47,7 +56,6 @@ public class EventClientManager {
 
     public List<EventInfo> getUpcomingEvents(){
         List<EventInfo> events = new ArrayList<>(AllEvents);
-        sortList(events);
         pruneList(events);
         upcomingEventFilter(events);
         return events;
