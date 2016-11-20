@@ -145,6 +145,11 @@ public class MapViewFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Callback for a long click on the map, creates a building fragment if
+     * the point clicked is a building
+     * @param point the point clicked on the map
+     */
     public void onLongClickMapCallback(LatLng point){
         for(Building b : buildings){
             LatLng[] vertices = b.getAllCoordinates().toArray(new LatLng[b.getAllCoordinates().size()]);

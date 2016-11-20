@@ -294,6 +294,7 @@ public class MainActivity extends AppCompatActivity
      * Plots upcoming events on the map
      */
     private void plotUpcomingEventsOnMap(){
+        // TODO: Replace getRawEvents() with getUpcomingEvents()
         List<EventInfo> upcomingEvents = ecm.getRawEvents();
         ListIterator<EventInfo> li = upcomingEvents.listIterator();
         List<LatLng> markerLoc = new ArrayList<>();
@@ -302,11 +303,13 @@ public class MainActivity extends AppCompatActivity
             Building bldg = dbh.getBuildingByCode(event.getBuildingName());
             if (bldg != null) {
                 LatLng loc = GeoJsonParser.getCoordinates(bldg.getAllCoordinates());
+                //Prevents marker overlapping directly on top of one another
                 while (markerLoc.contains(loc)){
                     loc = PolygonUtil.fuzzLatLng(loc);
                 }
                 markerLoc.add(loc);
                 mapFragment.addMarker(loc).setTitle(String.valueOf(event.getID()));
+                //Pass the creation of the event fragment to mapFragment (possible refactor)
                 mapFragment.getMap().setOnMarkerClickListener(new MapboxMap.OnMarkerClickListener(){
                     @Override
                     public boolean onMarkerClick(@NonNull Marker marker) {
@@ -325,7 +328,7 @@ public class MainActivity extends AppCompatActivity
 
     /**
      * Getter for the event client manager
-     * @return
+     * @return the event client manager
      */
     public EventClientManager getEventClientManager(){
         return ecm;

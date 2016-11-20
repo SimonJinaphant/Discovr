@@ -43,22 +43,33 @@ public class EventClientManager {
         AllEvents = new ArrayList<>(events);
     }
 
+    /**
+     * Updates the event list
+     */
     public void updateEventsList(){
         setUpEventsClient();
     }
 
-
+    /**
+     * @return A list of events that haven't ended
+     */
     public List<EventInfo> getAllEvents(){
         List<EventInfo> events = new ArrayList<>(AllEvents);
         pruneList(events);
         return events;
     }
 
+    /**
+     * @return The raw list containing all events from the database
+     */
     public List<EventInfo> getRawEvents(){
         List<EventInfo> events = new ArrayList<>(AllEvents);
         return events;
     }
 
+    /**
+     * @return The list upcoming events
+     */
     public List<EventInfo> getUpcomingEvents(){
         List<EventInfo> events = new ArrayList<>(AllEvents);
         pruneList(events);
@@ -66,6 +77,11 @@ public class EventClientManager {
         return events;
     }
 
+    /**
+     * The filter for upcoming events, currently filters only for
+     * events happening from now to tomorrow
+     * @param events A list of events
+     */
     private void upcomingEventFilter(List<EventInfo> events){
         Date tomorrow = addOneDay(new Date());
         ListIterator<EventInfo> li = events.listIterator();
@@ -77,6 +93,11 @@ public class EventClientManager {
         }
     }
 
+    /**
+     * Adds one day to the provided date
+     * @param date the input date
+     * @return a Date one day after date
+     */
     public static Date addOneDay(Date date){
         Calendar c = Calendar.getInstance();
         c.setTime(date);
@@ -84,6 +105,11 @@ public class EventClientManager {
         return c.getTime();
     }
 
+    /**
+     * Finds an event
+     * @param eventID the ID of the event searched for
+     * @return an EventInfo associated with the ID
+     */
     public EventInfo findEvent(int eventID){
         ListIterator<EventInfo> li = AllEvents.listIterator();
         while (li.hasNext()){
