@@ -282,7 +282,7 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
         db.close();
     }
 
-    //get all courses
+    //get all courses ---> should be divided to two cases: term1 & term2
     public List<Course> getAllCourses() throws ParseException {
         List<Course> myCourses = new ArrayList<>();
 

@@ -91,10 +91,10 @@ public class CoursesFragment extends Fragment {
                 int time = formatTime(course.getStartTime());
 
                 if(course.getDayOfWeek().contains(formattedDow)){
-                    if( time - currTime <= 10){
+                    if( (time - currTime <= 10) && (time - currTime) > 0){
                         //add notification here
                         new AlertDialog.Builder(this.getActivity())
-                                .setTitle("testing")
+                                .setTitle(course.getCategory()+" "+course.getNumber()+" "+course.getSection()+" will start in 10 mins")
                                 .setMessage(":->")
                                 .show();
                     }
@@ -116,10 +116,10 @@ public class CoursesFragment extends Fragment {
         int result = 0;
         int hrs = Integer.parseInt(String.valueOf(startTime).substring(0,2));
         if(hrs > 22){
-            result = Integer.parseInt(String.valueOf(startTime).substring(0,4));
+            result = Integer.parseInt(String.valueOf(startTime).substring(0,3));
             return result;
         }else if( 10 <= hrs &&  hrs <= 22){
-            result = Integer.parseInt(String.valueOf(startTime).substring(0,5));
+            result = Integer.parseInt(String.valueOf(startTime).substring(0,4));
             return result;
         }
         return -1;
