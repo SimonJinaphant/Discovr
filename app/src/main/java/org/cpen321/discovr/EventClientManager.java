@@ -51,7 +51,12 @@ public class EventClientManager {
     public List<EventInfo> getAllEvents(){
         List<EventInfo> events = new ArrayList<>(AllEvents);
         pruneList(events);
-        return AllEvents;
+        return events;
+    }
+
+    public List<EventInfo> getRawEvents(){
+        List<EventInfo> events = new ArrayList<>(AllEvents);
+        return events;
     }
 
     public List<EventInfo> getUpcomingEvents(){
