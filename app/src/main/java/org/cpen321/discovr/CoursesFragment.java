@@ -104,6 +104,7 @@ public class CoursesFragment extends Fragment {
                 final Button button = createCourseButton(course);
                 //Add this button to the layout
                 ll.addView(button, lp);
+
             }
         } catch (ParseException e) {
             e.printStackTrace();
