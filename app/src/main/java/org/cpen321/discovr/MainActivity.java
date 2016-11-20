@@ -294,7 +294,7 @@ public class MainActivity extends AppCompatActivity
         List<EventInfo> upcomingEvents = ecm.getUpcomingEvents();
         ListIterator<EventInfo> li = upcomingEvents.listIterator();
         while (li.hasNext()){
-            final EventInfo event = li.next();
+            EventInfo event = li.next();
             Building bldg = dbh.getBuildingByCode(event.getBuildingName());
             if (bldg != null) {
                 LatLng loc = GeoJsonParser.getCoordinates(bldg.getAllCoordinates());
@@ -303,13 +303,15 @@ public class MainActivity extends AppCompatActivity
                     @Override
                     public boolean onMarkerClick(@NonNull Marker marker) {
                         if (marker.getTitle() != null){
+                            SQLiteDBHandler dbh = new SQLiteDBHandler(getApplicationContext());
+                            EventInfo event = dbh.getEvent(Integer.parseInt(marker.getTitle()));
                             SingleEventFragment fragment = new SingleEventFragment();
+                            fragment.setEvent(event);
                             FragmentManager fm = getSupportFragmentManager();
                             Fragment currentFrag = fm.findFragmentById(R.id.fragment_container);
                             Log.d("backstack", "From Subscribed Events: currFragment = " + currentFrag);
                             FragmentTransaction transaction = fm.beginTransaction();
                             fragment.setEvent(event);
-
                             //hide current fragment, will reopen when back key pressed
                             transaction.add(R.id.fragment_container, fragment, marker.getTitle());
                             transaction.addToBackStack(null);
