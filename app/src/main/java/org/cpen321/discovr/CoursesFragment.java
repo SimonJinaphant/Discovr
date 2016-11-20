@@ -59,7 +59,7 @@ public class CoursesFragment extends Fragment {
         final FrameLayout fm = (FrameLayout) inflater.inflate(R.layout.fragment_courses, container, false);
         ScrollView sv = (ScrollView) fm.getChildAt(0);
 
-        //Get linearlayour and layoutParams for new button
+        //Get linearlayout and layoutParams for new button
         LinearLayout ll = (LinearLayout) sv.getChildAt(0);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
@@ -110,11 +110,17 @@ public class CoursesFragment extends Fragment {
         }
 
         try {
+            //check if there is any class in 10 mins
             if(AlertUtil.courseAlert(courseList) != null){
+                //get the course if there is any
                 Course currCourse = AlertUtil.courseAlert(courseList);
+                //show the alert message
                 new AlertDialog.Builder(this.getActivity())
+                        //set alert title with the course name
                         .setTitle(currCourse.getCategory()+" "+currCourse.getNumber()+" "+currCourse.getSection()+" will start in 10 mins")
+                        //set the message with the location
                         .setMessage(currCourse.getBuilding()+" "+currCourse.getRoom())
+                        //show the alert
                         .show();
             }
         } catch (ParseException e) {
