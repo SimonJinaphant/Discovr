@@ -68,38 +68,8 @@ public class CoursesFragment extends Fragment {
             //get course object from local database
             courseList = dbh.getAllCourses();
 
-//            //get current calendar object
-//            Calendar c = Calendar.getInstance();
-//            //get current day of week 0~6 -> SUN ~ SAT
-//            int dow = c.get(Calendar.DAY_OF_WEEK);
-//            String formattedDow = formatDow(dow);
-//            //get current hours & minutes
-//            int hr = c.get(Calendar.HOUR_OF_DAY);
-//            int min = c.get(Calendar.MINUTE);
-//
-//            int currTime;
-//            if(min < 10) {
-//                //indicate curr time
-//                currTime = Integer.parseInt((Integer.toString(hr) + "0" + Integer.toString(min)));
-//            }else{
-//                currTime = Integer.parseInt((Integer.toString(hr)+Integer.toString(min)));
-//            }
-
             //Add new button for each course in DB
             for(Course course : courseList){
-                //String courseTime = String.valueOf(course.getStartTime()).substring(0, 3);
-                //implement a method to format course.getStartTime() to 4 digits
-//                int time = formatTime(course.getStartTime());
-//
-//                if(course.getDayOfWeek().contains(formattedDow)){
-//                    if( (time - currTime <= 10) && (time - currTime) > 0){
-//                        //add notification here
-//                        new AlertDialog.Builder(this.getActivity())
-//                                .setTitle(course.getCategory()+" "+course.getNumber()+" "+course.getSection()+" will start in 10 mins")
-//                                .setMessage(course.getEndDate())
-//                                .show();
-//                    }
-//                }
                 //formats button to be the same as the format we want in the fragment
                 final Button button = createCourseButton(course);
                 //Add this button to the layout
@@ -129,36 +99,6 @@ public class CoursesFragment extends Fragment {
         }
         return fm;
     }
-
-//    private int formatTime(long startTime) {
-//        int result = 0;
-//        int hrs = Integer.parseInt(String.valueOf(startTime).substring(0,2));
-//        if(hrs > 22){
-//            result = Integer.parseInt(String.valueOf(startTime).substring(0,3));
-//            return result;
-//        }else if( 10 <= hrs &&  hrs <= 22){
-//            result = Integer.parseInt(String.valueOf(startTime).substring(0,4));
-//            return result;
-//        }
-//        return -1;
-//    }
-
-//    private String formatDow(int dow) {
-//        if(dow == 1 || dow == 7){
-//            return "Weekend";
-//        }else if(dow == 2){
-//            return "MO";
-//        }else if(dow == 3){
-//            return "TU";
-//        }else if(dow == 4){
-//            return "WE";
-//        }else if(dow == 5){
-//            return "TH";
-//        }else if(dow == 6){
-//            return  "FR";
-//        }
-//        return null;
-//    }
 
     private Button createCourseButton(Course course) {
         //Set button properties - gravity, allCaps, padding, backgroundColor, textColor, text
