@@ -1,8 +1,8 @@
 package org.cpen321.discovr;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 
 import android.view.LayoutInflater;
@@ -16,6 +16,7 @@ import android.text.SpannableString;
 import android.text.style.AbsoluteSizeSpan;
 
 import org.cpen321.discovr.model.Course;
+import org.cpen321.discovr.utility.AlertUtil;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -23,7 +24,6 @@ import java.util.List;
 
 import android.widget.Button;
 import static android.text.Spanned.SPAN_INCLUSIVE_INCLUSIVE;
-import static com.loopj.android.http.AsyncHttpClient.log;
 import static org.cpen321.discovr.R.dimen.button_margin;
 import static org.cpen321.discovr.R.id.left;
 
@@ -59,12 +59,14 @@ public class CoursesFragment extends Fragment {
         final FrameLayout fm = (FrameLayout) inflater.inflate(R.layout.fragment_courses, container, false);
         ScrollView sv = (ScrollView) fm.getChildAt(0);
 
-        //Get linearlayour and layoutParams for new button
+        //Get linearlayout and layoutParams for new button
         LinearLayout ll = (LinearLayout) sv.getChildAt(0);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
+        List<Course> courseList = null;
         try {
-            List<Course> courseList = dbh.getAllCourses();
+            //get course object from local database
+            courseList = dbh.getAllCourses();
 
             //Add new button for each course in DB
             for(Course course : courseList){
@@ -72,6 +74,25 @@ public class CoursesFragment extends Fragment {
                 final Button button = createCourseButton(course);
                 //Add this button to the layout
                 ll.addView(button, lp);
+
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            //check if there is any class in 10 mins
+            if(AlertUtil.courseAlert(courseList) != null){
+                //get the course if there is any
+                Course currCourse = AlertUtil.courseAlert(courseList);
+                //show the alert message
+                new AlertDialog.Builder(this.getActivity())
+                        //set alert title with the course name
+                        .setTitle(currCourse.getCategory()+" "+currCourse.getNumber()+" "+currCourse.getSection()+" will start in 10 mins")
+                        //set the message with the location
+                        .setMessage(currCourse.getBuilding()+" "+currCourse.getRoom())
+                        //show the alert
+                        .show();
             }
         } catch (ParseException e) {
             e.printStackTrace();

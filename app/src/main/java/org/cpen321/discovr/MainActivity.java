@@ -1,6 +1,7 @@
 package org.cpen321.discovr;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -38,6 +39,7 @@ import org.cpen321.discovr.model.EventInfo;
 import org.cpen321.discovr.utility.PolygonUtil;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -107,6 +109,31 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        Calendar c = Calendar.getInstance();
+        //get current month: 0~11 -> Jan~Dec
+        int month = c.get(Calendar.MONTH);
+        //get current hour
+        int hour = c.get(Calendar.HOUR_OF_DAY);
+        //standard time
+        if( month >= 10 || month < 2) {
+            //after 21:00 pm
+            if (hour >= 21) {
+                new AlertDialog.Builder(this)
+                        .setTitle("Don't walk alone after dark")
+                        .setMessage("Call safewalk @ 604-822-5355")
+                        .show();
+            }
+
+        //daylight saving time
+        }else{
+            //after 20:00 pm
+            if (hour >= 20) {
+                new AlertDialog.Builder(this)
+                        .setTitle("Don't walk alone after dark")
+                        .setMessage("Call safewalk @ 604-822-5355")
+                        .show();
+            }
+        }
 
     }
 

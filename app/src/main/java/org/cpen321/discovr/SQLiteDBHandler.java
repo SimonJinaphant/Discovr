@@ -280,7 +280,7 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
         db.close();
     }
 
-    //get all courses
+    //get all courses ---> should be divided to two cases: term1 & term2
     public List<Course> getAllCourses() throws ParseException {
         List<Course> myCourses = new ArrayList<>();
 
@@ -299,6 +299,7 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
                 Date startDate = formatter.parse(start);
                 Date endDate = formatter.parse(end);
 
+                //add condition here to divide courses for term2 & term2
                 Course course = new Course(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getLong(5), cursor.getLong(6), startDate, endDate, cursor.getString(9));
                 myCourses.add(course);
             }
