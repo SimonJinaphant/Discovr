@@ -9,6 +9,7 @@ import android.util.Log;
 
 import org.cpen321.discovr.model.Building;
 import org.cpen321.discovr.model.Course;
+import org.cpen321.discovr.model.EventInfo;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -37,7 +38,6 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
     private static final String KEY_BUILDING = "buildingName";
     private static final String KEY_STARTTIME = "startTime";
     private static final String KEY_ENDTIME = "endTime";
-    private static final String KEY_LOCATION = "location";
     private static final String KEY_DETAILS = "eventDetails";
 
     //Added column names in table "SubscribedCourses"
@@ -64,7 +64,6 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
             KEY_BUILDING + " TEXT," +
             KEY_STARTTIME + " TEXT," +
             KEY_ENDTIME + " TEXT," +
-            KEY_LOCATION + " TEXT," +
             KEY_DETAILS + " TEXT" + ")";
 
     public static final String CREATE_TABLE_COURSES = "CREATE TABLE " + TABLE_SUBSCRIBED_COURSES + "(" +
@@ -133,11 +132,9 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
         values.put(KEY_NAME, data.getName());
         values.put(KEY_HOST, data.getHostName());
         values.put(KEY_BUILDING, data.getBuildingName());
-        values.put(KEY_STARTTIME, data.getStartTime());
-        values.put(KEY_ENDTIME, data.getEndTime());
-        values.put(KEY_LOCATION, data.getLocation());
+        values.put(KEY_STARTTIME, data.getStartTimeString());
+        values.put(KEY_ENDTIME, data.getEndTimeString());
         values.put(KEY_DETAILS, data.getEventDetails());
-
         //Insert new row
         db.insert(TABLE_SUBSCRIBED_EVENTS, null, values);
 
@@ -153,7 +150,7 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
         Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_SUBSCRIBED_EVENTS + " WHERE " + KEY_ID + " = ? ", new String[]{String.valueOf(id)} );
         if (cursor.getCount() != 0) {
             cursor.moveToFirst();
-            event = new EventInfo(cursor.getInt(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5), cursor.getString(6), cursor.getString(7));
+            event = new EventInfo(cursor.getInt(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5), cursor.getString(6));
         }
         return event;
     }
@@ -171,7 +168,7 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
         if (cursor.moveToFirst()) {
             do {
                 Log.d("found events", cursor.getString(1));
-                EventInfo event = new EventInfo(cursor.getInt(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5), cursor.getString(6), cursor.getString(7));
+                EventInfo event = new EventInfo(cursor.getInt(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5), cursor.getString(6));
                 eventList.add(event);
             }
             while (cursor.moveToNext());
@@ -196,7 +193,9 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
         //loop through each row and add that event to the list
         if (cursor.moveToFirst()) {
             do {
-                EventInfo event = new EventInfo(cursor.getInt(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5), cursor.getString(6), cursor.getString(7));
+                Log.d("eventDate", "StartTime: " + cursor.getString(4) + " |EndTime: " + cursor.getString(5));
+                EventInfo event = new EventInfo(cursor.getInt(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5), cursor.getString(6));
+                Log.d("eventDate", "From database: " + cursor.getString(0) + " " + cursor.getString(1) + " " + cursor.getString(2) + " " + cursor.getString(3) + " " + cursor.getString(4) + " " + cursor.getString(5) + " " + cursor.getString(6));
                 eventList.add(event);
             }
             while (cursor.moveToNext());
@@ -228,9 +227,8 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
         values.put(KEY_NAME, event.getName());
         values.put(KEY_BUILDING, event.getBuildingName());
         values.put(KEY_HOST, event.getHostName());
-        values.put(KEY_STARTTIME, event.getStartTime());
-        values.put(KEY_ENDTIME, event.getEndTime());
-        values.put(KEY_LOCATION, event.getLocation());
+        values.put(KEY_STARTTIME, event.getStartTime().toString());
+        values.put(KEY_ENDTIME, event.getEndTime().toString());
         values.put(KEY_DETAILS, event.getEventDetails());
 
         //update that rowserCou
@@ -282,7 +280,7 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
         db.close();
     }
 
-    //get all courses
+    //get all courses ---> should be divided to two cases: term1 & term2
     public List<Course> getAllCourses() throws ParseException {
         List<Course> myCourses = new ArrayList<>();
 
@@ -301,6 +299,7 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
                 Date startDate = formatter.parse(start);
                 Date endDate = formatter.parse(end);
 
+                //add condition here to divide courses for term2 & term2
                 Course course = new Course(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getLong(5), cursor.getLong(6), startDate, endDate, cursor.getString(9));
                 myCourses.add(course);
             }
