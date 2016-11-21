@@ -17,6 +17,7 @@ import android.widget.TextView;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 
 import org.cpen321.discovr.model.Building;
+import org.cpen321.discovr.model.EventInfo;
 
 import static android.text.Spanned.SPAN_INCLUSIVE_INCLUSIVE;
 
@@ -79,8 +80,8 @@ public class SingleEventFragment extends Fragment {
 
             eventDetails.setText(
                     "Location: " + event.getBuildingName() + "\n"
-                            + "Time: " + formatTime(event.getStartTime()) + " - " + formatTime(event.getEndTime()) + "\n"
-                            + "Date: " + getDate(event.getStartTime())
+                            + "Time: " + EventInfo.getTimeString(event.getStartTime()) + " - " + EventInfo.getTimeString(event.getEndTime()) + "\n"
+                            + "Date: " + EventInfo.getDateString(event.getStartTime())
                             + "\n" + "Details: " + event.getEventDetails());
             if(dbh.getEvent(event.getID()) != null) {
                 subscribedButton.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.star_toggle_on));

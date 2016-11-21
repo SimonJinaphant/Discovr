@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -26,12 +27,17 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
 import com.mapbox.mapboxsdk.MapboxAccountManager;
+import com.mapbox.mapboxsdk.annotations.Marker;
 import com.mapbox.mapboxsdk.exceptions.InvalidAccessTokenException;
 import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.services.commons.ServicesException;
 import com.mapbox.services.commons.models.Position;
 
 import org.cpen321.discovr.model.Building;
+import org.cpen321.discovr.model.EventInfo;
+import org.cpen321.discovr.utility.PolygonUtil;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -289,9 +295,11 @@ public class MainActivity extends AppCompatActivity
         FragmentManager manager = getSupportFragmentManager();
         Fragment currentFragment = manager.findFragmentById(R.id.fragment_container);
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
+        } else if ((currentFragment instanceof MapViewFragment) && mapFragment.isMapDirty()){
+            mapFragment.removeRoute();
+            mapFragment.removeAllMarkers();
         } else {
             super.onBackPressed();
         }
@@ -308,6 +316,51 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    /**
+     * Plots upcoming events on the map
+     */
+    private void plotUpcomingEventsOnMap(){
+        // TODO: Replace getRawEvents() with getUpcomingEvents()
+        List<EventInfo> upcomingEvents = ecm.getRawEvents();
+        ListIterator<EventInfo> li = upcomingEvents.listIterator();
+        List<LatLng> markerLoc = new ArrayList<>();
+        while (li.hasNext()){
+            EventInfo event = li.next();
+            Building bldg = dbh.getBuildingByCode(event.getBuildingName());
+            if (bldg != null) {
+                LatLng loc = GeoJsonParser.getCoordinates(bldg.getAllCoordinates());
+                //Prevents marker overlapping directly on top of one another
+                while (markerLoc.contains(loc)){
+                    loc = PolygonUtil.fuzzLatLng(loc);
+                }
+                markerLoc.add(loc);
+                mapFragment.addMarker(loc).setTitle(String.valueOf(event.getID()));
+                //Pass the creation of the event fragment to mapFragment (possible refactor)
+                mapFragment.getMap().setOnMarkerClickListener(new MapboxMap.OnMarkerClickListener(){
+                    @Override
+                    public boolean onMarkerClick(@NonNull Marker marker) {
+                        if (marker.getTitle() != null){
+                            mapFragment.createEventPanel(Integer.parseInt(marker.getTitle()));
+                            return true;
+                        }
+                        return false;
+                    }
+                });
+
+            }
+        }
+    }
+
+
+    /**
+     * Getter for the event client manager
+     * @return the event client manager
+     */
+    public EventClientManager getEventClientManager(){
+        return ecm;
+    }
+
 
     /**
      * Takes care of hiding and switching of fragments
@@ -337,13 +390,16 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.events_subscribed:
                 ft.add(R.id.fragment_container, new EventsSubscribedFragment(), getResources().getString(R.string.events_sub_tag));
+                ft.addToBackStack(null);
                 getSupportActionBar().setTitle(getResources().getString(R.string.events_subscribed));
                 break;
-            case R.id.events_nearby:
-                getSupportActionBar().setTitle(getResources().getString(R.string.events_nearby));
+            case R.id.events_upcoming:
+                getSupportActionBar().setTitle(getResources().getString(R.string.events_upcoming));
+                plotUpcomingEventsOnMap();
                 break;
             case R.id.events_all:
                 ft.add(R.id.fragment_container, new AllEventsFragment(), getResources().getString(R.string.all_events_tag));
+                ft.addToBackStack(null);
                 getSupportActionBar().setTitle(getResources().getString((R.string.events_all)));
                 break;
             case R.id.test_frag:
@@ -352,6 +408,7 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.courses_frag:
                 ft.add(R.id.fragment_container, new CoursesFragment(), getResources().getString(R.string.courses));
+                ft.addToBackStack(null);
                 getSupportActionBar().setTitle(getResources().getString(R.string.courses));
                 break;
             default:
