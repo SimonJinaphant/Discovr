@@ -55,7 +55,8 @@ public class EventClientManager {
      */
     public List<EventInfo> getAllEvents(){
         List<EventInfo> events = new ArrayList<>(AllEvents);
-        pruneList(events);
+        eventDateFilter(events, new Date());
+        sortList(events);
         return events;
     }
 
@@ -68,29 +69,38 @@ public class EventClientManager {
     }
 
     /**
-     * @return The list upcoming events
+     * @return The list of upcoming events
      */
     public List<EventInfo> getUpcomingEvents(){
         List<EventInfo> events = new ArrayList<>(AllEvents);
-        pruneList(events);
-        upcomingEventFilter(events);
+        eventDateFilter(events, new Date(), addOneDay(new Date()));
         return events;
     }
 
     /**
-     * The filter for upcoming events, currently filters only for
-     * events happening from now to tomorrow
+     * Filters events from one date to another
      * @param events A list of events
+     * @param fromDate the start of the date interval
+     * @param toDate the end of the date interval
      */
-    private void upcomingEventFilter(List<EventInfo> events){
-        Date tomorrow = addOneDay(new Date());
+    public void eventDateFilter(List<EventInfo> events, Date fromDate, Date toDate){
         ListIterator<EventInfo> li = events.listIterator();
         while (li.hasNext()){
             EventInfo ei = li.next();
-            if (ei.getEndTime().after(tomorrow)){
+            if (   ei.getEndTime().before(fromDate)
+                    || (ei.getStartTime().after(toDate))    ){
                 li.remove();
             }
         }
+    }
+
+    /**
+     * Filters events happening after a certain date
+     * @param events A list of events
+     * @param fromDate date
+     */
+    public void eventDateFilter(List<EventInfo> events, Date fromDate){
+        eventDateFilter(events, fromDate, new Date(Long.MAX_VALUE));
     }
 
     /**
@@ -125,7 +135,7 @@ public class EventClientManager {
     /**
      * Sorts the event list from earliest to latest
      */
-    private void sortList(List<EventInfo> events) {
+    public void sortList(List<EventInfo> events) {
         Collections.sort(events, new Comparator<EventInfo>() {
             @Override
             public int compare(EventInfo o1, EventInfo o2) {
@@ -134,21 +144,6 @@ public class EventClientManager {
         });
 
     }
-
-    /**
-     * Sorts and removes all events before the current Time period
-     */
-    private void pruneList(List<EventInfo> events){
-        sortList(events);
-        ListIterator<EventInfo> li = events.listIterator();
-        while (li.hasNext()) {
-            EventInfo event = li.next();
-            if (event.getEndTime().before(new Date())){
-                li.remove();
-            }
-        }
-    }
-
 
     /**
      * Sets up the client for getting event information from the events database
