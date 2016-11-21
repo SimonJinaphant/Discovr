@@ -4,7 +4,10 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
 import android.text.style.AbsoluteSizeSpan;
+import android.text.style.TabStopSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,20 +36,17 @@ public class SingleBuildingFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        LinearLayout build = (LinearLayout) inflater.inflate(R.layout.fragment_single_building, container, false);
+        LinearLayout ll = (LinearLayout) inflater.inflate(R.layout.fragment_single_building, container, false);
 
-        TextView BuildingInfo = (TextView) build.findViewById(R.id.buildinginfo);
-        BuildingInfo.setText("Building Details");
+        TextView BuildingInfo = (TextView) ll.findViewById(R.id.buildinginfo);
+        BuildingInfo.setText(building.name);
 
-        TextView BuildingDetails = (TextView) build.findViewById(R.id.buildingdetails);
-        BuildingDetails.setText(
-                "Name: " + building.name + "\n"
-                        + getCode(building)+ "\n"
-                        + getTime(building) + "\n"
-                        + "Address: " + getAddress(building)
-        );
+        TextView BuildingDetails = (TextView) ll.findViewById(R.id.buildingdetails);
+        SpannableStringBuilder span = new SpannableStringBuilder(getCode(building) + getTime(building) + getAddress(building));
+        span.setSpan(new TabStopSpan.Standard(300), 0, span.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE );
+        BuildingDetails.setText(span, TextView.BufferType.SPANNABLE);
 
-        return build;
+        return ll;
 
     }
 
@@ -54,8 +54,10 @@ public class SingleBuildingFragment extends Fragment {
     String getTime(Building building){
         String time = "";
         if(building.hours != null){
-
-            time = "Hours:" + building.hours;
+            String[] s = building.hours.split(",");
+            time = "Hours:";
+            for ( String i : s )
+            time = time + "\t" + i + "\n";
         }
 
         return time;
@@ -64,8 +66,7 @@ public class SingleBuildingFragment extends Fragment {
     String getAddress(Building building){
         String address = "";
         if(building.address != null){
-
-            address = "Address:" + building.address;
+            address = "Address:\t" + building.address + "\n";
         }
 
         return address;
@@ -74,8 +75,7 @@ public class SingleBuildingFragment extends Fragment {
     String getCode(Building building){
         String code = "";
         if(building.code != null){
-
-            code = "Code:" + building.code;
+            code = "Code:\t" + building.code + "\n";
         }
 
         return code;

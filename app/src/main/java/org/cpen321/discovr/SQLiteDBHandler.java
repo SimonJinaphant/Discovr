@@ -50,6 +50,8 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
     private static final String KEY_DAY_OF_WEEK = "dayOfWeek";
 
     //Column names int table of building
+    private int buildingNum;
+    private static final String KEY_BLDG_ID = "BuildingID";
     private static final String KEY_BLDG_NAME = "BuildingName";
     private static final String KEY_BLDG_CODE = "BuildingCode";
     private static final String KEY_BLDG_ADDRESS = "BuildingAddress";
@@ -79,6 +81,7 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
             KEY_DAY_OF_WEEK + " TEXT" + ")";
 
     public static final String CREATE_TABLE_BUILDINGS = "CREATE TABLE " + TABLE_BUILDINGS + "(" +
+            KEY_BLDG_ID + " INTEGER PRIMARY KEY," +
             KEY_BLDG_NAME+ " TEXT," +
             KEY_BLDG_CODE + " TEXT," +
             KEY_BLDG_ADDRESS + " TEXT," +
@@ -94,6 +97,7 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
     @Override
 
     public void onCreate(SQLiteDatabase db){
+        buildingNum = 0;
         db.execSQL(CREATE_TABLE_SUBBED_EVENTS);
         db.execSQL(CREATE_TABLE_COURSES);
         db.execSQL(CREATE_TABLE_BUILDINGS);
@@ -314,7 +318,8 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
     /*
     The following allows these methods for the TABLE_BUILDiNGS
     addBuilding(Building);
-    getBuildiing(String name);
+    getBuilding(String name);
+    getBuilding(int id);
     getBuildingCount();
      */
     //Adds single building to database
@@ -323,12 +328,13 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
 
         //Place values in contentValues
         ContentValues values = new ContentValues();
+        values.put(KEY_BLDG_ID, this.buildingNum);
         values.put(KEY_BLDG_NAME, bldg.name);
         values.put(KEY_BLDG_CODE, bldg.code);
         values.put(KEY_BLDG_ADDRESS, bldg.address);
         values.put(KEY_BLDG_COORDINATES, bldg.getCoordinatesAsString());
         values.put(KEY_BLDG_HOURS, bldg.hours);
-
+        this.buildingNum++;
         //Insert new row
         db.insert(TABLE_BUILDINGS, null, values);
         //close database connection
@@ -346,19 +352,27 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
         Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_BUILDINGS + " WHERE " + KEY_BLDG_CODE + " LIKE ? OR " + KEY_BLDG_NAME + " LIKE ?", new String[]{code, code} );;
         if (cursor.getCount() != 0) {
             cursor.moveToFirst();
-            bldg = new Building(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4));
+            bldg = new Building(cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5));
+        }
+        return bldg;
+    }
+
+    public Building getBuildingByID(int ID){
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Building bldg = null;
+
+        //Select all rows from TABLE_BUILDING where KEY_BLDG_ID is ID
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_BUILDINGS + " WHERE " + KEY_BLDG_ID + " = ? ", new String[]{String.valueOf(ID)});;
+        if (cursor.getCount() != 0) {
+            cursor.moveToFirst();
+            bldg = new Building(cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5));
         }
         return bldg;
     }
 
     public int getBuildingCount(){
-        String query = "SELECT * FROM " + TABLE_BUILDINGS;
-        SQLiteDatabase db = this.getReadableDatabase();
-
-        Cursor cursor = db.rawQuery(query, null);
-        cursor.close();
-
-        return cursor.getCount();
+        return (this.buildingNum + 1);
     }
     public List<Building> getAllBuildings() {
         List<Building> bldgs = new ArrayList<Building>();
@@ -372,7 +386,7 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
         //loop through each row and add that event to the list
         if (cursor.moveToFirst()) {
             do {
-                Building bldg = new Building(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4));
+                Building bldg = new Building(cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5));
                 bldgs.add(bldg);
             }
             while (cursor.moveToNext());

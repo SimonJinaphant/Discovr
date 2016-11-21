@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 
+import android.text.style.RelativeSizeSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -91,13 +92,13 @@ public class CoursesFragment extends Fragment {
         bt.setTextColor(ContextCompat.getColor(getContext(), R.color.primaryTextColor));
         String startTime = timeFormatter(course.getStartTime());
         String endTime = timeFormatter(course.getEndTime());
-        SpannableString buttonText = new SpannableString(course.getCategory()+ " " +course.getNumber()+" "+course.getSection() + "\n" + (startTime+ " - " + endTime) + "\n" + course.getBuilding()+ " "+course.getRoom());
+        SpannableString buttonText = new SpannableString(course.getCategory()+ " " +course.getNumber()+" "+course.getSection() + "\n" + course.getBuilding() + "\n" + (startTime+ " - " + endTime) + " " +course.getRoom());
 
         //should i add startDate and endDate as well?
         //when it reaches the endDate ,then the course button automatically disappear
         int index = buttonText.toString().indexOf("\n");
-        buttonText.setSpan(new AbsoluteSizeSpan(50), 0, index, SPAN_INCLUSIVE_INCLUSIVE);
-        buttonText.setSpan(new AbsoluteSizeSpan(30), index, buttonText.length(), SPAN_INCLUSIVE_INCLUSIVE);
+        buttonText.setSpan(new RelativeSizeSpan(2), 0, index, SPAN_INCLUSIVE_INCLUSIVE);
+        buttonText.setSpan(new RelativeSizeSpan((float) 1.5), index, buttonText.length(), SPAN_INCLUSIVE_INCLUSIVE);
         bt.setText(buttonText);
         return bt;
     }
