@@ -41,9 +41,11 @@ import com.mapbox.services.directions.v5.models.DirectionsResponse;
 import com.mapbox.services.directions.v5.models.DirectionsRoute;
 
 import org.cpen321.discovr.model.Building;
+import org.cpen321.discovr.model.EventInfo;
 import org.cpen321.discovr.utility.PolygonUtil;
 
 import java.util.List;
+import java.util.ListIterator;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -89,7 +91,6 @@ public class MapViewFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         FrameLayout view = (FrameLayout) inflater.inflate(R.layout.fragment_map_view, container, false);
-
         //Creates and initializes the map view
         mapView = (MapView) view.findViewById(R.id.mapview);
         mapView.onCreate(savedInstanceState);
@@ -110,23 +111,11 @@ public class MapViewFragment extends Fragment {
                 map.setMyLocationEnabled(true);
                 //Polygon callback on touch
                 // Implement an onclick which cycles through all buildings and attempt to match a single LatLng point
-// into a polygon based on the above algorithm.
+                // into a polygon based on the above algorithm.
                 map.setOnMapLongClickListener(new MapboxMap.OnMapLongClickListener(){
                     @Override
                     public void onMapLongClick(@NonNull LatLng point) {
-                        for(Building b : buildings){
-                            LatLng[] vertices = b.getAllCoordinates().toArray(new LatLng[b.getAllCoordinates().size()]);
-                            if(PolygonUtil.pointInPolygon(point, vertices)){
-                                //Toast.makeText(getActivity(), "You pressed on "+b.name, Toast.LENGTH_SHORT).show()
-                                SingleBuildingFragment buildingFrag = new SingleBuildingFragment();
-                                buildingFrag.setBuilding(b);
-                                FragmentManager fm = getActivity().getSupportFragmentManager();
-                                FragmentTransaction ft = fm.beginTransaction();
-                                ft.add(R.id.fragment_container, buildingFrag);
-                                ft.commit();
-                                break;
-                            }
-                        }
+                        onLongClickMapCallback(point);
                     }
                 } );
 
@@ -138,11 +127,8 @@ public class MapViewFragment extends Fragment {
                             .fillColor(Color.parseColor("#3bb2d0"))
                     );
                 }
-
             }
         });
-
-
 
         //Initializes button to focus on user location
         FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
@@ -157,6 +143,28 @@ public class MapViewFragment extends Fragment {
         });
 
         return view;
+    }
+
+    /**
+     * Callback for a long click on the map, creates a building fragment if
+     * the point clicked is a building
+     * @param point the point clicked on the map
+     */
+    public void onLongClickMapCallback(LatLng point){
+        for(Building b : buildings){
+            LatLng[] vertices = b.getAllCoordinates().toArray(new LatLng[b.getAllCoordinates().size()]);
+            if(PolygonUtil.pointInPolygon(point, vertices)){
+                //Toast.makeText(getActivity(), "You pressed on "+b.name, Toast.LENGTH_SHORT).show()
+                SingleBuildingFragment buildingFrag = new SingleBuildingFragment();
+                buildingFrag.setBuilding(b);
+                FragmentManager fm = getActivity().getSupportFragmentManager();
+                FragmentTransaction ft = fm.beginTransaction();
+                ft.add(R.id.fragment_container, buildingFrag);
+                ft.addToBackStack(null);
+                ft.commit();
+                break;
+            }
+        }
     }
 
     /**
@@ -247,6 +255,25 @@ public class MapViewFragment extends Fragment {
                 .width(2));
     }
 
+    /**
+     * Removes all the markers on the map
+     */
+    public void removeAllMarkers(){
+        List<Marker> allMarkers = map.getMarkers();
+        ListIterator<Marker> li = allMarkers.listIterator();
+        while (li.hasNext()){
+            Marker marker = li.next();
+            marker.remove();
+            li.remove();
+        }
+    }
+
+    /**
+     * @return whether the map has markers and routes on it
+     */
+    public boolean isMapDirty(){
+        return ((map.getMarkers().size() > 0) || (routeLine != null));
+    }
 
     /**
      * Removes the routeline
@@ -254,6 +281,7 @@ public class MapViewFragment extends Fragment {
     public void removeRoute(){
         if (routeLine != null){
             routeLine.remove();
+            routeLine = null;
         }
     }
 
@@ -273,35 +301,6 @@ public class MapViewFragment extends Fragment {
         return false;
     }
 
-    /**
-     * Moves the user position marker to a specified location and creates it
-     * if it doesn't exist
-     * @param loc the location to place the marker
-     */
-    public void moveUserPositionMarker(LatLng loc){
-        Log.d("map", "User position marker to: " + loc);
-        if (loc != null){
-            if (userPositionMarker == null){
-                Log.d("map", "Creating user position marker at " + loc);
-                MarkerViewOptions marker = new MarkerViewOptions().position(loc);
-                userPositionMarker = map.addMarker(marker);
-            } else {
-                Log.d("map", "Moving user position marker to " + loc);
-                userPositionMarker.setPosition(loc);
-            }
-        }
-    }
-
-    /**
-     * Removes the user position marker if it exists
-     */
-    public void removeUserPositionMarker(){
-        Log.d("map", "Removing user position marker");
-        if (userPositionMarker != null){
-            userPositionMarker.remove();
-            userPositionMarker = null;
-        }
-    }
 
     /**
      * Moves the point of interest marker to a specified location and creates
@@ -332,6 +331,36 @@ public class MapViewFragment extends Fragment {
             pointOfInterestMarker = null;
         }
     }
+
+    /**
+     * Adds a marker to the map
+     * @param loc
+     */
+    public Marker addMarker(LatLng loc){
+        MarkerViewOptions marker = new MarkerViewOptions().position(loc);
+        return map.addMarker(marker);
+    }
+
+    /**
+     * Creates an event panel given an eventID
+     * @param eventID
+     */
+    public void createEventPanel(int eventID){
+        EventClientManager ecm = ((MainActivity)getActivity()).getEventClientManager();
+        EventInfo event = ecm.findEvent(eventID);
+        SingleEventFragment fragment = new SingleEventFragment();
+        fragment.setEvent(event);
+        FragmentManager fm = getActivity().getSupportFragmentManager();
+        Fragment currentFrag = fm.findFragmentById(R.id.fragment_container);
+        Log.d("backstack", "From Subscribed Events: currFragment = " + currentFrag);
+        FragmentTransaction transaction = fm.beginTransaction();
+        fragment.setEvent(event);
+        //hide current fragment, will reopen when back key pressed
+        transaction.add(R.id.fragment_container, fragment, String.valueOf(eventID));
+        transaction.addToBackStack(null);
+        transaction.commit();
+    }
+
 
     /**
      * Returns a reference to the map

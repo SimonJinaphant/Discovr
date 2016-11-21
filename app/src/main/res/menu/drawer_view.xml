@@ -13,8 +13,8 @@
             android:layout_height="wrap_content" />
 
         <item
-            android:id="@+id/events_nearby"
-            android:title="@string/events_nearby"
+            android:id="@+id/events_upcoming"
+            android:title="@string/events_upcoming"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
         <item
@@ -25,12 +25,6 @@
         <item
             android:id="@+id/events_all"
             android:title="@string/events_all"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <item
-            android:id="@+id/events_create"
-            android:title="@string/events_create"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
