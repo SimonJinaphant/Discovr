@@ -22,7 +22,7 @@ import static android.content.SearchRecentSuggestionsProvider.DATABASE_MODE_QUER
 
 public class MyCustomSuggestionProvider extends ContentProvider {
 
-
+    //Projection to change database column names into recognized column names for list of suggestions
     private static final HashMap<String, String> PROJECTION_MAP = new HashMap<String, String>();
     static {
         PROJECTION_MAP.put("_id", "BuildingID AS _id");
@@ -41,6 +41,7 @@ public class MyCustomSuggestionProvider extends ContentProvider {
 
     @Nullable
     @Override
+    //Function is called when text changed for searchable
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
 
         SQLiteQueryBuilder qBuilder = new SQLiteQueryBuilder();

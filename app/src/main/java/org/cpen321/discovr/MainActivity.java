@@ -395,14 +395,17 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
+        //Handle intent when suggestion is selected from search
         if (Intent.ACTION_VIEW.equals(intent.getAction())) {
             String uri = intent.getDataString();
             String[] s = uri.split("/");
 
+            //find buildling being selected with the dataString passed
             Building b = dbh.getBuildingByID(Integer.valueOf(s[s.length-1]));
             SingleBuildingFragment buildingFrag = new SingleBuildingFragment();
             buildingFrag.setBuilding(b);
 
+            //Move map to the building location
             LatLng loc = GeoJsonParser.getCoordinates(b.getAllCoordinates()); //obtains coordinates from query
 
             //Check for null loc
@@ -410,6 +413,7 @@ public class MainActivity extends AppCompatActivity
                 moveMap(loc);
             }
 
+            //Open new singleBuilding fragment
             FragmentManager fm = this.getSupportFragmentManager();
             FragmentTransaction ft = fm.beginTransaction();
             ft.add(R.id.fragment_container, buildingFrag);
