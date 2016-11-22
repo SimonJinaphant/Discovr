@@ -7,12 +7,26 @@ import java.util.Set;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
+import static java.lang.Math.random;
 
 /**
  * Created by Simon Jinaphant on 09-Nov-2016.
  */
 
 public class PolygonUtil {
+
+    /**
+     * Fuzzes the latlong to a nearby point
+     * @param input
+     * @return
+     */
+    public static LatLng fuzzLatLng(LatLng input){
+        double lat = input.getLatitude();
+        double lon = input.getLongitude();
+        lat += random()*0.0001;
+        lon += random()*0.0001;
+        return new LatLng(lat, lon);
+    }
 
     private static boolean isZero(double value, double threshold){
         return value >= -threshold && value <= threshold;
