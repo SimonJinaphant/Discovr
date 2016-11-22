@@ -232,8 +232,8 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
         values.put(KEY_NAME, event.getName());
         values.put(KEY_BUILDING, event.getBuildingName());
         values.put(KEY_HOST, event.getHostName());
-        values.put(KEY_STARTTIME, event.getStartTime().toString());
-        values.put(KEY_ENDTIME, event.getEndTime().toString());
+        values.put(KEY_STARTTIME, event.getStartTimeString());
+        values.put(KEY_ENDTIME, event.getEndTimeString());
         values.put(KEY_DETAILS, event.getEventDetails());
 
         //update that rowserCou
@@ -256,6 +256,12 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
 
     //Add new courses to the local database
     public void addCourses(List<Course> courses){
+
+        //Check for empty size
+        if (courses.size() < 1){
+            return;
+        }
+
         SQLiteDatabase db = this.getWritableDatabase();
         Log.d("sql", db.toString());
         for(int i = 0; i < courses.size();i++) {
