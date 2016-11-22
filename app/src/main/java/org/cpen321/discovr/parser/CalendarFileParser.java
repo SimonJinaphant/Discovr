@@ -48,10 +48,10 @@ public class CalendarFileParser {
                 Environment.DIRECTORY_DOWNLOADS) + "/ical.ics");
 
         if (!icalFile.exists()) {
-            System.out.println("Unable to find a ical file, please download one off of UBC SSC.");
+            Log.d("calendar", "Unable to find a ical file, please download one off of UBC SSC.");
             return null;
         }
-        System.out.println("ICal file found :D");
+        Log.d("calendar","ICal file found :D" );
 
         List<Course> courses = new ArrayList<>();
 

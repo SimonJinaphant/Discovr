@@ -192,7 +192,7 @@ public class GeoJsonParser {
 
 			if(!jsonBuilding.has("Name")){
 				Log.e("GeoParser", "There seems to be a nameless entry at index "+i);
-				System.out.println(jsonBuilding);
+				Log.v("GeoParser", jsonBuilding.toString());
 				continue;
 			}
 			String name = jsonBuilding.getString("Name");
@@ -213,7 +213,6 @@ public class GeoJsonParser {
 
 				coordinates.add(coordinate);
 			}
-			System.out.println(coordinates.size());
 			buildings.add(new Building(name, code, address, hours, coordinates));
 
 		}
