@@ -1,14 +1,14 @@
 package org.cpen321.discovr;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.AssetManager;
-import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -26,26 +26,25 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Toast;
 
-import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.mapbox.mapboxsdk.MapboxAccountManager;
-import com.mapbox.mapboxsdk.annotations.PolygonOptions;
+import com.mapbox.mapboxsdk.annotations.Marker;
 import com.mapbox.mapboxsdk.exceptions.InvalidAccessTokenException;
 import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.services.commons.ServicesException;
 import com.mapbox.services.commons.models.Position;
 
 import org.cpen321.discovr.model.Building;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import java.io.IOException;
-import java.io.InputStream;
+import org.cpen321.discovr.model.EventInfo;
+import org.cpen321.discovr.utility.PolygonUtil;
+
+import java.net.URI;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.ListIterator;
-import cz.msebera.android.httpclient.Header;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener{
@@ -113,6 +112,31 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        Calendar c = Calendar.getInstance();
+        //get current month: 0~11 -> Jan~Dec
+        int month = c.get(Calendar.MONTH);
+        //get current hour
+        int hour = c.get(Calendar.HOUR_OF_DAY);
+        //standard time
+        if( month >= 10 || month < 2) {
+            //after 21:00 pm
+            if (hour >= 21) {
+                new AlertDialog.Builder(this)
+                        .setTitle("Don't walk alone after dark")
+                        .setMessage("Call safewalk @ 604-822-5355")
+                        .show();
+            }
+
+        //daylight saving time
+        }else{
+            //after 20:00 pm
+            if (hour >= 20) {
+                new AlertDialog.Builder(this)
+                        .setTitle("Don't walk alone after dark")
+                        .setMessage("Call safewalk @ 604-822-5355")
+                        .show();
+            }
+        }
 
     }
 
@@ -165,10 +189,9 @@ public class MainActivity extends AppCompatActivity
         try {
             List<Building> buildings = GeoJsonParser.parseBuildings(getResources().getAssets().open("buildings.geojson"));
             mapFragment.setBuildings(buildings);
-
-            for (Building bldg : buildings) {
+                for (Building bldg : buildings) {
                     dbh.addBuilding(bldg);
-            }
+                }
 
         } catch (Exception e) {
             System.out.println(e);
@@ -274,9 +297,11 @@ public class MainActivity extends AppCompatActivity
         FragmentManager manager = getSupportFragmentManager();
         Fragment currentFragment = manager.findFragmentById(R.id.fragment_container);
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
+        } else if ((currentFragment instanceof MapViewFragment) && mapFragment.isMapDirty()){
+            mapFragment.removeRoute();
+            mapFragment.removeAllMarkers();
         } else {
             super.onBackPressed();
         }
@@ -293,6 +318,51 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    /**
+     * Plots upcoming events on the map
+     */
+    private void plotUpcomingEventsOnMap(){
+        // TODO: Replace getRawEvents() with getUpcomingEvents()
+        List<EventInfo> upcomingEvents = ecm.getRawEvents();
+        ListIterator<EventInfo> li = upcomingEvents.listIterator();
+        List<LatLng> markerLoc = new ArrayList<>();
+        while (li.hasNext()){
+            EventInfo event = li.next();
+            Building bldg = dbh.getBuildingByCode(event.getBuildingName());
+            if (bldg != null) {
+                LatLng loc = GeoJsonParser.getCoordinates(bldg.getAllCoordinates());
+                //Prevents marker overlapping directly on top of one another
+                while (markerLoc.contains(loc)){
+                    loc = PolygonUtil.fuzzLatLng(loc);
+                }
+                markerLoc.add(loc);
+                mapFragment.addMarker(loc).setTitle(String.valueOf(event.getID()));
+                //Pass the creation of the event fragment to mapFragment (possible refactor)
+                mapFragment.getMap().setOnMarkerClickListener(new MapboxMap.OnMarkerClickListener(){
+                    @Override
+                    public boolean onMarkerClick(@NonNull Marker marker) {
+                        if (marker.getTitle() != null){
+                            mapFragment.createEventPanel(Integer.parseInt(marker.getTitle()));
+                            return true;
+                        }
+                        return false;
+                    }
+                });
+
+            }
+        }
+    }
+
+
+    /**
+     * Getter for the event client manager
+     * @return the event client manager
+     */
+    public EventClientManager getEventClientManager(){
+        return ecm;
+    }
+
 
     /**
      * Takes care of hiding and switching of fragments
@@ -322,13 +392,16 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.events_subscribed:
                 ft.add(R.id.fragment_container, new EventsSubscribedFragment(), getResources().getString(R.string.events_sub_tag));
+                ft.addToBackStack(null);
                 getSupportActionBar().setTitle(getResources().getString(R.string.events_subscribed));
                 break;
-            case R.id.events_nearby:
-                getSupportActionBar().setTitle(getResources().getString(R.string.events_nearby));
+            case R.id.events_upcoming:
+                getSupportActionBar().setTitle(getResources().getString(R.string.events_upcoming));
+                plotUpcomingEventsOnMap();
                 break;
             case R.id.events_all:
                 ft.add(R.id.fragment_container, new AllEventsFragment(), getResources().getString(R.string.all_events_tag));
+                ft.addToBackStack(null);
                 getSupportActionBar().setTitle(getResources().getString((R.string.events_all)));
                 break;
             case R.id.test_frag:
@@ -337,6 +410,7 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.courses_frag:
                 ft.add(R.id.fragment_container, new CoursesFragment(), getResources().getString(R.string.courses));
+                ft.addToBackStack(null);
                 getSupportActionBar().setTitle(getResources().getString(R.string.courses));
                 break;
             default:
@@ -345,5 +419,33 @@ public class MainActivity extends AppCompatActivity
 
         ft.commit();
     }
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        //Handle intent when suggestion is selected from search
+        if (Intent.ACTION_VIEW.equals(intent.getAction())) {
+            String uri = intent.getDataString();
+            String[] s = uri.split("/");
 
+            //find buildling being selected with the dataString passed
+            Building b = dbh.getBuildingByID(Integer.valueOf(s[s.length-1]));
+            SingleBuildingFragment buildingFrag = new SingleBuildingFragment();
+            buildingFrag.setBuilding(b);
+
+            //Move map to the building location
+            LatLng loc = GeoJsonParser.getCoordinates(b.getAllCoordinates()); //obtains coordinates from query
+
+            //Check for null loc
+            if (loc != null){
+                moveMap(loc);
+            }
+
+            //Open new singleBuilding fragment
+            FragmentManager fm = this.getSupportFragmentManager();
+            FragmentTransaction ft = fm.beginTransaction();
+            ft.add(R.id.fragment_container, buildingFrag);
+            ft.addToBackStack(null);
+            ft.commit();
+        }
+    }
 }

@@ -8,8 +8,6 @@ import android.support.test.espresso.matcher.BoundedMatcher;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.v7.widget.Toolbar;
-import android.test.ActivityInstrumentationTestCase2;
-import android.view.KeyEvent;
 import android.widget.EditText;
 
 import org.hamcrest.Description;
@@ -18,13 +16,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static android.support.test.espresso.Espresso.closeSoftKeyboard;
-import static android.support.test.espresso.Espresso.getIdlingResources;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.Espresso.pressBack;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.pressImeActionButton;
-import static android.support.test.espresso.action.ViewActions.swipeRight;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.contrib.DrawerActions.openDrawer;
@@ -36,7 +31,6 @@ import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withResourceName;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.allOf;
 
 /**
@@ -89,9 +83,9 @@ public class MainActivityTest{
     @Test
     public void testEventsNearby(){
         onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
-        onView(withText(R.string.events_nearby)).perform(click());
+        onView(withText(R.string.events_upcoming)).perform(click());
         //Check whether the right title shows up
-        CharSequence title = InstrumentationRegistry.getTargetContext().getString(R.string.events_nearby);
+        CharSequence title = InstrumentationRegistry.getTargetContext().getString(R.string.events_upcoming);
         matchToolbarTitle(title);
         //TODO: Check whether the proper actions occur on the map
     }
