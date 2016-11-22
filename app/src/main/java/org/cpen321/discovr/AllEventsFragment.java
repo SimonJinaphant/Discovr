@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.text.SpannableString;
 import android.text.style.AbsoluteSizeSpan;
+import android.text.style.RelativeSizeSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -83,10 +84,10 @@ public class AllEventsFragment extends Fragment {
         button.setPadding(getResources().getDimensionPixelSize(button_margin), getResources().getDimensionPixelSize(button_margin), getResources().getDimensionPixelSize(button_margin), getResources().getDimensionPixelSize(button_margin));
         button.setBackground(ContextCompat.getDrawable(getContext(),R.drawable.button_press_colors));
         button.setTextColor(ContextCompat.getColor(getContext(), R.color.primaryTextColor));
-        SpannableString buttonText = new SpannableString(event.getName() + "\n" + EventInfo.getTimeString(event.getStartTime()) + " - " + EventInfo.getTimeString(event.getEndTime()) + ", " + EventInfo.getDateString(event.getStartTime()) + "\n" + event.getBuildingName());
+        SpannableString buttonText = new SpannableString(event.getName() + "\n" + EventInfo.getTimeString(event.getStartTime()).substring(0,5) + " - " + EventInfo.getTimeString(event.getEndTime()).substring(0,5) + ", " + EventInfo.getDateString(event.getStartTime()) + "\n" + event.getBuildingName());
         int index = buttonText.toString().indexOf("\n");
-        buttonText.setSpan(new AbsoluteSizeSpan(100), 0, index, SPAN_INCLUSIVE_INCLUSIVE);
-        buttonText.setSpan(new AbsoluteSizeSpan(60), index, buttonText.length(), SPAN_INCLUSIVE_INCLUSIVE);
+        buttonText.setSpan(new RelativeSizeSpan(2), 0, index, SPAN_INCLUSIVE_INCLUSIVE);
+        buttonText.setSpan(new RelativeSizeSpan((float) 1.5), index, buttonText.length(), SPAN_INCLUSIVE_INCLUSIVE);
         button.setText(buttonText);
 
         //Add arrow to end of button
