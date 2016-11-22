@@ -368,7 +368,7 @@ public class MainActivity extends AppCompatActivity
      * Takes care of hiding and switching of fragments
      * @param fragmentID the ID of the fragment selected
      */
-    private void drawerFragmentManager(int fragmentID){
+    public void drawerFragmentManager(int fragmentID){
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         List<Fragment> all_frag = fm.getFragments();
