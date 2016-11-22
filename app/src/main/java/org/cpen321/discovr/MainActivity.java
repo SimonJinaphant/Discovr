@@ -38,6 +38,7 @@ import com.mapbox.services.commons.models.Position;
 
 import org.cpen321.discovr.model.Building;
 import org.cpen321.discovr.model.EventInfo;
+import org.cpen321.discovr.model.MapTransitStation;
 import org.cpen321.discovr.utility.PolygonUtil;
 
 import java.net.URI;
@@ -75,6 +76,7 @@ public class MainActivity extends AppCompatActivity
             final FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             mapFragment = new MapViewFragment();
             initializeBuildingPolygons();
+            initializeTransitStation();
             // Add map fragment to parent container
             transaction.add(R.id.fragment_container, mapFragment, "com.mapbox.map");
             transaction.commit();
@@ -195,6 +197,15 @@ public class MainActivity extends AppCompatActivity
 
         } catch (Exception e) {
             System.out.println(e);
+        }
+    }
+
+    private void initializeTransitStation(){
+        try{
+            List<MapTransitStation> stations = GeoJsonParser.parseTransitStations(getResources().getAssets().open("busloop.geojson"));
+            mapFragment.setTransitStation(stations);
+        }catch (Exception e){
+
         }
     }
 
@@ -397,6 +408,7 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.events_upcoming:
                 getSupportActionBar().setTitle(getResources().getString(R.string.events_upcoming));
+                mapFragment.removeAllMarkers();
                 plotUpcomingEventsOnMap();
                 break;
             case R.id.events_all:
@@ -404,10 +416,9 @@ public class MainActivity extends AppCompatActivity
                 ft.addToBackStack(null);
                 getSupportActionBar().setTitle(getResources().getString((R.string.events_all)));
                 break;
-            case R.id.test_frag:
-                ft.add(R.id.fragment_container, new TransitFragment(), "test fragment");
-                ft.addToBackStack(null);
-                getSupportActionBar().setTitle("Testing Fragment");
+            case R.id.transit_display:
+                mapFragment.removeAllMarkers();
+                mapFragment.displayTransitStation();
                 break;
             case R.id.courses_frag:
                 ft.add(R.id.fragment_container, new CoursesFragment(), getResources().getString(R.string.courses));

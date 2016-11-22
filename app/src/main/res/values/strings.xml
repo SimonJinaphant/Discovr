@@ -11,6 +11,7 @@
     <string name="events_all">All Events</string>
     <string name="events_create">Create an Event</string>
     <string name="courses">List all courses</string>
+    <string name="transit">Show Buses</string>
 
     <!-- Elements prefixed by 'fw' are framework and should be finalized/replaced -->
     <string name="fw_events_sub_1"><font size="20">Math 101 Tutoring</font> \n <font size="10">Today, 5:30 - 9:00 pm in EDC 301</font></string>

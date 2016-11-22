@@ -3,7 +3,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="org.cpen321.discovr.TransitFragment"
-    android:layout_marginTop="?attr/actionBarSize"
+    android:layout_marginTop="400dp"
+    android:gravity="top"
+    android:weightSum="1"
     android:background="@color/colorPrimary">
 
     <ListView

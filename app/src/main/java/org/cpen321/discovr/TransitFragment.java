@@ -26,11 +26,16 @@ import java.util.Map;
  */
 public class TransitFragment extends Fragment {
 
-    ListView transitList;
-    ArrayAdapter<String> transitListAdapter;
+    private ListView transitList;
+    private ArrayAdapter<String> transitListAdapter;
+    private String stationNumber;
 
     public TransitFragment() {
         // Required empty public constructor
+    }
+
+    public void setStation(String stationNumber){
+        this.stationNumber = stationNumber;
     }
 
     @Override
@@ -71,7 +76,7 @@ public class TransitFragment extends Fragment {
         @Override
         protected String doInBackground(Void... params) {
             for(Map.Entry<String, List<TransitEstimateSchedule>> entry :
-                    TransitScheduleParser.httpGetTransitSchedule("51479").entrySet()){
+                    TransitScheduleParser.httpGetTransitSchedule(stationNumber).entrySet()){
                 String busNo = entry.getKey();
                 publishProgress(busNo);
 
@@ -97,7 +102,6 @@ public class TransitFragment extends Fragment {
 
         @Override
         protected void onPostExecute(String result){
-            Toast.makeText(getContext().getApplicationContext(), result, Toast.LENGTH_SHORT).show();
         }
     }
 

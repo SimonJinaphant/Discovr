@@ -42,6 +42,7 @@ import com.mapbox.services.directions.v5.models.DirectionsRoute;
 
 import org.cpen321.discovr.model.Building;
 import org.cpen321.discovr.model.EventInfo;
+import org.cpen321.discovr.model.MapTransitStation;
 import org.cpen321.discovr.utility.PolygonUtil;
 
 import java.util.List;
@@ -66,6 +67,7 @@ public class MapViewFragment extends Fragment {
     Location userLocation;
     Polyline routeLine;
     List<Building> buildings;
+    List<MapTransitStation> stations;
 
     public MapViewFragment() {
         // Required empty public constructor
@@ -127,6 +129,26 @@ public class MapViewFragment extends Fragment {
                             .fillColor(Color.parseColor("#3bb2d0"))
                     );
                 }
+
+                for(MapTransitStation station : stations){
+                    map.addMarker(new MarkerViewOptions()
+                            .position(station.location)
+                            .title("["+station.stationNumber+"]"+station.name)
+                    );
+                }
+                map.setOnMarkerClickListener(new MapboxMap.OnMarkerClickListener() {
+                    @Override
+                    public boolean onMarkerClick(@NonNull Marker marker) {
+                        if(marker.getTitle().startsWith("[")){
+                            String station = marker.getTitle().split("]")[0];
+                            station = station.split("\\[")[1];
+                            createTransitPanel(station);
+
+                            return true;
+                        }
+                        return false;
+                    }
+                });
             }
         });
 
@@ -173,6 +195,38 @@ public class MapViewFragment extends Fragment {
      */
     public void setBuildings(List<Building> buildings){
         this.buildings = buildings;
+    }
+
+    public void setTransitStation(List<MapTransitStation> stations) {
+        this.stations = stations;
+    }
+
+    public void displayTransitStation(){
+        mapView.getMapAsync(new OnMapReadyCallback() {
+            @Override
+            public void onMapReady(MapboxMap mapboxMap) {
+                for(MapTransitStation station : stations){
+                    map.addMarker(new MarkerViewOptions()
+                            .position(station.location)
+                            .title("["+station.stationNumber+"]"+station.name)
+                    );
+                }
+                map.setOnMarkerClickListener(new MapboxMap.OnMarkerClickListener() {
+                    @Override
+                    public boolean onMarkerClick(@NonNull Marker marker) {
+                        if(marker.getTitle().startsWith("[")){
+                            String station = marker.getTitle().split("]")[0];
+                            station = station.split("\\[")[1];
+                            createTransitPanel(station);
+
+                            return true;
+                        }
+                        return false;
+                    }
+                });
+            }
+        });
+
     }
 
     /**
@@ -357,6 +411,26 @@ public class MapViewFragment extends Fragment {
         fragment.setEvent(event);
         //hide current fragment, will reopen when back key pressed
         transaction.add(R.id.fragment_container, fragment, String.valueOf(eventID));
+        transaction.addToBackStack(null);
+        transaction.commit();
+    }
+
+    /**
+     * Creates an transit panel
+     * @param stationNumber - Station number
+     */
+    public void createTransitPanel(String stationNumber){
+
+        TransitFragment fragment = new TransitFragment();
+        fragment.setStation(stationNumber);
+
+        FragmentManager fm = getActivity().getSupportFragmentManager();
+        Fragment currentFrag = fm.findFragmentById(R.id.fragment_container);
+
+        FragmentTransaction transaction = fm.beginTransaction();
+
+        //hide current fragment, will reopen when back key pressed
+        transaction.add(R.id.fragment_container, fragment);
         transaction.addToBackStack(null);
         transaction.commit();
     }
