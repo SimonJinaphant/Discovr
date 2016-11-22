@@ -43,7 +43,18 @@ dependencies {
     // Espresso-contrib for DatePicker, RecyclerView, Drawer actions, Accessibility checks, CountingIdlingResource
     // Espresso-idling-resource for synchronization with background jobs
     // Optional -- UI testing with UI Automator
-    androidTestCompile group: 'commons-io', name: 'commons-io', version: '2.0.1'
+
+    androidTestCompile 'com.android.support.test.uiautomator:uiautomator-v18:2.1.2'
+    androidTestCompile 'com.android.support:appcompat-v7:24.2.1'
+    androidTestCompile 'com.android.support:design:24.2.1'
+    androidTestCompile 'com.android.support:support-v4:24.2.1'
+
+    testCompile 'org.robolectric:robolectric:3.1.4'
+    testCompile 'org.robolectric:shadows-support-v4:3.0'
+    testCompile 'org.mockito:mockito-core:1.10.19'
+    //fixing more of roboelectric dependency issues
+    testCompile 'org.khronos:opengl-api:gl1.1-android-2.1_r1'
+
     compile('com.mapbox.mapboxsdk:mapbox-android-sdk:4.1.1@aar') {
         transitive = true
     }
@@ -54,6 +65,8 @@ dependencies {
     compile files('libs/backport-util-concurrent-3.1.jar')
     compile files('libs/ical4j-1.0.jar')
     compile 'com.android.support:appcompat-v7:24.2.1'
+    //Guava upgrade to match latest roboElectric in test compile
+    compile 'com.google.guava:guava:19.0'
     compile 'com.android.support:design:24.2.1'
     compile 'com.android.support:support-v4:24.2.1'
     compile 'com.loopj.android:android-async-http:1.4.9'

@@ -43,6 +43,10 @@
 
         </activity>
 
+        <provider
+            android:name="MyCustomSuggestionProvider"
+            android:authorities="my.package.MyCustomSuggestionProvider" />
+
 
         <!-- Required for permission request with MapBox on Android versions >= 23 -->
         <service android:name="com.mapbox.mapboxsdk.telemetry.TelemetryService" />

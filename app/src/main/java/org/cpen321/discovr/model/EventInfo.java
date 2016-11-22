@@ -2,6 +2,8 @@ package org.cpen321.discovr.model;
 
 import android.util.Log;
 
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -102,6 +104,29 @@ public class EventInfo {
         return format.format(Time);
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof EventInfo){
+            EventInfo object = (EventInfo) obj;
+            if (this.id == object.getID() &&
+                this.getName().equals(object.getName()) &&
+                this.getHostName().equals(object.getHostName()) &&
+                this.getBuildingName().equals(object.getBuildingName()) &&
+                this.getStartTime().equals(object.getStartTime()) &&
+                this.getEndTime().equals(object.getEndTime()) &&
+                this.getEventDetails().equals(object.getEventDetails())     ){
+
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 31).append(id).append(name).append(hostName)
+                .append(buildingName).append(startTime).append(endTime).append(eventDetails).toHashCode();
+    }
 
     /*String getTags(){
         String allTags = "";

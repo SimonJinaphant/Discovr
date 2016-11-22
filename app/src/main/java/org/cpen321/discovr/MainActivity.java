@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.AlertDialog;
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -25,6 +26,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Toast;
 
 import com.mapbox.mapboxsdk.MapboxAccountManager;
 import com.mapbox.mapboxsdk.annotations.Marker;
@@ -38,6 +40,7 @@ import org.cpen321.discovr.model.Building;
 import org.cpen321.discovr.model.EventInfo;
 import org.cpen321.discovr.utility.PolygonUtil;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -186,10 +189,9 @@ public class MainActivity extends AppCompatActivity
         try {
             List<Building> buildings = GeoJsonParser.parseBuildings(getResources().getAssets().open("buildings.geojson"));
             mapFragment.setBuildings(buildings);
-
-            for (Building bldg : buildings) {
+                for (Building bldg : buildings) {
                     dbh.addBuilding(bldg);
-            }
+                }
 
         } catch (Exception e) {
             System.out.println(e);
@@ -366,7 +368,7 @@ public class MainActivity extends AppCompatActivity
      * Takes care of hiding and switching of fragments
      * @param fragmentID the ID of the fragment selected
      */
-    private void drawerFragmentManager(int fragmentID){
+    public void drawerFragmentManager(int fragmentID){
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         List<Fragment> all_frag = fm.getFragments();
@@ -418,5 +420,33 @@ public class MainActivity extends AppCompatActivity
 
         ft.commit();
     }
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        //Handle intent when suggestion is selected from search
+        if (Intent.ACTION_VIEW.equals(intent.getAction())) {
+            String uri = intent.getDataString();
+            String[] s = uri.split("/");
 
+            //find buildling being selected with the dataString passed
+            Building b = dbh.getBuildingByID(Integer.valueOf(s[s.length-1]));
+            SingleBuildingFragment buildingFrag = new SingleBuildingFragment();
+            buildingFrag.setBuilding(b);
+
+            //Move map to the building location
+            LatLng loc = GeoJsonParser.getCoordinates(b.getAllCoordinates()); //obtains coordinates from query
+
+            //Check for null loc
+            if (loc != null){
+                moveMap(loc);
+            }
+
+            //Open new singleBuilding fragment
+            FragmentManager fm = this.getSupportFragmentManager();
+            FragmentTransaction ft = fm.beginTransaction();
+            ft.add(R.id.fragment_container, buildingFrag);
+            ft.addToBackStack(null);
+            ft.commit();
+        }
+    }
 }
