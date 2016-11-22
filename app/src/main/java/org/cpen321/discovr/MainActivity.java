@@ -189,7 +189,7 @@ public class MainActivity extends AppCompatActivity
     private void initializeBuildingPolygons() {
         // Load the buildings from the buildings.geojson file and draw a polygon outline for each building.
         try {
-            List<Building> buildings = GeoJsonParser.parseBuildings(getResources().getAssets().open("buildings.geojson"));
+            List<Building> buildings = GeoJsonParser.parseBuildings(getResources().getAssets().open("simplebuildings.geojson"));
             mapFragment.setBuildings(buildings);
                 for (Building bldg : buildings) {
                     dbh.addBuilding(bldg);
