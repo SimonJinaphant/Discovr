@@ -38,6 +38,7 @@ import com.mapbox.services.commons.models.Position;
 
 import org.cpen321.discovr.model.Building;
 import org.cpen321.discovr.model.EventInfo;
+import org.cpen321.discovr.model.MapPolygon;
 import org.cpen321.discovr.model.MapTransitStation;
 import org.cpen321.discovr.utility.PolygonUtil;
 
@@ -77,6 +78,7 @@ public class MainActivity extends AppCompatActivity
             mapFragment = new MapViewFragment();
             initializeBuildingPolygons();
             initializeTransitStation();
+            initializeConstructionZones();
             // Add map fragment to parent container
             transaction.add(R.id.fragment_container, mapFragment, "com.mapbox.map");
             transaction.commit();
@@ -204,6 +206,15 @@ public class MainActivity extends AppCompatActivity
         try{
             List<MapTransitStation> stations = GeoJsonParser.parseTransitStations(getResources().getAssets().open("busloop.geojson"));
             mapFragment.setTransitStation(stations);
+        }catch (Exception e){
+
+        }
+    }
+
+    private void initializeConstructionZones(){
+        try{
+            List<MapPolygon> constructions = GeoJsonParser.parsePolygons(getResources().getAssets().open("construction.geojson"));
+            mapFragment.setConstructionZones(constructions);
         }catch (Exception e){
 
         }
