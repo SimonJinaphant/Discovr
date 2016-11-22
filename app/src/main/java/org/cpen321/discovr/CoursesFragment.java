@@ -151,7 +151,7 @@ public class CoursesFragment extends Fragment {
                 for (int j = 0; j < result.size(); j++){
                     String nTitle = result.get(j).getCategory()+result.get(j).getNumber()+result.get(j).getSection();
                     if (rTitle.equals(nTitle)){
-                        //String dow = result.get(j).getDayOfWeek();
+                        //String dow = scheduleResult.get(j).getDayOfWeek();
                         result.get(j).setDayOfWeek(result.get(j).getDayOfWeek()+"/"+rawCourses.get(i).getDayOfWeek());
                         break label;
                     }

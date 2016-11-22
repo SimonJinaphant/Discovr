@@ -403,7 +403,8 @@ public class MainActivity extends AppCompatActivity
                 getSupportActionBar().setTitle(getResources().getString((R.string.events_all)));
                 break;
             case R.id.test_frag:
-                ft.add(R.id.fragment_container, new SingleBuildingFragment(), "test fragment");
+                ft.add(R.id.fragment_container, new TransitFragment(), "test fragment");
+                ft.addToBackStack(null);
                 getSupportActionBar().setTitle("Testing Fragment");
                 break;
             case R.id.courses_frag:
