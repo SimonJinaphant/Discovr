@@ -213,9 +213,10 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.rawQuery(query, null);
+        int count = cursor.getCount();
         cursor.close();
 
-        return cursor.getCount();
+        return count;
     }
 
     //Updates single Event
