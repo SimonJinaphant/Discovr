@@ -126,7 +126,7 @@ public class CoursesFragment extends Fragment {
 
     //for course time only
     //i got this worked on my phone... but i have no idea why- -
-    private String timeFormatter(long startTime) {
+    private static String timeFormatter(long startTime) {
         String time = String.valueOf(startTime);
         String[] timeArray = time.split("");
         if (timeArray.length == 6){
