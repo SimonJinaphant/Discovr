@@ -98,7 +98,6 @@ public class CalendarFileParser {
                         location[0], room[1], startTime, endTime,
                         startDate, endDate, dayOfWeek
                 );
-
                 courses.add(course);
             }
 

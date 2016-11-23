@@ -1,5 +1,6 @@
 package org.cpen321.discovr;
 
+import org.cpen321.discovr.model.Course;
 import org.cpen321.discovr.model.EventInfo;
 import org.junit.Before;
 import org.junit.Test;
