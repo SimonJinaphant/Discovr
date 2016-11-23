@@ -88,7 +88,7 @@ public class PolygonUtil {
         Set<LatLng> sameYcoordPoints = new HashSet<>();
         do {
 
-            if (intersectionTest(p, PtoInfinity, polygon[i], polygon[j]) == true) {
+            if (intersectionTest(p, PtoInfinity, polygon[i], polygon[j])) {
 
                 boolean invalidIntersection = false;
                 if (p.getLongitude() == polygon[i].getLongitude() || p.getLongitude() == polygon[j].getLongitude()) {
@@ -114,7 +114,7 @@ public class PolygonUtil {
                     ++intersectionsCount;
 
                     if (orientation(polygon[i], polygon[j], p) == 0) { // Collinear
-                        if (onSegment(polygon[i], polygon[j], p) == true)
+                        if (onSegment(polygon[i], polygon[j], p))
                             return true;
                         else {
                             // Exception case when point is collinear but not on segment

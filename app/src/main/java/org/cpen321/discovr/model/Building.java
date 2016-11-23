@@ -15,7 +15,7 @@ public class Building {
     public String code;
     public String address;
     public String hours;
-    private List<LatLng> coordinates = new ArrayList<LatLng>();
+    private List<LatLng> coordinates = new ArrayList<>();
 
     public Building(String name, String code, String address, String hours, String coordinates) {
         this.name = name;

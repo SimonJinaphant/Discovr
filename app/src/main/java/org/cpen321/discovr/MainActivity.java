@@ -202,7 +202,7 @@ public class MainActivity extends AppCompatActivity
             }
 
         } catch (Exception e) {
-            System.out.println(e);
+            e.printStackTrace();
         }
     }
 
@@ -211,7 +211,7 @@ public class MainActivity extends AppCompatActivity
             List<MapTransitStation> stations = GeojsonFileParser.parseTransitStations(getResources().getAssets().open("busloop.geojson"));
             mapFragment.setTransitStation(stations);
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
     }
 
@@ -220,7 +220,7 @@ public class MainActivity extends AppCompatActivity
             List<MapPolygon> constructions = GeojsonFileParser.parsePolygons(getResources().getAssets().open("construction.geojson"));
             mapFragment.setConstructionZones(constructions);
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
     }
 

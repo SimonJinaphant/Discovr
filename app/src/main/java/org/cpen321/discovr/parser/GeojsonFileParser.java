@@ -28,7 +28,7 @@ public class GeojsonFileParser {
 
     public static List<String> allnames(InputStream is) throws IOException, JSONException {
 
-        List<String> names = new ArrayList<String>();
+        List<String> names = new ArrayList<>();
         String jsonTxt = IOUtils.toString(is);
         JSONObject obj = new JSONObject(jsonTxt.substring(1));
         JSONArray arr = obj.getJSONArray("features");
@@ -89,19 +89,17 @@ public class GeojsonFileParser {
      * @return an array of double of size 2, long / lat
      */
     public static LatLng getCoordinates(List<LatLng> allCoordinates) {
-
-        double temp[] = new double[2];
         double latitude = 0;
-        double longtitude = 0;
+        double longitude = 0;
         for (int i = 0; i < allCoordinates.size(); i++) {
             latitude += allCoordinates.get(i).getLatitude();
-            longtitude += allCoordinates.get(i).getLongitude();
+            longitude += allCoordinates.get(i).getLongitude();
         }
 
         latitude /= allCoordinates.size();
-        longtitude /= allCoordinates.size();
+        longitude /= allCoordinates.size();
 
-        return new LatLng(latitude, longtitude);
+        return new LatLng(latitude, longitude);
     }
 
     /**

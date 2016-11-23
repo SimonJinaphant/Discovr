@@ -150,6 +150,7 @@ public class SQLiteDBHandler extends SQLiteOpenHelper {
             cursor.moveToFirst();
             event = new EventInfo(cursor.getInt(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5), cursor.getString(6));
         }
+        cursor.close();
         return event;
     }
 
@@ -352,11 +353,12 @@ public class SQLiteDBHandler extends SQLiteOpenHelper {
 
         //Select all rows from TABLE_BUILDING where KEY_BLDG_CODE is code
         Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_BUILDINGS + " WHERE " + KEY_BLDG_CODE + " LIKE ? OR " + KEY_BLDG_NAME + " LIKE ?", new String[]{code, code});
-        ;
+
         if (cursor.getCount() != 0) {
             cursor.moveToFirst();
             bldg = new Building(cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5));
         }
+        cursor.close();
         return bldg;
     }
 
@@ -367,11 +369,12 @@ public class SQLiteDBHandler extends SQLiteOpenHelper {
 
         //Select all rows from TABLE_BUILDING where KEY_BLDG_ID is ID
         Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_BUILDINGS + " WHERE " + KEY_BLDG_ID + " = ? ", new String[]{String.valueOf(ID)});
-        ;
+
         if (cursor.getCount() != 0) {
             cursor.moveToFirst();
             bldg = new Building(cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5));
         }
+        cursor.close();
         return bldg;
     }
 

@@ -27,7 +27,6 @@ import java.util.Map;
 public class TransitPartialFragment extends Fragment {
 
     private ListView transitList;
-    private ArrayAdapter<String> transitListAdapter;
     private String stationNumber;
 
     public TransitPartialFragment() {
@@ -44,7 +43,7 @@ public class TransitPartialFragment extends Fragment {
         View transitView = inflater.inflate(R.layout.fragment_transit, container, false);
 
         transitList = (ListView) transitView.findViewById(R.id.transit_list);
-        transitListAdapter = new ArrayAdapter<String>(transitView.getContext(),
+        ArrayAdapter<String> transitListAdapter = new ArrayAdapter<String>(transitView.getContext(),
                 android.R.layout.simple_list_item_1, new ArrayList<String>()) {
 
             @Override

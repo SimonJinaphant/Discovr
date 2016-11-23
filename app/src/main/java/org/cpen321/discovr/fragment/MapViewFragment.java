@@ -140,7 +140,7 @@ public class MapViewFragment extends Fragment {
                 for (MapTransitStation station : stations) {
                     map.addMarker(new MarkerViewOptions()
                             .position(station.location)
-                            .title("[" + station.stationNumber + "]" + station.name)
+                            .title("[" + station.identifier + "]" + station.name)
                     );
                 }
 
@@ -230,7 +230,7 @@ public class MapViewFragment extends Fragment {
                 for (MapTransitStation station : stations) {
                     map.addMarker(new MarkerViewOptions()
                             .position(station.location)
-                            .title("[" + station.stationNumber + "]" + station.name)
+                            .title("[" + station.identifier + "]" + station.name)
                     );
                 }
                 map.setOnMarkerClickListener(new MapboxMap.OnMarkerClickListener() {
@@ -449,14 +449,10 @@ public class MapViewFragment extends Fragment {
      * @param stationNumber - Station number
      */
     public void createTransitPanel(String stationNumber) {
-
         TransitPartialFragment fragment = new TransitPartialFragment();
         fragment.setStation(stationNumber);
 
-        FragmentManager fm = getActivity().getSupportFragmentManager();
-        Fragment currentFrag = fm.findFragmentById(R.id.fragment_container);
-
-        FragmentTransaction transaction = fm.beginTransaction();
+        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
 
         //hide current fragment, will reopen when back key pressed
         transaction.add(R.id.fragment_container, fragment);
