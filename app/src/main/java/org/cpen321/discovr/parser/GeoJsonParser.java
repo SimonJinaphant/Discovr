@@ -1,4 +1,4 @@
-package org.cpen321.discovr;
+package org.cpen321.discovr.parser;
 
 import android.util.Log;
 
@@ -200,9 +200,7 @@ public class GeoJsonParser {
 
             List<LatLng> coordinates = new ArrayList<>();
             JSONArray jsonCoordinates = jsonFeatures.getJSONObject(i).getJSONObject("geometry").getJSONArray("coordinates").getJSONArray(0);
-            //	if(jsonCoordinates.length() > 18){
-            //		continue;
-            //	}
+
             for (int j = 0; j < jsonCoordinates.length() - 1; j++) {
                 JSONArray latLng = jsonCoordinates.getJSONArray(j);
 
@@ -218,20 +216,6 @@ public class GeoJsonParser {
         return buildings;
     }
 }
-    /*public static void main (String[] args) throws IOException {
-
-		File f = new File("./app/src/main/java/org/cpen321/discovr/buildings.geojson");
-
-		if (f.exists()) {
-			InputStream is = new FileInputStream("./app/src/main/java/org/cpen321/discovr/buildings.geojson");
-
-			double[] arr = getCoordinatesAsString("Civil And Mechanical Engineering Building", is);
-			System.out.println(arr[0]);
-			System.out.println(arr[1]);
-
-		}
-		return;
-	}*/
 
 
 

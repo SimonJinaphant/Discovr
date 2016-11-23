@@ -18,6 +18,7 @@ import com.mapbox.mapboxsdk.geometry.LatLng;
 
 import org.cpen321.discovr.model.Building;
 import org.cpen321.discovr.model.EventInfo;
+import org.cpen321.discovr.parser.GeoJsonParser;
 
 import static android.text.Spanned.SPAN_INCLUSIVE_INCLUSIVE;
 

@@ -39,6 +39,7 @@ import org.cpen321.discovr.model.Building;
 import org.cpen321.discovr.model.EventInfo;
 import org.cpen321.discovr.model.MapPolygon;
 import org.cpen321.discovr.model.MapTransitStation;
+import org.cpen321.discovr.parser.GeoJsonParser;
 import org.cpen321.discovr.utility.PolygonUtil;
 
 import java.util.ArrayList;
