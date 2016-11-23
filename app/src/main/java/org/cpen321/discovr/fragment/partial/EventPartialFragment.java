@@ -1,4 +1,4 @@
-package org.cpen321.discovr;
+package org.cpen321.discovr.fragment.partial;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -16,6 +16,9 @@ import android.widget.TextView;
 
 import com.mapbox.mapboxsdk.geometry.LatLng;
 
+import org.cpen321.discovr.MainActivity;
+import org.cpen321.discovr.R;
+import org.cpen321.discovr.SQLiteDBHandler;
 import org.cpen321.discovr.model.Building;
 import org.cpen321.discovr.model.EventInfo;
 import org.cpen321.discovr.parser.GeoJsonParser;
@@ -23,7 +26,7 @@ import org.cpen321.discovr.parser.GeoJsonParser;
 import static android.text.Spanned.SPAN_INCLUSIVE_INCLUSIVE;
 
 
-public class SingleEventFragment extends Fragment {
+public class EventPartialFragment extends Fragment {
     final int ALLEVENTS = 0;
     final int SUBSCRIBEDEVENTS = 1;
 
@@ -31,7 +34,7 @@ public class SingleEventFragment extends Fragment {
 
     private int PrevFragment;
 
-    public SingleEventFragment() {
+    public EventPartialFragment() {
 
     }
 

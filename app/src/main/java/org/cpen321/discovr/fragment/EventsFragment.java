@@ -1,4 +1,4 @@
-package org.cpen321.discovr;
+package org.cpen321.discovr.fragment;
 
 
 import android.graphics.drawable.Drawable;
@@ -17,7 +17,11 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
+import org.cpen321.discovr.MainActivity;
+import org.cpen321.discovr.R;
+import org.cpen321.discovr.SQLiteDBHandler;
 import org.cpen321.discovr.model.EventInfo;
+import org.cpen321.discovr.fragment.partial.EventPartialFragment;
 
 import static android.text.Spanned.SPAN_INCLUSIVE_INCLUSIVE;
 import static org.cpen321.discovr.R.dimen.button_margin;
@@ -27,10 +31,10 @@ import static org.cpen321.discovr.R.id.left;
  * A simple {@link Fragment} subclass.
  */
 
-public class AllEventsFragment extends Fragment {
+public class EventsFragment extends Fragment {
     final int ALLEVENTS = 0;
 
-    public AllEventsFragment() {
+    public EventsFragment() {
         // Required empty public constructor
     }
 
@@ -53,7 +57,7 @@ public class AllEventsFragment extends Fragment {
             button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    SingleEventFragment fragment = new SingleEventFragment();
+                    EventPartialFragment fragment = new EventPartialFragment();
                     FragmentManager fm = getActivity().getSupportFragmentManager();
                     Fragment currentFrag = fm.findFragmentById(R.id.fragment_container);
                     FragmentTransaction transaction = getFragmentManager().beginTransaction();

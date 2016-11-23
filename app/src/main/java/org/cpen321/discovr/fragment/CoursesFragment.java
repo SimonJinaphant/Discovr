@@ -1,4 +1,4 @@
-package org.cpen321.discovr;
+package org.cpen321.discovr.fragment;
 
 import android.app.AlertDialog;
 import android.os.Bundle;
@@ -14,6 +14,8 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
+import org.cpen321.discovr.R;
+import org.cpen321.discovr.SQLiteDBHandler;
 import org.cpen321.discovr.model.Course;
 import org.cpen321.discovr.utility.AlertUtil;
 

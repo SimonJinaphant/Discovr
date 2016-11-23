@@ -13,7 +13,7 @@ import org.robolectric.annotation.Config;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 23, manifest = "app/src/main/AndroidManifest.xml")
-public class AllEventsFragmentTest {
+public class EventsFragmentTest {
 
     @Before
     public void setUp() {
@@ -22,7 +22,7 @@ public class AllEventsFragmentTest {
 
     @Test
     public void testOpenAllEventsFragment() {
-        //AllEventsFragment frag = new AllEventsFragment();
+        //EventsFragment frag = new EventsFragment();
         //SupportFragmentTestUtil.startFragment(frag, MainActivity.class);
     }
 }

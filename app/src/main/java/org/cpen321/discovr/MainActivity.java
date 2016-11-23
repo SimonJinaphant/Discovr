@@ -35,10 +35,15 @@ import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.services.commons.ServicesException;
 import com.mapbox.services.commons.models.Position;
 
+import org.cpen321.discovr.fragment.EventsFragment;
 import org.cpen321.discovr.model.Building;
 import org.cpen321.discovr.model.EventInfo;
 import org.cpen321.discovr.model.MapPolygon;
 import org.cpen321.discovr.model.MapTransitStation;
+import org.cpen321.discovr.fragment.CoursesFragment;
+import org.cpen321.discovr.fragment.EventsSubscribedFragment;
+import org.cpen321.discovr.fragment.MapViewFragment;
+import org.cpen321.discovr.fragment.partial.BuildingPartialFragment;
 import org.cpen321.discovr.parser.GeoJsonParser;
 import org.cpen321.discovr.utility.PolygonUtil;
 
@@ -425,7 +430,7 @@ public class MainActivity extends AppCompatActivity
                 plotUpcomingEventsOnMap();
                 break;
             case R.id.events_all:
-                ft.add(R.id.fragment_container, new AllEventsFragment(), getResources().getString(R.string.all_events_tag));
+                ft.add(R.id.fragment_container, new EventsFragment(), getResources().getString(R.string.all_events_tag));
                 ft.addToBackStack(null);
                 getSupportActionBar().setTitle(getResources().getString((R.string.events_all)));
                 break;
@@ -455,7 +460,7 @@ public class MainActivity extends AppCompatActivity
 
             //find buildling being selected with the dataString passed
             Building b = dbh.getBuildingByID(Integer.valueOf(s[s.length - 1]));
-            SingleBuildingFragment buildingFrag = new SingleBuildingFragment();
+            BuildingPartialFragment buildingFrag = new BuildingPartialFragment();
             buildingFrag.setBuilding(b);
 
             //Move map to the building location

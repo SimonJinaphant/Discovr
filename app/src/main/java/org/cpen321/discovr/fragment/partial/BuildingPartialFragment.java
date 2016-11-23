@@ -1,4 +1,4 @@
-package org.cpen321.discovr;
+package org.cpen321.discovr.fragment.partial;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import org.cpen321.discovr.R;
 import org.cpen321.discovr.model.Building;
 
 
@@ -18,7 +19,7 @@ import org.cpen321.discovr.model.Building;
  * Created by David Wong on 2016-11-08.
  */
 
-public class SingleBuildingFragment extends Fragment {
+public class BuildingPartialFragment extends Fragment {
 
     private Building building;
     private int PrevFragment;

@@ -1,4 +1,4 @@
-package org.cpen321.discovr;
+package org.cpen321.discovr.fragment;
 
 
 import android.graphics.Color;
@@ -39,10 +39,16 @@ import com.mapbox.services.directions.v5.MapboxDirections;
 import com.mapbox.services.directions.v5.models.DirectionsResponse;
 import com.mapbox.services.directions.v5.models.DirectionsRoute;
 
+import org.cpen321.discovr.EventClientManager;
+import org.cpen321.discovr.MainActivity;
+import org.cpen321.discovr.R;
 import org.cpen321.discovr.model.Building;
 import org.cpen321.discovr.model.EventInfo;
 import org.cpen321.discovr.model.MapPolygon;
 import org.cpen321.discovr.model.MapTransitStation;
+import org.cpen321.discovr.fragment.partial.BuildingPartialFragment;
+import org.cpen321.discovr.fragment.partial.EventPartialFragment;
+import org.cpen321.discovr.fragment.partial.TransitPartialFragment;
 import org.cpen321.discovr.utility.PolygonUtil;
 
 import java.util.List;
@@ -188,7 +194,7 @@ public class MapViewFragment extends Fragment {
             LatLng[] vertices = b.getAllCoordinates().toArray(new LatLng[b.getAllCoordinates().size()]);
             if (PolygonUtil.pointInPolygon(point, vertices)) {
                 //Toast.makeText(getActivity(), "You pressed on "+b.name, Toast.LENGTH_SHORT).show()
-                SingleBuildingFragment buildingFrag = new SingleBuildingFragment();
+                BuildingPartialFragment buildingFrag = new BuildingPartialFragment();
                 buildingFrag.setBuilding(b);
                 FragmentManager fm = getActivity().getSupportFragmentManager();
                 FragmentTransaction ft = fm.beginTransaction();
@@ -424,7 +430,7 @@ public class MapViewFragment extends Fragment {
     public void createEventPanel(int eventID) {
         EventClientManager ecm = ((MainActivity) getActivity()).getEventClientManager();
         EventInfo event = ecm.findEvent(eventID);
-        SingleEventFragment fragment = new SingleEventFragment();
+        EventPartialFragment fragment = new EventPartialFragment();
         fragment.setEvent(event);
         FragmentManager fm = getActivity().getSupportFragmentManager();
         Fragment currentFrag = fm.findFragmentById(R.id.fragment_container);
@@ -444,7 +450,7 @@ public class MapViewFragment extends Fragment {
      */
     public void createTransitPanel(String stationNumber) {
 
-        TransitFragment fragment = new TransitFragment();
+        TransitPartialFragment fragment = new TransitPartialFragment();
         fragment.setStation(stationNumber);
 
         FragmentManager fm = getActivity().getSupportFragmentManager();

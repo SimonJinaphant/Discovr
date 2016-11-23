@@ -1,4 +1,4 @@
-package org.cpen321.discovr;
+package org.cpen321.discovr.fragment.partial;
 
 import android.graphics.Color;
 import android.os.AsyncTask;
@@ -11,6 +11,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import org.cpen321.discovr.R;
 import org.cpen321.discovr.model.transit.TransitEstimateSchedule;
 import org.cpen321.discovr.parser.TransitScheduleParser;
 
@@ -23,13 +24,13 @@ import java.util.Map;
 /**
  * Transit Schedule Fragment
  */
-public class TransitFragment extends Fragment {
+public class TransitPartialFragment extends Fragment {
 
     private ListView transitList;
     private ArrayAdapter<String> transitListAdapter;
     private String stationNumber;
 
-    public TransitFragment() {
+    public TransitPartialFragment() {
         // Required empty public constructor
     }
 
