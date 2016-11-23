@@ -14,7 +14,7 @@ public class TransitEstimateSchedule {
         this.expectedCountdown = expectedCountdown;
         this.lastUpdated = lastUpdated;
 
-        switch (rawStatus){
+        switch (rawStatus) {
             case "*":
                 this.scheduleStatus = TransitScheduleStatus.ON_TIME;
                 break;

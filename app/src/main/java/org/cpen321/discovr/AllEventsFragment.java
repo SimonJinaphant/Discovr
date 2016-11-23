@@ -8,7 +8,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.text.SpannableString;
-import android.text.style.AbsoluteSizeSpan;
 import android.text.style.RelativeSizeSpan;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -45,9 +44,9 @@ public class AllEventsFragment extends Fragment {
         final LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
 
-        SQLiteDBHandler dbh =new SQLiteDBHandler(this.getActivity());
+        SQLiteDBHandler dbh = new SQLiteDBHandler(this.getActivity());
 
-        for(final EventInfo event : ((MainActivity) this.getActivity()).getAllEvents()) {
+        for (final EventInfo event : ((MainActivity) this.getActivity()).getAllEvents()) {
             final Button button = createButton(event);
             ll.addView(button, lp);
             //Set button's on click listener to open new fragment of that single event on top of map
@@ -75,16 +74,16 @@ public class AllEventsFragment extends Fragment {
         return fm;
     }
 
-    public Button createButton(EventInfo event){
+    public Button createButton(EventInfo event) {
         //Set button properties - gravity, allCaps, padding, backgroundColor, textColor, text
-        Button button =  new Button(this.getActivity());
+        Button button = new Button(this.getActivity());
         button.setId(event.getID());
         button.setGravity(left);
         button.setAllCaps(false);
         button.setPadding(getResources().getDimensionPixelSize(button_margin), getResources().getDimensionPixelSize(button_margin), getResources().getDimensionPixelSize(button_margin), getResources().getDimensionPixelSize(button_margin));
-        button.setBackground(ContextCompat.getDrawable(getContext(),R.drawable.button_press_colors));
+        button.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.button_press_colors));
         button.setTextColor(ContextCompat.getColor(getContext(), R.color.primaryTextColor));
-        SpannableString buttonText = new SpannableString(event.getName() + "\n" + EventInfo.getTimeString(event.getStartTime()).substring(0,5) + " - " + EventInfo.getTimeString(event.getEndTime()).substring(0,5) + ", " + EventInfo.getDateString(event.getStartTime()) + "\n" + event.getBuildingName());
+        SpannableString buttonText = new SpannableString(event.getName() + "\n" + EventInfo.getTimeString(event.getStartTime()).substring(0, 5) + " - " + EventInfo.getTimeString(event.getEndTime()).substring(0, 5) + ", " + EventInfo.getDateString(event.getStartTime()) + "\n" + event.getBuildingName());
         int index = buttonText.toString().indexOf("\n");
         buttonText.setSpan(new RelativeSizeSpan(2), 0, index, SPAN_INCLUSIVE_INCLUSIVE);
         buttonText.setSpan(new RelativeSizeSpan((float) 1.5), index, buttonText.length(), SPAN_INCLUSIVE_INCLUSIVE);
@@ -97,12 +96,12 @@ public class AllEventsFragment extends Fragment {
         return button;
     }
 
-    public String formatTime(String Time){
+    public String formatTime(String Time) {
         String[] dateTime = Time.split("T");
         return dateTime[1].substring(0, 5);
     }
 
-    public String getDate(String Time){
+    public String getDate(String Time) {
         String[] dateTime = Time.split("T");
         return dateTime[0];
     }

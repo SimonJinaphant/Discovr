@@ -36,7 +36,7 @@ public class PolygonUtilTest {
     }
 
     @Test
-    public void notInPolygon(){
+    public void notInPolygon() {
         LatLng p1 = new LatLng(49.266229, -123.252933);
         assertEquals(false, PolygonUtil.pointInPolygon(p1, polygon));
 

@@ -23,7 +23,6 @@ import com.mapbox.mapboxsdk.annotations.PolygonOptions;
 import com.mapbox.mapboxsdk.annotations.Polyline;
 import com.mapbox.mapboxsdk.annotations.PolylineOptions;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
-import com.mapbox.mapboxsdk.camera.CameraUpdate;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.location.LocationListener;
@@ -48,7 +47,6 @@ import org.cpen321.discovr.utility.PolygonUtil;
 
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -117,12 +115,12 @@ public class MapViewFragment extends Fragment {
                 //Polygon callback on touch
                 // Implement an onclick which cycles through all buildings and attempt to match a single LatLng point
                 // into a polygon based on the above algorithm.
-                map.setOnMapLongClickListener(new MapboxMap.OnMapLongClickListener(){
+                map.setOnMapLongClickListener(new MapboxMap.OnMapLongClickListener() {
                     @Override
                     public void onMapLongClick(@NonNull LatLng point) {
                         onLongClickMapCallback(point);
                     }
-                } );
+                });
 
                 for (Building building : buildings) {
                     map.addPolygon(new PolygonOptions()
@@ -133,14 +131,14 @@ public class MapViewFragment extends Fragment {
                     );
                 }
 
-                for(MapTransitStation station : stations){
+                for (MapTransitStation station : stations) {
                     map.addMarker(new MarkerViewOptions()
                             .position(station.location)
-                            .title("["+station.stationNumber+"]"+station.name)
+                            .title("[" + station.stationNumber + "]" + station.name)
                     );
                 }
 
-                for(MapPolygon constructionZone : constructions){
+                for (MapPolygon constructionZone : constructions) {
                     map.addPolygon(new PolygonOptions()
                             .addAll(constructionZone.vertices)
                             .alpha(0.35f)
@@ -151,7 +149,7 @@ public class MapViewFragment extends Fragment {
                 map.setOnMarkerClickListener(new MapboxMap.OnMarkerClickListener() {
                     @Override
                     public boolean onMarkerClick(@NonNull Marker marker) {
-                        if(marker.getTitle().startsWith("[")){
+                        if (marker.getTitle().startsWith("[")) {
                             String station = marker.getTitle().split("]")[0];
                             station = station.split("\\[")[1];
                             createTransitPanel(station);
@@ -170,7 +168,7 @@ public class MapViewFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 Log.d("location fab", "fab clicked");
-                if (userLocation != null){
+                if (userLocation != null) {
                     moveMapToLocation(new LatLng(userLocation));
                 }
             }
@@ -182,12 +180,13 @@ public class MapViewFragment extends Fragment {
     /**
      * Callback for a long click on the map, creates a building fragment if
      * the point clicked is a building
+     *
      * @param point the point clicked on the map
      */
-    public void onLongClickMapCallback(LatLng point){
-        for(Building b : buildings){
+    public void onLongClickMapCallback(LatLng point) {
+        for (Building b : buildings) {
             LatLng[] vertices = b.getAllCoordinates().toArray(new LatLng[b.getAllCoordinates().size()]);
-            if(PolygonUtil.pointInPolygon(point, vertices)){
+            if (PolygonUtil.pointInPolygon(point, vertices)) {
                 //Toast.makeText(getActivity(), "You pressed on "+b.name, Toast.LENGTH_SHORT).show()
                 SingleBuildingFragment buildingFrag = new SingleBuildingFragment();
                 buildingFrag.setBuilding(b);
@@ -203,9 +202,10 @@ public class MapViewFragment extends Fragment {
 
     /**
      * Initializes the list of buildings associated with the map
+     *
      * @param buildings
      */
-    public void setBuildings(List<Building> buildings){
+    public void setBuildings(List<Building> buildings) {
         this.buildings = buildings;
     }
 
@@ -213,24 +213,24 @@ public class MapViewFragment extends Fragment {
         this.stations = stations;
     }
 
-    public  void setConstructionZones(List<MapPolygon> constructions){
+    public void setConstructionZones(List<MapPolygon> constructions) {
         this.constructions = constructions;
     }
 
-    public void displayTransitStation(){
+    public void displayTransitStation() {
         mapView.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(MapboxMap mapboxMap) {
-                for(MapTransitStation station : stations){
+                for (MapTransitStation station : stations) {
                     map.addMarker(new MarkerViewOptions()
                             .position(station.location)
-                            .title("["+station.stationNumber+"]"+station.name)
+                            .title("[" + station.stationNumber + "]" + station.name)
                     );
                 }
                 map.setOnMarkerClickListener(new MapboxMap.OnMarkerClickListener() {
                     @Override
                     public boolean onMarkerClick(@NonNull Marker marker) {
-                        if(marker.getTitle().startsWith("[")){
+                        if (marker.getTitle().startsWith("[")) {
                             String station = marker.getTitle().split("]")[0];
                             station = station.split("\\[")[1];
                             createTransitPanel(station);
@@ -248,14 +248,15 @@ public class MapViewFragment extends Fragment {
     /**
      * Getter for the user location
      */
-    public Location getUserLocation(){
+    public Location getUserLocation() {
         return userLocation;
     }
 
     /**
      * Obtain route from one position to another
      * Obtained from: https://www.mapbox.com/android-sdk/examples/directions/
-     * @param origin the starting point
+     *
+     * @param origin      the starting point
      * @param destination the endpoint
      * @throws ServicesException
      */
@@ -302,9 +303,10 @@ public class MapViewFragment extends Fragment {
     /**
      * Draws a route on the map
      * Obtained from: https://www.mapbox.com/android-sdk/examples/directions/
+     *
      * @param route the map
      */
-    public void drawRoute(DirectionsRoute route){
+    public void drawRoute(DirectionsRoute route) {
         // Convert LineString coordinates into LatLng[]
         LineString lineString = LineString.fromPolyline(route.getGeometry(), Constants.OSRM_PRECISION_V5);
         List<Position> coordinates = lineString.getCoordinates();
@@ -314,7 +316,7 @@ public class MapViewFragment extends Fragment {
                     coordinates.get(i).getLatitude(),
                     coordinates.get(i).getLongitude());
         }
-        if (routeLine != null){
+        if (routeLine != null) {
             removeRoute();
         }
         // Draw Points on MapView
@@ -328,10 +330,10 @@ public class MapViewFragment extends Fragment {
     /**
      * Removes all the markers on the map
      */
-    public void removeAllMarkers(){
+    public void removeAllMarkers() {
         List<Marker> allMarkers = map.getMarkers();
         ListIterator<Marker> li = allMarkers.listIterator();
-        while (li.hasNext()){
+        while (li.hasNext()) {
             Marker marker = li.next();
             marker.remove();
             li.remove();
@@ -341,15 +343,15 @@ public class MapViewFragment extends Fragment {
     /**
      * @return whether the map has markers and routes on it
      */
-    public boolean isMapDirty(){
+    public boolean isMapDirty() {
         return ((map.getMarkers().size() > 0) || (routeLine != null));
     }
 
     /**
      * Removes the routeline
      */
-    public void removeRoute(){
-        if (routeLine != null){
+    public void removeRoute() {
+        if (routeLine != null) {
             routeLine.remove();
             routeLine = null;
         }
@@ -358,6 +360,7 @@ public class MapViewFragment extends Fragment {
 
     /**
      * Moves the map to a location
+     *
      * @return true if the map is moved, false otherwise
      */
     public boolean moveMapToLocation(LatLng loc) {
@@ -375,15 +378,16 @@ public class MapViewFragment extends Fragment {
     /**
      * Moves the point of interest marker to a specified location and creates
      * it if it doesn't exist
+     *
      * @param loc the location to place the marker
      */
-    public void movePointOfInterestMarker(LatLng loc){
+    public void movePointOfInterestMarker(LatLng loc) {
         Log.d("map", "Point of interest marker to: " + loc);
-        if (loc != null){
-            if (pointOfInterestMarker == null){
+        if (loc != null) {
+            if (pointOfInterestMarker == null) {
                 Log.d("map", "Creating point of interest marker at " + loc);
                 MarkerViewOptions marker = new MarkerViewOptions().position(loc);
-                pointOfInterestMarker= map.addMarker(marker);
+                pointOfInterestMarker = map.addMarker(marker);
             } else {
                 Log.d("map", "Moving point of interest marker to " + loc);
                 pointOfInterestMarker.setPosition(loc);
@@ -394,9 +398,9 @@ public class MapViewFragment extends Fragment {
     /**
      * Removes the point of interest marker
      */
-    public void removePointOfInterestMarker(){
+    public void removePointOfInterestMarker() {
         Log.d("map", "Removing point of interest marker");
-        if (pointOfInterestMarker != null){
+        if (pointOfInterestMarker != null) {
             pointOfInterestMarker.remove();
             pointOfInterestMarker = null;
         }
@@ -404,19 +408,21 @@ public class MapViewFragment extends Fragment {
 
     /**
      * Adds a marker to the map
+     *
      * @param loc
      */
-    public Marker addMarker(LatLng loc){
+    public Marker addMarker(LatLng loc) {
         MarkerViewOptions marker = new MarkerViewOptions().position(loc);
         return map.addMarker(marker);
     }
 
     /**
      * Creates an event panel given an eventID
+     *
      * @param eventID
      */
-    public void createEventPanel(int eventID){
-        EventClientManager ecm = ((MainActivity)getActivity()).getEventClientManager();
+    public void createEventPanel(int eventID) {
+        EventClientManager ecm = ((MainActivity) getActivity()).getEventClientManager();
         EventInfo event = ecm.findEvent(eventID);
         SingleEventFragment fragment = new SingleEventFragment();
         fragment.setEvent(event);
@@ -433,9 +439,10 @@ public class MapViewFragment extends Fragment {
 
     /**
      * Creates an transit panel
+     *
      * @param stationNumber - Station number
      */
-    public void createTransitPanel(String stationNumber){
+    public void createTransitPanel(String stationNumber) {
 
         TransitFragment fragment = new TransitFragment();
         fragment.setStation(stationNumber);
@@ -454,9 +461,10 @@ public class MapViewFragment extends Fragment {
 
     /**
      * Returns a reference to the map
+     *
      * @return
      */
-    public MapboxMap getMap(){
+    public MapboxMap getMap() {
         return map;
     }
 

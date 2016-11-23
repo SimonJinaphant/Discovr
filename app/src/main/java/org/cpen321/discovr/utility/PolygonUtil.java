@@ -17,22 +17,23 @@ public class PolygonUtil {
 
     /**
      * Fuzzes the latlong to a nearby point
+     *
      * @param input
      * @return
      */
-    public static LatLng fuzzLatLng(LatLng input){
+    public static LatLng fuzzLatLng(LatLng input) {
         double lat = input.getLatitude();
         double lon = input.getLongitude();
-        lat += random()*0.0001;
-        lon += random()*0.0001;
+        lat += random() * 0.0001;
+        lon += random() * 0.0001;
         return new LatLng(lat, lon);
     }
 
-    private static boolean isZero(double value, double threshold){
+    private static boolean isZero(double value, double threshold) {
         return value >= -threshold && value <= threshold;
     }
 
-    private static int orientation(LatLng p1, LatLng p2, LatLng q1){
+    private static int orientation(LatLng p1, LatLng p2, LatLng q1) {
         double val = (p2.getLongitude() - p1.getLongitude()) * (q1.getLatitude() - p2.getLatitude())
                 - (q1.getLongitude() - p2.getLongitude()) * (p2.getLatitude() - p1.getLatitude());
         if (isZero(val, 0.0000001))

@@ -35,6 +35,7 @@ public class TransitScheduleParser {
 
     /**
      * Parse a JSONArray of transit schedules for an individual vehicle.
+     *
      * @param jsonRawSchedules
      * @return List of TransitEstimateSchedules for the next 3 departure time.
      */

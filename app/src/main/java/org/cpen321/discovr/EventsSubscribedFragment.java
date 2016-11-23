@@ -21,6 +21,7 @@ import android.widget.ScrollView;
 import org.cpen321.discovr.model.EventInfo;
 
 import java.util.List;
+
 import static android.text.Spanned.SPAN_INCLUSIVE_INCLUSIVE;
 import static org.cpen321.discovr.R.dimen.button_margin;
 import static org.cpen321.discovr.R.id.left;
@@ -54,7 +55,7 @@ public class EventsSubscribedFragment extends Fragment {
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
         //Add new button for each event in DB
-        for(final EventInfo event : allEvents) {
+        for (final EventInfo event : allEvents) {
 
             //formats button to be the same as the format we want in the fragment
             final Button button = createButton(event);
@@ -89,14 +90,14 @@ public class EventsSubscribedFragment extends Fragment {
         return fm;
     }
 
-    public Button createButton(EventInfo event){
+    public Button createButton(EventInfo event) {
         //Set button properties - gravity, allCaps, padding, backgroundColor, textColor, text
-        Button button =  new Button(this.getActivity());
+        Button button = new Button(this.getActivity());
         button.setId(event.getID());
         button.setGravity(left);
         button.setAllCaps(false);
         button.setPadding(getResources().getDimensionPixelSize(button_margin), getResources().getDimensionPixelSize(button_margin), getResources().getDimensionPixelSize(button_margin), getResources().getDimensionPixelSize(button_margin));
-        button.setBackground(ContextCompat.getDrawable(getContext(),R.drawable.button_press_colors));
+        button.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.button_press_colors));
         button.setTextColor(ContextCompat.getColor(getContext(), R.color.primaryTextColor));
         SpannableString buttonText = new SpannableString(event.getName() + "\n" + EventInfo.getTimeString(event.getStartTime()) + " - " + EventInfo.getTimeString(event.getEndTime()) + ", " + EventInfo.getDateString(event.getStartTime()) + "\n" + event.getBuildingName());
         int index = buttonText.toString().indexOf("\n");
@@ -110,7 +111,6 @@ public class EventsSubscribedFragment extends Fragment {
 
         return button;
     }
-
 
 
 }

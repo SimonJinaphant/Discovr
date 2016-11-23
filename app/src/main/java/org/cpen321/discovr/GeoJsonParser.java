@@ -16,101 +16,97 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.PriorityQueue;
 
 public class GeoJsonParser {
 
 
-	/**
-	 *
-	 * @param is from the ubc buildings geojson datset in /assets
-	 * @return a List of all the names of the buildings
-	 * @throws IOException, JSONException
-	 */
+    /**
+     * @param is from the ubc buildings geojson datset in /assets
+     * @return a List of all the names of the buildings
+     * @throws IOException, JSONException
+     */
 
-	public static List<String> allnames(InputStream is) throws IOException, JSONException {
+    public static List<String> allnames(InputStream is) throws IOException, JSONException {
 
-		List<String> names = new ArrayList<String>();
-		String jsonTxt = IOUtils.toString(is);
-		JSONObject obj = new JSONObject(jsonTxt.substring(1));
-		JSONArray arr = obj.getJSONArray("features");
-		for (int i = 0; i < arr.length(); i++) {
-			if (arr.getJSONObject(i).getJSONObject("properties").has("Name")) {
-				names.add(arr.getJSONObject(i).getJSONObject("properties").getString("Name"));
-			}
-			else {
-				names.add("does not exist");
-			}
-		}
-		return names;
-	}
+        List<String> names = new ArrayList<String>();
+        String jsonTxt = IOUtils.toString(is);
+        JSONObject obj = new JSONObject(jsonTxt.substring(1));
+        JSONArray arr = obj.getJSONArray("features");
+        for (int i = 0; i < arr.length(); i++) {
+            if (arr.getJSONObject(i).getJSONObject("properties").has("Name")) {
+                names.add(arr.getJSONObject(i).getJSONObject("properties").getString("Name"));
+            } else {
+                names.add("does not exist");
+            }
+        }
+        return names;
+    }
 
-	/**
-	 *
-	 * @param name - name of the building
-	 * @param is - InputStream from the ubc buildings geojson datset in /assets
-	 * @return an array of double of size 2, long / lat
-	 * @throws IOException
-	 */
-	public static double[] getCoordinates(String name, InputStream is) throws IOException, JSONException {
+    /**
+     * @param name - name of the building
+     * @param is   - InputStream from the ubc buildings geojson datset in /assets
+     * @return an array of double of size 2, long / lat
+     * @throws IOException
+     */
+    public static double[] getCoordinates(String name, InputStream is) throws IOException, JSONException {
 
-		double temp[] = new double[2];
+        double temp[] = new double[2];
 
-		int index = -1;
-		String jsonTxt = IOUtils.toString(is);
+        int index = -1;
+        String jsonTxt = IOUtils.toString(is);
 
-		JSONObject obj = new JSONObject(jsonTxt.substring(1));
-		JSONArray arr = obj.getJSONArray("features");
+        JSONObject obj = new JSONObject(jsonTxt.substring(1));
+        JSONArray arr = obj.getJSONArray("features");
 
-		for (int i = 0; i < arr.length(); i++) {
-			if (arr.getJSONObject(i).getJSONObject("properties").has("Name")) {
-				if (arr.getJSONObject(i).getJSONObject("properties").getString("Name").equals(name)) {
-					index = i;
-					break;
-				}
-			}
-		}
+        for (int i = 0; i < arr.length(); i++) {
+            if (arr.getJSONObject(i).getJSONObject("properties").has("Name")) {
+                if (arr.getJSONObject(i).getJSONObject("properties").getString("Name").equals(name)) {
+                    index = i;
+                    break;
+                }
+            }
+        }
 
-		if (index != -1) {
-			JSONArray coords = arr.getJSONObject(index).getJSONObject("geometry").getJSONArray("coordinates").getJSONArray(0);
+        if (index != -1) {
+            JSONArray coords = arr.getJSONObject(index).getJSONObject("geometry").getJSONArray("coordinates").getJSONArray(0);
 
-			for (int j = 0; j < coords.length(); j++) {
-				temp[0] += coords.getJSONArray(j).getDouble(0);
+            for (int j = 0; j < coords.length(); j++) {
+                temp[0] += coords.getJSONArray(j).getDouble(0);
 
-				temp[1] += coords.getJSONArray(j).getDouble(1);
+                temp[1] += coords.getJSONArray(j).getDouble(1);
 
-			}
-			temp[0] = temp[0] / coords.length();
-			temp[1] = temp[1] / coords.length();
+            }
+            temp[0] = temp[0] / coords.length();
+            temp[1] = temp[1] / coords.length();
 
-		}
+        }
 
-		return temp;
-	}
+        return temp;
+    }
 
-	/**
-	 *
-	 * @param allCoordinates - list of all latlngs
-	 * @return an array of double of size 2, long / lat
-	 */
-	public static LatLng getCoordinates(List<LatLng> allCoordinates) {
+    /**
+     * @param allCoordinates - list of all latlngs
+     * @return an array of double of size 2, long / lat
+     */
+    public static LatLng getCoordinates(List<LatLng> allCoordinates) {
 
-		double temp[] = new double[2];
-		double latitude=0;
-		double longtitude=0;
-		for(int i = 0; i < allCoordinates.size(); i++){
-				latitude += allCoordinates.get(i).getLatitude();
-				longtitude += allCoordinates.get(i).getLongitude();
-		}
+        double temp[] = new double[2];
+        double latitude = 0;
+        double longtitude = 0;
+        for (int i = 0; i < allCoordinates.size(); i++) {
+            latitude += allCoordinates.get(i).getLatitude();
+            longtitude += allCoordinates.get(i).getLongitude();
+        }
 
-		latitude /= allCoordinates.size();
-		longtitude /= allCoordinates.size();
+        latitude /= allCoordinates.size();
+        longtitude /= allCoordinates.size();
 
-		return new LatLng(latitude, longtitude);
-	}
+        return new LatLng(latitude, longtitude);
+    }
 
     /**
      * Parse a geojson file to extract the geoMarkers objects from it.
+     *
      * @param fileStream - A input file stream of the .geojson file.
      * @return - A list of render-able MapTransitStation.
      * @throws IOException
@@ -143,6 +139,7 @@ public class GeoJsonParser {
 
     /**
      * Parse a geojson file to extract the geoPolygon objects from it.
+     *
      * @param fileStream - A input file stream of the .geojson file.
      * @return - A list of render-able MapPolygons
      * @throws IOException
@@ -163,7 +160,7 @@ public class GeoJsonParser {
             List<String> buses = new ArrayList<>();
             JSONArray jsonBuses = jsonFeatures.getJSONObject(i).getJSONObject("properties").getJSONArray("Bus");
 
-            for(int b = 0; b < jsonBuses.length(); b++){
+            for (int b = 0; b < jsonBuses.length(); b++) {
                 buses.add(String.valueOf(jsonBuses.get(b)));
             }
 
@@ -175,52 +172,53 @@ public class GeoJsonParser {
         return stations;
     }
 
-	/**
-	 * Parse a geojson file to extract MapBox building objects from it.
-	 * @param fileStream - A input file stream of the .geojson file.
-	 * @return - A list of Buildings
-	 * @throws IOException
-	 * @throws JSONException
-	 */
+    /**
+     * Parse a geojson file to extract MapBox building objects from it.
+     *
+     * @param fileStream - A input file stream of the .geojson file.
+     * @return - A list of Buildings
+     * @throws IOException
+     * @throws JSONException
+     */
 
-	public static List<Building> parseBuildings(InputStream fileStream) throws IOException, JSONException {
-		JSONArray jsonFeatures = new JSONObject(IOUtils.toString(fileStream)).getJSONArray("features");
-		List<Building> buildings = new ArrayList<>();
+    public static List<Building> parseBuildings(InputStream fileStream) throws IOException, JSONException {
+        JSONArray jsonFeatures = new JSONObject(IOUtils.toString(fileStream)).getJSONArray("features");
+        List<Building> buildings = new ArrayList<>();
 
-		for (int i = 0; i < jsonFeatures.length(); i++) {
-			JSONObject jsonBuilding = jsonFeatures.getJSONObject(i).getJSONObject("properties");
+        for (int i = 0; i < jsonFeatures.length(); i++) {
+            JSONObject jsonBuilding = jsonFeatures.getJSONObject(i).getJSONObject("properties");
 
-			if(!jsonBuilding.has("Name")){
-				Log.e("GeoParser", "There seems to be a nameless entry at index "+i);
-				Log.v("GeoParser", jsonBuilding.toString());
-				continue;
-			}
-			String name = jsonBuilding.getString("Name");
-			String code = jsonBuilding.has("Code") ? jsonBuilding.getString("Code") : null;
-			String address = jsonBuilding.has("Address") ? jsonBuilding.getString("Address") : null;
-			String hours = jsonBuilding.has("Hours") ? jsonBuilding.getString("Hours") : null;
+            if (!jsonBuilding.has("Name")) {
+                Log.e("GeoParser", "There seems to be a nameless entry at index " + i);
+                Log.v("GeoParser", jsonBuilding.toString());
+                continue;
+            }
+            String name = jsonBuilding.getString("Name");
+            String code = jsonBuilding.has("Code") ? jsonBuilding.getString("Code") : null;
+            String address = jsonBuilding.has("Address") ? jsonBuilding.getString("Address") : null;
+            String hours = jsonBuilding.has("Hours") ? jsonBuilding.getString("Hours") : null;
 
-			List<LatLng> coordinates = new ArrayList<>();
-			JSONArray jsonCoordinates = jsonFeatures.getJSONObject(i).getJSONObject("geometry").getJSONArray("coordinates").getJSONArray(0);
-		//	if(jsonCoordinates.length() > 18){
-		//		continue;
-		//	}
-			for (int j = 0; j < jsonCoordinates.length()-1; j++) {
-				JSONArray latLng = jsonCoordinates.getJSONArray(j);
+            List<LatLng> coordinates = new ArrayList<>();
+            JSONArray jsonCoordinates = jsonFeatures.getJSONObject(i).getJSONObject("geometry").getJSONArray("coordinates").getJSONArray(0);
+            //	if(jsonCoordinates.length() > 18){
+            //		continue;
+            //	}
+            for (int j = 0; j < jsonCoordinates.length() - 1; j++) {
+                JSONArray latLng = jsonCoordinates.getJSONArray(j);
 
-				// .geojson files typically store LatLng in order of [longitude, latitude]
-				LatLng coordinate = new LatLng(latLng.getDouble(1), latLng.getDouble(0));
+                // .geojson files typically store LatLng in order of [longitude, latitude]
+                LatLng coordinate = new LatLng(latLng.getDouble(1), latLng.getDouble(0));
 
-				coordinates.add(coordinate);
-			}
-			buildings.add(new Building(name, code, address, hours, coordinates));
+                coordinates.add(coordinate);
+            }
+            buildings.add(new Building(name, code, address, hours, coordinates));
 
-		}
+        }
 
-		return buildings;
-	}
+        return buildings;
+    }
 }
-	/*public static void main (String[] args) throws IOException {
+    /*public static void main (String[] args) throws IOException {
 
 		File f = new File("./app/src/main/java/org/cpen321/discovr/buildings.geojson");
 

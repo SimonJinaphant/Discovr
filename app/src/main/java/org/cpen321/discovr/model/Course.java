@@ -23,7 +23,7 @@ public class Course {
 
     public String dayOfWeek;
 
-    public Course( String category, String number, String section,
+    public Course(String category, String number, String section,
                   String building, String room, long startTime, long endTime,
                   Date startDate, Date endDate, String dayOfWeek) {
 
@@ -44,76 +44,76 @@ public class Course {
         return category;
     }
 
-    public String getNumber() {
-        return number;
-    }
-
-    public String getSection() {
-        return section;
-    }
-
-    public String getBuilding() {
-        return building;
-    }
-
-    public String getRoom() {
-        return room;
-    }
-
-    public long getStartTime() {
-        return startTime;
-    }
-
-    public long getEndTime() {
-        return endTime;
-    }
-
-    public String getStartDate() {
-        return startDate.toString();
-    }
-
-    public String getEndDate() {
-        return endDate.toString();
-    }
-
-    public String getDayOfWeek() {
-        return dayOfWeek;
-    }
-
     public void setCategory(String category) {
         this.category = category;
+    }
+
+    public String getNumber() {
+        return number;
     }
 
     public void setNumber(String number) {
         this.number = number;
     }
 
+    public String getSection() {
+        return section;
+    }
+
     public void setSection(String section) {
         this.section = section;
+    }
+
+    public String getBuilding() {
+        return building;
     }
 
     public void setBuilding(String building) {
         this.building = building;
     }
 
+    public String getRoom() {
+        return room;
+    }
+
     public void setRoom(String room) {
         this.room = room;
+    }
+
+    public long getStartTime() {
+        return startTime;
     }
 
     public void setStartTime(long startTime) {
         this.startTime = startTime;
     }
 
+    public long getEndTime() {
+        return endTime;
+    }
+
     public void setEndTime(long endTime) {
         this.endTime = endTime;
+    }
+
+    public String getStartDate() {
+        return startDate.toString();
     }
 
     public void setStartDate(Date startDate) {
         this.startDate = startDate;
     }
 
+    public String getEndDate() {
+        return endDate.toString();
+    }
+
     public void setEndDate(Date endDate) {
         this.endDate = endDate;
+    }
+
+    public String getDayOfWeek() {
+        return dayOfWeek;
     }
 
     public void setDayOfWeek(String dayOfWeek) {

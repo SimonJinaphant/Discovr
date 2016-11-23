@@ -2,22 +2,16 @@ package org.cpen321.discovr;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
-import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
-import android.text.style.AbsoluteSizeSpan;
 import android.text.style.TabStopSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import org.cpen321.discovr.model.Building;
-
-import static android.text.Spanned.SPAN_INCLUSIVE_INCLUSIVE;
 
 
 /**
@@ -29,9 +23,10 @@ public class SingleBuildingFragment extends Fragment {
     private Building building;
     private int PrevFragment;
 
-    public void setBuilding(Building building){
+    public void setBuilding(Building building) {
         this.building = building;
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -43,7 +38,7 @@ public class SingleBuildingFragment extends Fragment {
 
         TextView BuildingDetails = (TextView) ll.findViewById(R.id.buildingdetails);
         SpannableStringBuilder span = new SpannableStringBuilder(getCode(building) + getTime(building) + getAddress(building));
-        span.setSpan(new TabStopSpan.Standard(300), 0, span.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE );
+        span.setSpan(new TabStopSpan.Standard(300), 0, span.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         BuildingDetails.setText(span, TextView.BufferType.SPANNABLE);
 
         return ll;
@@ -51,38 +46,35 @@ public class SingleBuildingFragment extends Fragment {
     }
 
 
-    String getTime(Building building){
+    String getTime(Building building) {
         String time = "";
-        if(building.hours != null){
+        if (building.hours != null) {
             String[] s = building.hours.split(",");
             time = "Hours:";
-            for ( String i : s )
-            time = time + "\t" + i + "\n";
+            for (String i : s)
+                time = time + "\t" + i + "\n";
         }
 
         return time;
     }
 
-    String getAddress(Building building){
+    String getAddress(Building building) {
         String address = "";
-        if(building.address != null){
+        if (building.address != null) {
             address = "Address:\t" + building.address + "\n";
         }
 
         return address;
     }
 
-    String getCode(Building building){
+    String getCode(Building building) {
         String code = "";
-        if(building.code != null){
+        if (building.code != null) {
             code = "Code:\t" + building.code + "\n";
         }
 
         return code;
     }
-
-
-
 
 
 }

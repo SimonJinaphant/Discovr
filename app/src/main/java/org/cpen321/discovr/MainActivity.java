@@ -26,7 +26,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Toast;
 
 import com.mapbox.mapboxsdk.MapboxAccountManager;
 import com.mapbox.mapboxsdk.annotations.Marker;
@@ -42,22 +41,20 @@ import org.cpen321.discovr.model.MapPolygon;
 import org.cpen321.discovr.model.MapTransitStation;
 import org.cpen321.discovr.utility.PolygonUtil;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.ListIterator;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener{
+        implements NavigationView.OnNavigationItemSelectedListener {
+    private static final int REQUEST_ALL_MAPBOX_PERMISSIONS = 3211;
     final int ALLEVENTS = 0;
     final int SUBSCRIBEDEVENTS = 1;
     SQLiteDBHandler dbh = new SQLiteDBHandler(this);
     MapViewFragment mapFragment;
     EventClientManager ecm;
-
     private List<EventInfo> AllEventsList = new ArrayList<EventInfo>();
-    private static final int REQUEST_ALL_MAPBOX_PERMISSIONS = 3211;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {// Get the SearchView and set the searchable configuration
@@ -92,7 +89,7 @@ public class MainActivity extends AppCompatActivity
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.app_name, R.string.app_name){
+                this, drawer, toolbar, R.string.app_name, R.string.app_name) {
             @Override
             public void onDrawerClosed(View drawerView) {
                 super.onDrawerClosed(drawerView);
@@ -122,7 +119,7 @@ public class MainActivity extends AppCompatActivity
         //get current hour
         int hour = c.get(Calendar.HOUR_OF_DAY);
         //standard time
-        if( month >= 10 || month < 2) {
+        if (month >= 10 || month < 2) {
             //after 21:00 pm
             if (hour >= 21) {
                 new AlertDialog.Builder(this)
@@ -131,8 +128,8 @@ public class MainActivity extends AppCompatActivity
                         .show();
             }
 
-        //daylight saving time
-        }else{
+            //daylight saving time
+        } else {
             //after 20:00 pm
             if (hour >= 20) {
                 new AlertDialog.Builder(this)
@@ -147,7 +144,7 @@ public class MainActivity extends AppCompatActivity
     /**
      * Obtains necessary permission for mapbox
      */
-    void obtainPermissions(){
+    void obtainPermissions() {
         // TODO: Refactor permission code
         String[] permissions = {
                 Manifest.permission.ACCESS_FINE_LOCATION,
@@ -178,9 +175,10 @@ public class MainActivity extends AppCompatActivity
 
     /**
      * Wrapper function for the Event Client Manager
+     *
      * @return
      */
-    public List<EventInfo> getAllEvents(){
+    public List<EventInfo> getAllEvents() {
         ecm.updateEventsList();
         return ecm.getAllEvents();
     }
@@ -193,29 +191,29 @@ public class MainActivity extends AppCompatActivity
         try {
             List<Building> buildings = GeoJsonParser.parseBuildings(getResources().getAssets().open("simplebuildings.geojson"));
             mapFragment.setBuildings(buildings);
-                for (Building bldg : buildings) {
-                    dbh.addBuilding(bldg);
-                }
+            for (Building bldg : buildings) {
+                dbh.addBuilding(bldg);
+            }
 
         } catch (Exception e) {
             System.out.println(e);
         }
     }
 
-    private void initializeTransitStation(){
-        try{
+    private void initializeTransitStation() {
+        try {
             List<MapTransitStation> stations = GeoJsonParser.parseTransitStations(getResources().getAssets().open("busloop.geojson"));
             mapFragment.setTransitStation(stations);
-        }catch (Exception e){
+        } catch (Exception e) {
 
         }
     }
 
-    private void initializeConstructionZones(){
-        try{
+    private void initializeConstructionZones() {
+        try {
             List<MapPolygon> constructions = GeoJsonParser.parsePolygons(getResources().getAssets().open("construction.geojson"));
             mapFragment.setConstructionZones(constructions);
-        }catch (Exception e){
+        } catch (Exception e) {
 
         }
     }
@@ -233,11 +231,12 @@ public class MainActivity extends AppCompatActivity
 
     /**
      * Overriden to create a search bar on the top toolbar
+     *
      * @param menu
      * @return
      */
     @Override
-    public boolean onCreateOptionsMenu(Menu menu){
+    public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.toolbar_menu, menu);
 
         //Creates the searchbar
@@ -248,7 +247,7 @@ public class MainActivity extends AppCompatActivity
         searchView.setOnQueryTextListener(
                 new SearchView.OnQueryTextListener() {
                     @Override
-                    public boolean onQueryTextChange(String newText){
+                    public boolean onQueryTextChange(String newText) {
                         Log.d("search", "Text changed to: " + newText);
                         //Try and perform autocomplete
                         return true;
@@ -256,7 +255,7 @@ public class MainActivity extends AppCompatActivity
 
 
                     @Override
-                    public boolean onQueryTextSubmit(String query){
+                    public boolean onQueryTextSubmit(String query) {
                         //Search is submitted
 
                         // Closes the keyboard
@@ -269,14 +268,14 @@ public class MainActivity extends AppCompatActivity
                             LatLng loc = GeoJsonParser.getCoordinates(dbh.getBuildingByCode(query).getAllCoordinates()); //obtains coordinates from query
 
                             //Failed to return values
-                            if (loc == null){
+                            if (loc == null) {
                                 return false;
                             }
 
                             Log.d("search", loc.toString());
                             moveMap(loc);
 
-                        } catch (Exception e){
+                        } catch (Exception e) {
                             e.printStackTrace();
                             return false;
                         }
@@ -287,7 +286,7 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    public void moveMap(LatLng loc){
+    public void moveMap(LatLng loc) {
         //Creates a marker on the queried location
         mapFragment.movePointOfInterestMarker(loc);
 
@@ -298,12 +297,12 @@ public class MainActivity extends AppCompatActivity
         Position destination = Position.fromCoordinates(loc.getLongitude(), loc.getLatitude());
 
         Location userLoc = mapFragment.getUserLocation();
-        if (userLoc == null){
+        if (userLoc == null) {
             Log.d("search", "User location not found, route not calculated");
             return;
         }
         Position origin = Position.fromCoordinates(userLoc.getLongitude(), userLoc.getLatitude());
-        try{
+        try {
             mapFragment.getRoute(origin, destination);
         } catch (ServicesException servicesException) {
             servicesException.printStackTrace();
@@ -321,7 +320,7 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        } else if ((currentFragment instanceof MapViewFragment) && mapFragment.isMapDirty()){
+        } else if ((currentFragment instanceof MapViewFragment) && mapFragment.isMapDirty()) {
             mapFragment.removeRoute();
             mapFragment.removeAllMarkers();
         } else {
@@ -344,27 +343,27 @@ public class MainActivity extends AppCompatActivity
     /**
      * Plots upcoming events on the map
      */
-    private void plotUpcomingEventsOnMap(){
+    private void plotUpcomingEventsOnMap() {
         // TODO: Replace getRawEvents() with getUpcomingEvents()
         List<EventInfo> upcomingEvents = ecm.getUpcomingEvents();
         ListIterator<EventInfo> li = upcomingEvents.listIterator();
         List<LatLng> markerLoc = new ArrayList<>();
-        while (li.hasNext()){
+        while (li.hasNext()) {
             EventInfo event = li.next();
             Building bldg = dbh.getBuildingByCode(event.getBuildingName());
             if (bldg != null) {
                 LatLng loc = GeoJsonParser.getCoordinates(bldg.getAllCoordinates());
                 //Prevents marker overlapping directly on top of one another
-                while (markerLoc.contains(loc)){
+                while (markerLoc.contains(loc)) {
                     loc = PolygonUtil.fuzzLatLng(loc);
                 }
                 markerLoc.add(loc);
                 mapFragment.addMarker(loc).setTitle(String.valueOf(event.getID()));
                 //Pass the creation of the event fragment to mapFragment (possible refactor)
-                mapFragment.getMap().setOnMarkerClickListener(new MapboxMap.OnMarkerClickListener(){
+                mapFragment.getMap().setOnMarkerClickListener(new MapboxMap.OnMarkerClickListener() {
                     @Override
                     public boolean onMarkerClick(@NonNull Marker marker) {
-                        if (marker.getTitle() != null){
+                        if (marker.getTitle() != null) {
                             mapFragment.createEventPanel(Integer.parseInt(marker.getTitle()));
                             return true;
                         }
@@ -379,27 +378,29 @@ public class MainActivity extends AppCompatActivity
 
     /**
      * Getter for the event client manager
+     *
      * @return the event client manager
      */
-    public EventClientManager getEventClientManager(){
+    public EventClientManager getEventClientManager() {
         return ecm;
     }
 
 
     /**
      * Takes care of hiding and switching of fragments
+     *
      * @param fragmentID the ID of the fragment selected
      */
-    public void drawerFragmentManager(int fragmentID){
+    public void drawerFragmentManager(int fragmentID) {
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         List<Fragment> all_frag = fm.getFragments();
 
         //Remove all the fragments but the map fragment
         ListIterator<Fragment> li = all_frag.listIterator();
-        while (li.hasNext()){
+        while (li.hasNext()) {
             Fragment currFrag = li.next();
-            if ((currFrag != null) && (!currFrag.equals(mapFragment))){
+            if ((currFrag != null) && (!currFrag.equals(mapFragment))) {
                 ft.remove(currFrag);
             }
         }
@@ -442,6 +443,7 @@ public class MainActivity extends AppCompatActivity
 
         ft.commit();
     }
+
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
@@ -451,7 +453,7 @@ public class MainActivity extends AppCompatActivity
             String[] s = uri.split("/");
 
             //find buildling being selected with the dataString passed
-            Building b = dbh.getBuildingByID(Integer.valueOf(s[s.length-1]));
+            Building b = dbh.getBuildingByID(Integer.valueOf(s[s.length - 1]));
             SingleBuildingFragment buildingFrag = new SingleBuildingFragment();
             buildingFrag.setBuilding(b);
 
@@ -459,7 +461,7 @@ public class MainActivity extends AppCompatActivity
             LatLng loc = GeoJsonParser.getCoordinates(b.getAllCoordinates()); //obtains coordinates from query
 
             //Check for null loc
-            if (loc != null){
+            if (loc != null) {
                 moveMap(loc);
             }
 
