@@ -44,7 +44,7 @@ import org.cpen321.discovr.fragment.CoursesFragment;
 import org.cpen321.discovr.fragment.EventsSubscribedFragment;
 import org.cpen321.discovr.fragment.MapViewFragment;
 import org.cpen321.discovr.fragment.partial.BuildingPartialFragment;
-import org.cpen321.discovr.parser.GeoJsonParser;
+import org.cpen321.discovr.parser.GeojsonFileParser;
 import org.cpen321.discovr.utility.PolygonUtil;
 
 import java.util.ArrayList;
@@ -195,7 +195,7 @@ public class MainActivity extends AppCompatActivity
     private void initializeBuildingPolygons() {
         // Load the buildings from the buildings.geojson file and draw a polygon outline for each building.
         try {
-            List<Building> buildings = GeoJsonParser.parseBuildings(getResources().getAssets().open("simplebuildings.geojson"));
+            List<Building> buildings = GeojsonFileParser.parseBuildings(getResources().getAssets().open("simplebuildings.geojson"));
             mapFragment.setBuildings(buildings);
             for (Building bldg : buildings) {
                 dbh.addBuilding(bldg);
@@ -208,7 +208,7 @@ public class MainActivity extends AppCompatActivity
 
     private void initializeTransitStation() {
         try {
-            List<MapTransitStation> stations = GeoJsonParser.parseTransitStations(getResources().getAssets().open("busloop.geojson"));
+            List<MapTransitStation> stations = GeojsonFileParser.parseTransitStations(getResources().getAssets().open("busloop.geojson"));
             mapFragment.setTransitStation(stations);
         } catch (Exception e) {
 
@@ -217,7 +217,7 @@ public class MainActivity extends AppCompatActivity
 
     private void initializeConstructionZones() {
         try {
-            List<MapPolygon> constructions = GeoJsonParser.parsePolygons(getResources().getAssets().open("construction.geojson"));
+            List<MapPolygon> constructions = GeojsonFileParser.parsePolygons(getResources().getAssets().open("construction.geojson"));
             mapFragment.setConstructionZones(constructions);
         } catch (Exception e) {
 
@@ -271,7 +271,7 @@ public class MainActivity extends AppCompatActivity
 
                         Log.d("search", "Text submitted: " + query);
                         try {
-                            LatLng loc = GeoJsonParser.getCoordinates(dbh.getBuildingByCode(query).getAllCoordinates()); //obtains coordinates from query
+                            LatLng loc = GeojsonFileParser.getCoordinates(dbh.getBuildingByCode(query).getAllCoordinates()); //obtains coordinates from query
 
                             //Failed to return values
                             if (loc == null) {
@@ -358,7 +358,7 @@ public class MainActivity extends AppCompatActivity
             EventInfo event = li.next();
             Building bldg = dbh.getBuildingByCode(event.getBuildingName());
             if (bldg != null) {
-                LatLng loc = GeoJsonParser.getCoordinates(bldg.getAllCoordinates());
+                LatLng loc = GeojsonFileParser.getCoordinates(bldg.getAllCoordinates());
                 //Prevents marker overlapping directly on top of one another
                 while (markerLoc.contains(loc)) {
                     loc = PolygonUtil.fuzzLatLng(loc);
@@ -464,7 +464,7 @@ public class MainActivity extends AppCompatActivity
             buildingFrag.setBuilding(b);
 
             //Move map to the building location
-            LatLng loc = GeoJsonParser.getCoordinates(b.getAllCoordinates()); //obtains coordinates from query
+            LatLng loc = GeojsonFileParser.getCoordinates(b.getAllCoordinates()); //obtains coordinates from query
 
             //Check for null loc
             if (loc != null) {

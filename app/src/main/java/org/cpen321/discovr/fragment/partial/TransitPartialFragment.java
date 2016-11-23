@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 import org.cpen321.discovr.R;
 import org.cpen321.discovr.model.transit.TransitEstimateSchedule;
-import org.cpen321.discovr.parser.TransitScheduleParser;
+import org.cpen321.discovr.parser.TransitParser;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -76,7 +76,7 @@ public class TransitPartialFragment extends Fragment {
         @Override
         protected String doInBackground(Void... params) {
             for (Map.Entry<String, List<TransitEstimateSchedule>> entry :
-                    TransitScheduleParser.httpGetTransitSchedule(stationNumber).entrySet()) {
+                    TransitParser.httpGetTransitSchedule(stationNumber).entrySet()) {
                 String busNo = entry.getKey();
                 publishProgress(busNo);
 

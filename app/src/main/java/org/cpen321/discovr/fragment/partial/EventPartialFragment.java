@@ -21,7 +21,7 @@ import org.cpen321.discovr.R;
 import org.cpen321.discovr.SQLiteDBHandler;
 import org.cpen321.discovr.model.Building;
 import org.cpen321.discovr.model.EventInfo;
-import org.cpen321.discovr.parser.GeoJsonParser;
+import org.cpen321.discovr.parser.GeojsonFileParser;
 
 import static android.text.Spanned.SPAN_INCLUSIVE_INCLUSIVE;
 
@@ -60,7 +60,7 @@ public class EventPartialFragment extends Fragment {
         Building bldg = dbh.getBuildingByCode(event.getBuildingName());
         LatLng loc;
         if (bldg != null) {
-            loc = GeoJsonParser.getCoordinates(bldg.getAllCoordinates());
+            loc = GeojsonFileParser.getCoordinates(bldg.getAllCoordinates());
             ((MainActivity) this.getActivity()).moveMap(loc);
         }
 

@@ -21,7 +21,7 @@ import cz.msebera.android.httpclient.Header;
  * Created by Simon Jinaphant on 21-Nov-2016.
  */
 
-public class TransitScheduleParser {
+public class TransitParser {
 
     private static final String TRANSIT_API_PUBLIC_KEY = "VxujSiOu28llUoMXPgmw";
 
@@ -30,7 +30,7 @@ public class TransitScheduleParser {
 
     private static final String RESULT_LIMIT_PARAM = "&count=3";
 
-    private TransitScheduleParser() {
+    private TransitParser() {
     }
 
     /**
