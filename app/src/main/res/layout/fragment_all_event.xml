@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginTop="?attr/actionBarSize"
-    tools:context="org.cpen321.discovr.EventsSubscribedFragment">
+    tools:context=".fragment.EventsSubscribedFragment">
 
     <!-- This layout will need to be filled programmatically,
             currently hardcoding to show framework      -->

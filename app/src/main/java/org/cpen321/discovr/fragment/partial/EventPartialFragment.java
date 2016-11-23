@@ -1,4 +1,4 @@
-package org.cpen321.discovr;
+package org.cpen321.discovr.fragment.partial;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -16,13 +16,17 @@ import android.widget.TextView;
 
 import com.mapbox.mapboxsdk.geometry.LatLng;
 
+import org.cpen321.discovr.MainActivity;
+import org.cpen321.discovr.R;
+import org.cpen321.discovr.SQLiteDBHandler;
 import org.cpen321.discovr.model.Building;
 import org.cpen321.discovr.model.EventInfo;
+import org.cpen321.discovr.parser.GeojsonFileParser;
 
 import static android.text.Spanned.SPAN_INCLUSIVE_INCLUSIVE;
 
 
-public class SingleEventFragment extends Fragment {
+public class EventPartialFragment extends Fragment {
     final int ALLEVENTS = 0;
     final int SUBSCRIBEDEVENTS = 1;
 
@@ -30,20 +34,20 @@ public class SingleEventFragment extends Fragment {
 
     private int PrevFragment;
 
-    public SingleEventFragment() {
+    public EventPartialFragment() {
 
     }
 
-    public void setEvent(EventInfo event){
+    public void setEvent(EventInfo event) {
         this.event = event;
     }
 
-    public void setPrevFragment(int PrevFragment){
-        this.PrevFragment = PrevFragment;
+    public int getPrevFragment() {
+        return this.PrevFragment;
     }
 
-    public int getPrevFragment(){
-        return this.PrevFragment;
+    public void setPrevFragment(int PrevFragment) {
+        this.PrevFragment = PrevFragment;
     }
 
     @Override
@@ -55,8 +59,8 @@ public class SingleEventFragment extends Fragment {
 
         Building bldg = dbh.getBuildingByCode(event.getBuildingName());
         LatLng loc;
-        if(bldg!=null){
-            loc = GeoJsonParser.getCoordinates(bldg.getAllCoordinates());
+        if (bldg != null) {
+            loc = GeojsonFileParser.getCoordinates(bldg.getAllCoordinates());
             ((MainActivity) this.getActivity()).moveMap(loc);
         }
 
@@ -71,50 +75,48 @@ public class SingleEventFragment extends Fragment {
 
         Building bldgInfo = dbh.getBuildingByCode(event.getBuildingName());
         if (bldgInfo != null)
-            Log.d("Got info: ", bldgInfo.getCoordinatesAsString() + " " + bldgInfo.address );
+            Log.d("Got info: ", bldgInfo.getCoordinatesAsString() + " " + bldgInfo.address);
         //Get second linear layout and change button background and textView w eventDetails
         LinearLayout ll2 = (LinearLayout) ll.getChildAt(1);
         final Button subscribedButton = (Button) ll2.getChildAt(0);
         ScrollView sv = (ScrollView) ll2.getChildAt(1);
-        TextView eventDetails = (TextView)sv.getChildAt(0);
+        TextView eventDetails = (TextView) sv.getChildAt(0);
 
-            eventDetails.setText(
-                    "Location: " + event.getBuildingName() + "\n"
-                            + "Time: " + EventInfo.getTimeString(event.getStartTime()) + " - " + EventInfo.getTimeString(event.getEndTime()) + "\n"
-                            + "Date: " + EventInfo.getDateString(event.getStartTime())
-                            + "\n" + "Details: " + event.getEventDetails());
-            if(dbh.getEvent(event.getID()) != null) {
-                subscribedButton.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.star_toggle_on));
-            }
-            else{
-                subscribedButton.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.star_toggle_off));
-            }
-
-            //Set subscribe button to listen for clicks and delete the event when pressed, and set background to toggle_off
-            subscribedButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (dbh.getEvent(event.getID()) != null){
-                        subscribedButton.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.star_toggle_off));
-                        dbh.deleteEvent(event.getID());
-                    }
-                    else{
-                        subscribedButton.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.star_toggle_on));
-                        dbh.addEvent(event);
-                    }
-                }
-            });
-
-
-            return ll;
+        eventDetails.setText(
+                "Location: " + event.getBuildingName() + "\n"
+                        + "Time: " + EventInfo.getTimeString(event.getStartTime()) + " - " + EventInfo.getTimeString(event.getEndTime()) + "\n"
+                        + "Date: " + EventInfo.getDateString(event.getStartTime())
+                        + "\n" + "Details: " + event.getEventDetails());
+        if (dbh.getEvent(event.getID()) != null) {
+            subscribedButton.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.star_toggle_on));
+        } else {
+            subscribedButton.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.star_toggle_off));
         }
 
-    public String formatTime(String Time){
+        //Set subscribe button to listen for clicks and delete the event when pressed, and set background to toggle_off
+        subscribedButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (dbh.getEvent(event.getID()) != null) {
+                    subscribedButton.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.star_toggle_off));
+                    dbh.deleteEvent(event.getID());
+                } else {
+                    subscribedButton.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.star_toggle_on));
+                    dbh.addEvent(event);
+                }
+            }
+        });
+
+
+        return ll;
+    }
+
+    public String formatTime(String Time) {
         String[] dateTime = Time.split("T");
         return dateTime[1].substring(0, 5);
     }
 
-    public String getDate(String Time){
+    public String getDate(String Time) {
         String[] dateTime = Time.split("T");
         return dateTime[0];
     }

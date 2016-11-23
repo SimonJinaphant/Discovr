@@ -22,32 +22,30 @@ import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.pressImeActionButton;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.contrib.DrawerActions.openDrawer;
 import static android.support.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static android.support.test.espresso.matcher.ViewMatchers.isClickable;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.isFocusable;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static android.support.test.espresso.matcher.ViewMatchers.withResourceName;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.allOf;
 
 /**
  * Created by valerian on 11/9/16.
  */
 
 @RunWith(AndroidJUnit4.class)
-public class MainActivityTest{
+public class MainActivityTest {
 
     @Rule
     public ActivityTestRule<MainActivity> mActivityRule =
             new ActivityTestRule<>(MainActivity.class);
 
-    @Test
-    public void testDrawerOpen(){
-        onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
-        pressBack();
+    // Title checking code credit: http://blog.sqisland.com/2015/05/espresso-match-toolbar-title.html
+    private static ViewInteraction matchToolbarTitle(
+            CharSequence title) {
+        return onView(isAssignableFrom(Toolbar.class))
+                .check(matches(withToolbarTitle(is(title))));
     }
 
 
@@ -57,31 +55,31 @@ public class MainActivityTest{
     // actual way to check for the fragment within the view
     // :(
 
-
-    // Title checking code credit: http://blog.sqisland.com/2015/05/espresso-match-toolbar-title.html
-    private static ViewInteraction matchToolbarTitle(
-            CharSequence title) {
-        return onView(isAssignableFrom(Toolbar.class))
-                .check(matches(withToolbarTitle(is(title))));
-    }
-
     private static Matcher<Object> withToolbarTitle(
             final Matcher<CharSequence> textMatcher) {
         return new BoundedMatcher<Object, Toolbar>(Toolbar.class) {
-            @Override public boolean matchesSafely(Toolbar toolbar) {
+            @Override
+            public boolean matchesSafely(Toolbar toolbar) {
                 return textMatcher.matches(toolbar.getTitle());
             }
-            @Override public void describeTo(Description description) {
+
+            @Override
+            public void describeTo(Description description) {
                 description.appendText("with toolbar title: ");
                 textMatcher.describeTo(description);
             }
         };
     }
 
+    @Test
+    public void testDrawerOpen() {
+        onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
+        pressBack();
+    }
 
     // 1. Open up Events Nearby
     @Test
-    public void testEventsNearby(){
+    public void testEventsNearby() {
         onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
         onView(withText(R.string.events_upcoming)).perform(click());
         //Check whether the right title shows up
@@ -92,7 +90,7 @@ public class MainActivityTest{
 
     // 2. Open up Subscribed Events
     @Test
-    public void testSubscribedEvents(){
+    public void testSubscribedEvents() {
         onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
         onView(withText(R.string.events_subscribed)).perform(click());
         //Check whether the right title shows up
@@ -104,7 +102,7 @@ public class MainActivityTest{
 
     // 3. Open up all events
     @Test
-    public void testAllEvents(){
+    public void testAllEvents() {
         onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
         onView(withText(R.string.events_all)).perform(click());
         //Check whether the right title shows up
@@ -115,7 +113,7 @@ public class MainActivityTest{
 
     // 4. Open up course list
     @Test
-    public void testCourseList(){
+    public void testCourseList() {
         onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
         onView(withText(R.string.courses)).perform(click());
         //Check whether the right title shows up
@@ -125,11 +123,10 @@ public class MainActivityTest{
     }
 
 
-
     // TODO: Testing fragment switching
     // 5. Open up Subscribed Events Fragment, then open up course list
     @Test
-    public void testFragmentSwitch(){
+    public void testFragmentSwitch() {
         onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
         onView(withText(R.string.events_subscribed)).perform(click());
         //Check whether the right title shows up
@@ -147,7 +144,7 @@ public class MainActivityTest{
     // 6. Open up subscribed events, pressing back
     //      - assert we are back in the map view page
     @Test
-    public void backFragmentBackNavigation(){
+    public void backFragmentBackNavigation() {
         onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
         onView(withText(R.string.events_subscribed)).perform(click());
         //Check whether the right title shows up
@@ -162,7 +159,7 @@ public class MainActivityTest{
     // TODO: Determine way to organize tests
 
     @Test
-    public void testSearchBarExistance(){
+    public void testSearchBarExistance() {
         onView(withId(R.id.action_search)).check(matches(isDisplayed()));
         onView(withId(R.id.action_search)).check(matches(isClickable()));
         onView(withId(R.id.action_search)).check(matches(isFocusable()));
@@ -172,7 +169,7 @@ public class MainActivityTest{
 
 
     @Test
-    public void testSearchBarType(){
+    public void testSearchBarType() {
         onView(withId(R.id.action_search)).perform(click());
         String testText = "This is a test";
         onView(isAssignableFrom(EditText.class)).perform(typeText(testText));
@@ -180,10 +177,10 @@ public class MainActivityTest{
     }
 
     @Test
-    public void testSearchQuery(){
+    public void testSearchQuery() {
         try {
             Thread.sleep(1000);
-        } catch (InterruptedException e){
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
         onView(withId(R.id.action_search)).perform(click());

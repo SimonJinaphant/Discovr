@@ -12,15 +12,16 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Scanner;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class EventClientManagerTest {
 
     EventClientManager ecm;
     List<EventInfo> testEventList;
-    int[] eventID = {0,1,2,3,4,5};
+    int[] eventID = {0, 1, 2, 3, 4, 5};
     String[] eventName = {"Event 1", "Event 2", "Event 3", "Event 4", "Event 5", "Event 6"};
     String[] hostName = {"Host 1", "Host 2", "Host 3", "Host 4", "Host 5", "Host 6"};
     String[] loc = {"Loc 1", "Loc 2", "Loc 3", "Loc 4", "Loc 5", "Loc 6"};
@@ -29,15 +30,15 @@ public class EventClientManagerTest {
     String[] description = {"Description for event 1", "Description for event 2", "Description for event 3", "Description for event 4", "Description for event 5", "Description for event 6"};
 
     @Before
-    public void setUp(){
+    public void setUp() {
         testEventList = new ArrayList<>();
 
         // List of Test Events
-        for (int i = 0; i < eventID.length; i++){
+        for (int i = 0; i < eventID.length; i++) {
             testEventList.add(new EventInfo(eventID[i], eventName[i], hostName[i], loc[i], startTime[i], endTime[i], description[i]));
         }
 
-        ecm = new EventClientManager(testEventList){
+        ecm = new EventClientManager(testEventList) {
             @Override
             public void updateEventsList() {
 
@@ -50,65 +51,64 @@ public class EventClientManagerTest {
     }
 
     @After
-    public void tearDown(){
+    public void tearDown() {
         ecm = null;
         testEventList.clear();
     }
 
-   @Test
-   public void testEventDateFilter(){
-       Calendar cal = Calendar.getInstance();
-       cal.set(2016, Calendar.NOVEMBER, 22, 0, 0, 0);
-       Date dayAfter = ecm.addOneDay(cal.getTime());
-       ecm.eventDateFilter(testEventList, cal.getTime(), dayAfter);
+    @Test
+    public void testEventDateFilter() {
+        Calendar cal = Calendar.getInstance();
+        cal.set(2016, Calendar.NOVEMBER, 22, 0, 0, 0);
+        Date dayAfter = ecm.addOneDay(cal.getTime());
+        ecm.eventDateFilter(testEventList, cal.getTime(), dayAfter);
 
-       EventInfo e0 = new EventInfo(eventID[0], eventName[0], hostName[0], loc[0], startTime[0], endTime[0], description[0]);
-       EventInfo e1 = new EventInfo(eventID[1], eventName[1], hostName[1], loc[1], startTime[1], endTime[1], description[1]);
-       EventInfo e2 = new EventInfo(eventID[2], eventName[2], hostName[2], loc[2], startTime[2], endTime[2], description[2]);
-       EventInfo e3 = new EventInfo(eventID[3], eventName[3], hostName[3], loc[3], startTime[3], endTime[3], description[3]);
-       EventInfo e4 = new EventInfo(eventID[4], eventName[4], hostName[4], loc[4], startTime[4], endTime[4], description[4]);
-       EventInfo e5 = new EventInfo(eventID[5], eventName[5], hostName[5], loc[5], startTime[5], endTime[5], description[5]);
+        EventInfo e0 = new EventInfo(eventID[0], eventName[0], hostName[0], loc[0], startTime[0], endTime[0], description[0]);
+        EventInfo e1 = new EventInfo(eventID[1], eventName[1], hostName[1], loc[1], startTime[1], endTime[1], description[1]);
+        EventInfo e2 = new EventInfo(eventID[2], eventName[2], hostName[2], loc[2], startTime[2], endTime[2], description[2]);
+        EventInfo e3 = new EventInfo(eventID[3], eventName[3], hostName[3], loc[3], startTime[3], endTime[3], description[3]);
+        EventInfo e4 = new EventInfo(eventID[4], eventName[4], hostName[4], loc[4], startTime[4], endTime[4], description[4]);
+        EventInfo e5 = new EventInfo(eventID[5], eventName[5], hostName[5], loc[5], startTime[5], endTime[5], description[5]);
 
-       assertFalse(testEventList.contains(e0));
-       assertFalse(testEventList.contains(e4));
-       assertTrue(testEventList.contains(e1));
-       assertTrue(testEventList.contains(e2));
-       assertTrue(testEventList.contains(e3));
-       assertTrue(testEventList.contains(e5));
-   }
+        assertFalse(testEventList.contains(e0));
+        assertFalse(testEventList.contains(e4));
+        assertTrue(testEventList.contains(e1));
+        assertTrue(testEventList.contains(e2));
+        assertTrue(testEventList.contains(e3));
+        assertTrue(testEventList.contains(e5));
+    }
 
     @Test
-    public void testFindEvent(){
+    public void testFindEvent() {
         EventInfo event = new EventInfo(eventID[5], eventName[5], hostName[5], loc[5], startTime[5], endTime[5], description[5]);
         EventInfo foundEvent = ecm.findEvent(eventID[5]);
         assertEquals(event, foundEvent);
     }
 
     @Test
-    public void testSortList(){
+    public void testSortList() {
         ecm.sortList(testEventList);
-        for (int i = 0; i < eventID.length - 1; i++){
-            assertTrue(testEventList.get(i).getStartTime().before(testEventList.get(i+1).getStartTime()));
+        for (int i = 0; i < eventID.length - 1; i++) {
+            assertTrue(testEventList.get(i).getStartTime().before(testEventList.get(i + 1).getStartTime()));
         }
 
     }
 
     @Test
-    public void testAddOneDay(){
+    public void testAddOneDay() {
         String dateString = "18-11-2016 00:00:00";
         String dateStringTmrw = "19-11-2016 00:00:00";
         SimpleDateFormat format = new SimpleDateFormat("dd-M-yyyy hh:mm:ss");
 
-        try{
+        try {
             Date midnightNov18 = format.parse(dateString);
             Date midnightNov19 = format.parse(dateStringTmrw);
             midnightNov18 = ecm.addOneDay(midnightNov18);
             assertEquals(midnightNov18, midnightNov19);
-        } catch (ParseException e){
+        } catch (ParseException e) {
             e.printStackTrace();
         }
     }
-
 
 
 }

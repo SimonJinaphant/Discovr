@@ -23,16 +23,16 @@ public class AlertUtil {
         //format the curr time
         String currTime = CurrTimeFormatter.format(currDate);
 
-        if(courseList == null){
+        if (courseList == null) {
             return null;
-        }else {
+        } else {
             //go over the courseList to check if there is any course in 10 mins
             for (Course course : courseList) {
                 Date courDate;
                 //get course time
-                if(new Long(course.getStartTime()).toString().length() == 5){
-                    courDate = CourTimeFormatter.parse("0"+String.valueOf(course.getStartTime()));
-                }else{
+                if (new Long(course.getStartTime()).toString().length() == 5) {
+                    courDate = CourTimeFormatter.parse("0" + String.valueOf(course.getStartTime()));
+                } else {
                     courDate = CourTimeFormatter.parse(String.valueOf(course.getStartTime()));
                 }
                 //get curr time
@@ -47,7 +47,7 @@ public class AlertUtil {
                 long second = (diff / 1000 - day * 24 * 60 * 60 - hour * 60 * 60 - min * 60);
 
                 //if diff <= 10 mins, return curr course
-                if(day == 0 && hour == 0){
+                if (day == 0 && hour == 0) {
                     if (second > 0 && min < 10 && min >= 0) {
                         return course;
                     }

@@ -40,6 +40,7 @@ public class CalendarFileParser {
     /**
      * Parses the user's time table from the ical file.
      * Requires: The ical file to be located in their phone's Download folder.
+     *
      * @return
      */
     public static List<Course> loadUserCourses() {
@@ -51,7 +52,7 @@ public class CalendarFileParser {
             Log.d("calendar", "Unable to find a ical file, please download one off of UBC SSC.");
             return null;
         }
-        Log.d("calendar","ICal file found :D" );
+        Log.d("calendar", "ICal file found :D");
 
         List<Course> courses = new ArrayList<>();
 
@@ -110,6 +111,7 @@ public class CalendarFileParser {
 
     /**
      * Parse the given string into a Date object.
+     *
      * @param rawFormat - A string in the format of yyyyMMdd
      * @return The corresponding Date object to the input date at time 00:00:00
      */

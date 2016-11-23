@@ -1,9 +1,6 @@
 package org.cpen321.discovr.model;
 
 
-import android.util.Log;
-import android.widget.LinearLayout;
-
 import com.mapbox.mapboxsdk.geometry.LatLng;
 
 import java.util.ArrayList;
@@ -18,14 +15,14 @@ public class Building {
     public String code;
     public String address;
     public String hours;
-    private List<LatLng> coordinates = new ArrayList<LatLng>();
+    private List<LatLng> coordinates = new ArrayList<>();
 
-    public Building(String name, String code, String address, String hours, String coordinates){
+    public Building(String name, String code, String address, String hours, String coordinates) {
         this.name = name;
         this.code = code;
         this.address = address;
         this.hours = hours;
-        if(coordinates != null) {
+        if (coordinates != null) {
             String[] stringLatLng = coordinates.split("%");
 
             for (int i = 0; i < stringLatLng.length; i++) {
@@ -38,7 +35,7 @@ public class Building {
         }
     }
 
-    public Building(String name, String code, String address, String hours, List<LatLng> coordinates){
+    public Building(String name, String code, String address, String hours, List<LatLng> coordinates) {
         this.name = name;
         this.code = code;
         this.address = address;
@@ -47,16 +44,16 @@ public class Building {
     }
 
 
-    public String getCoordinatesAsString(){
+    public String getCoordinatesAsString() {
         String c = "";
-        for (LatLng l : coordinates){
+        for (LatLng l : coordinates) {
             c = c + String.valueOf(l.getLatitude()) + "," + String.valueOf(l.getLongitude()) + "%";
 
         }
-        return c.substring(0, c.length()-1);
+        return c.substring(0, c.length() - 1);
     }
 
-    public List<LatLng> getAllCoordinates(){
+    public List<LatLng> getAllCoordinates() {
         return this.coordinates;
     }
 }

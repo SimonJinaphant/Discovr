@@ -7,11 +7,8 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
-
-import static java.lang.Integer.parseInt;
 
 /**
  * Created by jacqueline on 10/28/2016.
@@ -26,7 +23,7 @@ public class EventInfo {
     private Date endTime;
     private String eventDetails;
 
-    public EventInfo(int id, String name, String hostName, String buildingName, String startTime, String endTime, String eventDetails){
+    public EventInfo(int id, String name, String hostName, String buildingName, String startTime, String endTime, String eventDetails) {
         setID(id);
         setName(name);
         setHostName(hostName);
@@ -35,86 +32,97 @@ public class EventInfo {
         setEventDetails(eventDetails);
     }
 
-
-    public void setID( int id ){
-        this.id = id;
+    public static String getDateString(Date Time) {
+        DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.CANADA);
+        return format.format(Time);
     }
 
-    public void setName( String name ){
-        this.name = name;
+    public static String getTimeString(Date Time) {
+        DateFormat format = new SimpleDateFormat("kk:mm:ss", Locale.CANADA);
+        return format.format(Time);
     }
 
-    public void setHostName( String hostName ){
-        this.hostName = hostName;
-    }
-
-    public void setBuildingName( String buildingName ){
-        this.buildingName = buildingName;
-    }
-
-    public void setTime( String startTime, String endTime ){
+    public void setTime(String startTime, String endTime) {
         DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'kk:mm:ss", Locale.CANADA);
         try {
             this.startTime = format.parse(startTime);
             this.endTime = format.parse(endTime);
-        } catch (ParseException e){
+        } catch (ParseException e) {
             e.printStackTrace();
         }
     }
 
-    public void setEventDetails( String eventDetails ){
-        this.eventDetails = eventDetails;
-    }
-
-    public int getID (){
+    public int getID() {
         return this.id;
     }
 
-    public String getName (){return this.name; }
+    public void setID(int id) {
+        this.id = id;
+    }
 
-    public String getHostName(){return this.hostName; }
+    public String getName() {
+        return this.name;
+    }
 
-    public String getBuildingName(){ return this.buildingName;}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-    public Date getStartTime(){return this.startTime;}
+    public String getHostName() {
+        return this.hostName;
+    }
 
-    public String getStartTimeString(){
+    public void setHostName(String hostName) {
+        this.hostName = hostName;
+    }
+
+    public String getBuildingName() {
+        return this.buildingName;
+    }
+
+    public void setBuildingName(String buildingName) {
+        this.buildingName = buildingName;
+    }
+
+    public Date getStartTime() {
+        return this.startTime;
+    }
+
+    public String getStartTimeString() {
         DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'kk:mm:ss", Locale.CANADA);
         Log.d("eventDate", "Start Time: " + format.format(this.startTime));
         return format.format(this.startTime);
     }
 
-    public String getEndTimeString(){
+    public String getEndTimeString() {
         DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'kk:mm:ss", Locale.CANADA);
         Log.d("eventDate", "End Time: " + format.format(this.endTime));
         return format.format(this.endTime);
     }
 
-    public Date getEndTime(){ return this.endTime;}
-
-    public String getEventDetails(){ return this.eventDetails; }
-
-    public static String getDateString(Date Time){
-        DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.CANADA);
-        return format.format(Time);
+    public Date getEndTime() {
+        return this.endTime;
     }
 
-    public static String getTimeString(Date Time){
-        DateFormat format = new SimpleDateFormat("kk:mm:ss", Locale.CANADA);
-        return format.format(Time);
+    public String getEventDetails() {
+        return this.eventDetails;
+    }
+
+    public void setEventDetails(String eventDetails) {
+        this.eventDetails = eventDetails;
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof EventInfo){
+        if (obj instanceof EventInfo) {
             EventInfo object = (EventInfo) obj;
             if (this.id == object.getID() &&
-                this.getName().equals(object.getName()) &&
-                this.getHostName().equals(object.getHostName()) &&
-                this.getBuildingName().equals(object.getBuildingName()) &&
-                this.getStartTime().equals(object.getStartTime()) &&
-                this.getEndTime().equals(object.getEndTime()) &&
-                this.getEventDetails().equals(object.getEventDetails())     ){
+                    this.getName().equals(object.getName()) &&
+                    this.getHostName().equals(object.getHostName()) &&
+                    this.getBuildingName().equals(object.getBuildingName()) &&
+                    this.getStartTime().equals(object.getStartTime()) &&
+                    this.getEndTime().equals(object.getEndTime()) &&
+                    this.getEventDetails().equals(object.getEventDetails())) {
 
                 return true;
             }
@@ -147,7 +155,6 @@ public class EventInfo {
         return infoString;
     }
     */
-
 
 
 }

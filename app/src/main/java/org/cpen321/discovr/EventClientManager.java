@@ -10,7 +10,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -30,30 +29,44 @@ public class EventClientManager {
     final List<EventInfo> AllEvents;
 
 
-    EventClientManager(){
+    EventClientManager() {
         AllEvents = new ArrayList<>();
         updateEventsList();
     }
 
     /**
      * Constructor with a list of events
+     *
      * @param events
      */
-    EventClientManager(List<EventInfo> events){
+    EventClientManager(List<EventInfo> events) {
         AllEvents = new ArrayList<>(events);
+    }
+
+    /**
+     * Adds one day to the provided date
+     *
+     * @param date the input date
+     * @return a Date one day after date
+     */
+    public static Date addOneDay(Date date) {
+        Calendar c = Calendar.getInstance();
+        c.setTime(date);
+        c.add(Calendar.DATE, 1);
+        return c.getTime();
     }
 
     /**
      * Updates the event list
      */
-    public void updateEventsList(){
+    public void updateEventsList() {
         setUpEventsClient();
     }
 
     /**
      * @return A list of events that haven't ended
      */
-    public List<EventInfo> getAllEvents(){
+    public List<EventInfo> getAllEvents() {
         List<EventInfo> events = new ArrayList<>(AllEvents);
         eventDateFilter(events, new Date());
         sortList(events);
@@ -63,7 +76,7 @@ public class EventClientManager {
     /**
      * @return The raw list containing all events from the database
      */
-    public List<EventInfo> getRawEvents(){
+    public List<EventInfo> getRawEvents() {
         List<EventInfo> events = new ArrayList<>(AllEvents);
         return events;
     }
@@ -71,7 +84,7 @@ public class EventClientManager {
     /**
      * @return The list of upcoming events
      */
-    public List<EventInfo> getUpcomingEvents(){
+    public List<EventInfo> getUpcomingEvents() {
         List<EventInfo> events = new ArrayList<>(AllEvents);
         eventDateFilter(events, new Date(), addOneDay(new Date()));
         return events;
@@ -79,16 +92,17 @@ public class EventClientManager {
 
     /**
      * Filters events from one date to another
-     * @param events A list of events
+     *
+     * @param events   A list of events
      * @param fromDate the start of the date interval
-     * @param toDate the end of the date interval
+     * @param toDate   the end of the date interval
      */
-    public void eventDateFilter(List<EventInfo> events, Date fromDate, Date toDate){
+    public void eventDateFilter(List<EventInfo> events, Date fromDate, Date toDate) {
         ListIterator<EventInfo> li = events.listIterator();
-        while (li.hasNext()){
+        while (li.hasNext()) {
             EventInfo ei = li.next();
-            if (   ei.getEndTime().before(fromDate)
-                    || (ei.getStartTime().after(toDate))    ){
+            if (ei.getEndTime().before(fromDate)
+                    || (ei.getStartTime().after(toDate))) {
                 li.remove();
             }
         }
@@ -96,35 +110,25 @@ public class EventClientManager {
 
     /**
      * Filters events happening after a certain date
-     * @param events A list of events
+     *
+     * @param events   A list of events
      * @param fromDate date
      */
-    public void eventDateFilter(List<EventInfo> events, Date fromDate){
+    public void eventDateFilter(List<EventInfo> events, Date fromDate) {
         eventDateFilter(events, fromDate, new Date(Long.MAX_VALUE));
     }
 
     /**
-     * Adds one day to the provided date
-     * @param date the input date
-     * @return a Date one day after date
-     */
-    public static Date addOneDay(Date date){
-        Calendar c = Calendar.getInstance();
-        c.setTime(date);
-        c.add(Calendar.DATE, 1);
-        return c.getTime();
-    }
-
-    /**
      * Finds an event
+     *
      * @param eventID the ID of the event searched for
      * @return an EventInfo associated with the ID
      */
-    public EventInfo findEvent(int eventID){
+    public EventInfo findEvent(int eventID) {
         ListIterator<EventInfo> li = AllEvents.listIterator();
-        while (li.hasNext()){
+        while (li.hasNext()) {
             EventInfo event = li.next();
-            if (event.getID() == eventID){
+            if (event.getID() == eventID) {
                 return event;
             }
         }
@@ -148,7 +152,7 @@ public class EventClientManager {
     /**
      * Sets up the client for getting event information from the events database
      */
-    private void setUpEventsClient(){
+    private void setUpEventsClient() {
         AsyncHttpClient client = new AsyncHttpClient();
         client.get("http://discovrweb2.azurewebsites.net/api/Events", new AsyncHttpResponseHandler() {
             @Override
@@ -162,7 +166,7 @@ public class EventClientManager {
                 String r = new String(response);
                 try {
                     JSONArray json = new JSONArray(r);
-                    for(int i = 0; i < json.length(); i++){
+                    for (int i = 0; i < json.length(); i++) {
                         JSONObject o = json.getJSONObject(i);
                         AllEvents.add(new EventInfo(o.getInt("Id"),
                                 o.getString("Name"),
@@ -172,8 +176,7 @@ public class EventClientManager {
                                 o.getString("EndTime"),
                                 o.getString("Description")));
                     }
-                }
-                catch (JSONException e){
+                } catch (JSONException e) {
                     throw new RuntimeException(e);
                 }
                 Log.v("events", "Raw client response: " + r);

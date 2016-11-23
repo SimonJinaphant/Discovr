@@ -12,16 +12,16 @@ import org.cpen321.discovr.model.Course;
 import org.cpen321.discovr.model.EventInfo;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.text.SimpleDateFormat;
 import java.util.List;
 
 /**
  * Created by jacqueline on 10/28/2016.
  */
 
-public class SQLiteDBHandler extends SQLiteOpenHelper{
+public class SQLiteDBHandler extends SQLiteOpenHelper {
     //Database version
     private static final int DATABASE_VERSION = 1;
     //Database name
@@ -39,26 +39,6 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
     private static final String KEY_STARTTIME = "startTime";
     private static final String KEY_ENDTIME = "endTime";
     private static final String KEY_DETAILS = "eventDetails";
-
-    //Added column names in table "SubscribedCourses"
-    private static final String KEY_CATEGORY = "category";
-    private static final String KEY_NUMBER = "number";
-    private static final String KEY_SECTION = "section";
-    private static final String KEY_ROOM = "room";
-    private static final String KEY_START_DATE= "startDate";
-    private static final String KEY_END_DATE = "endDate";
-    private static final String KEY_DAY_OF_WEEK = "dayOfWeek";
-
-    //Column names int table of building
-    private int buildingNum;
-    private static final String KEY_BLDG_ID = "BuildingID";
-    private static final String KEY_BLDG_NAME = "BuildingName";
-    private static final String KEY_BLDG_CODE = "BuildingCode";
-    private static final String KEY_BLDG_ADDRESS = "BuildingAddress";
-    private static final String KEY_BLDG_HOURS = "BuildingHours";
-    private static final String KEY_BLDG_COORDINATES = "BuildingCoordinates";
-
-
     public static final String CREATE_TABLE_SUBBED_EVENTS = "CREATE TABLE " + TABLE_SUBSCRIBED_EVENTS + "(" +
             KEY_ID + " INTEGER PRIMARY KEY," +
             KEY_NAME + " TEXT," +
@@ -67,7 +47,14 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
             KEY_STARTTIME + " TEXT," +
             KEY_ENDTIME + " TEXT," +
             KEY_DETAILS + " TEXT" + ")";
-
+    //Added column names in table "SubscribedCourses"
+    private static final String KEY_CATEGORY = "category";
+    private static final String KEY_NUMBER = "number";
+    private static final String KEY_SECTION = "section";
+    private static final String KEY_ROOM = "room";
+    private static final String KEY_START_DATE = "startDate";
+    private static final String KEY_END_DATE = "endDate";
+    private static final String KEY_DAY_OF_WEEK = "dayOfWeek";
     public static final String CREATE_TABLE_COURSES = "CREATE TABLE " + TABLE_SUBSCRIBED_COURSES + "(" +
             KEY_CATEGORY + " TEXT," +
             KEY_NUMBER + " TEXT," +
@@ -79,24 +66,31 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
             KEY_START_DATE + " TEXT," +
             KEY_END_DATE + " TEXT," +
             KEY_DAY_OF_WEEK + " TEXT" + ")";
-
+    private static final String KEY_BLDG_ID = "BuildingID";
+    private static final String KEY_BLDG_NAME = "BuildingName";
+    private static final String KEY_BLDG_CODE = "BuildingCode";
+    private static final String KEY_BLDG_ADDRESS = "BuildingAddress";
+    private static final String KEY_BLDG_HOURS = "BuildingHours";
+    private static final String KEY_BLDG_COORDINATES = "BuildingCoordinates";
     public static final String CREATE_TABLE_BUILDINGS = "CREATE TABLE " + TABLE_BUILDINGS + "(" +
             KEY_BLDG_ID + " INTEGER PRIMARY KEY," +
-            KEY_BLDG_NAME+ " TEXT," +
+            KEY_BLDG_NAME + " TEXT," +
             KEY_BLDG_CODE + " TEXT," +
             KEY_BLDG_ADDRESS + " TEXT," +
             KEY_BLDG_HOURS + " TEXT," +
             KEY_BLDG_COORDINATES + " TEXT" + ")";
+    //Column names int table of building
+    private int buildingNum;
 
 
-    public SQLiteDBHandler (Context context){
+    public SQLiteDBHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
     //Creates table when getReadableDatabase or getWritableDatabase is called and no DB exists
     @Override
 
-    public void onCreate(SQLiteDatabase db){
+    public void onCreate(SQLiteDatabase db) {
         buildingNum = 0;
         db.execSQL(CREATE_TABLE_SUBBED_EVENTS);
         db.execSQL(CREATE_TABLE_COURSES);
@@ -106,7 +100,7 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
 
     //Creates new db if new version > old version
     @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion){
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         //Drop older tables if they existed
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_SUBSCRIBED_EVENTS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_SUBSCRIBED_COURSES);
@@ -127,7 +121,7 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
      */
 
     //Adds new event to database
-    public void addEvent(EventInfo data){
+    public void addEvent(EventInfo data) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         //Place values in contentValues
@@ -147,19 +141,20 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
     }
 
     //Get one specific event based on ID
-    public EventInfo getEvent(int id){
+    public EventInfo getEvent(int id) {
         SQLiteDatabase db = this.getReadableDatabase();
         EventInfo event = null;
         //Select all rows from TABLE_SUBSCRIBED_EVENTS where key_ID = id
-        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_SUBSCRIBED_EVENTS + " WHERE " + KEY_ID + " = ? ", new String[]{String.valueOf(id)} );
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_SUBSCRIBED_EVENTS + " WHERE " + KEY_ID + " = ? ", new String[]{String.valueOf(id)});
         if (cursor.getCount() != 0) {
             cursor.moveToFirst();
             event = new EventInfo(cursor.getInt(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5), cursor.getString(6));
         }
+        cursor.close();
         return event;
     }
 
-    public List<EventInfo> getEventbySearch(String searchString){
+    public List<EventInfo> getEventbySearch(String searchString) {
         List<EventInfo> eventList = new ArrayList<EventInfo>();
         SQLiteDatabase db = this.getReadableDatabase();
 
@@ -212,7 +207,7 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
     }
 
     //Get count of all events in user's database
-    public int getEventCount(){
+    public int getEventCount() {
         String query = "SELECT * FROM " + TABLE_SUBSCRIBED_EVENTS;
         SQLiteDatabase db = this.getReadableDatabase();
 
@@ -224,7 +219,7 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
     }
 
     //Updates single Event
-    public int updateEvent(EventInfo event){
+    public int updateEvent(EventInfo event) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
 
@@ -241,7 +236,7 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
     }
 
     //Delete single Event
-    public void deleteEvent(int eventID){
+    public void deleteEvent(int eventID) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_SUBSCRIBED_EVENTS, KEY_ID + " = ?", new String[]{String.valueOf(eventID)});
         db.close();
@@ -255,16 +250,16 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
      */
 
     //Add new courses to the local database
-    public void addCourses(List<Course> courses){
+    public void addCourses(List<Course> courses) {
 
         //Check for empty size
-        if (courses.size() < 1){
+        if (courses.size() < 1) {
             return;
         }
 
         SQLiteDatabase db = this.getWritableDatabase();
         Log.d("sql", db.toString());
-        for(int i = 0; i < courses.size();i++) {
+        for (int i = 0; i < courses.size(); i++) {
             Course myCourse = courses.get(i);
 
             //Place values in contentValues
@@ -279,11 +274,11 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
             values.put(KEY_ENDTIME, myCourse.getEndTime());
             values.put(KEY_START_DATE, myCourse.getStartDate());
             values.put(KEY_END_DATE, myCourse.getEndDate());
-            values.put(KEY_DAY_OF_WEEK , myCourse.getDayOfWeek());
+            values.put(KEY_DAY_OF_WEEK, myCourse.getDayOfWeek());
 
 
             //Insert new row
-            if (db.insert(TABLE_SUBSCRIBED_COURSES, null, values) == -1){
+            if (db.insert(TABLE_SUBSCRIBED_COURSES, null, values) == -1) {
                 Log.d("sql", "Failed to insert the entry");
             }
         }
@@ -319,7 +314,7 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
 
         //close cursor and return list of all courses
         cursor.close();
-        return  myCourses;
+        return myCourses;
     }
 
 
@@ -331,7 +326,7 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
     getBuildingCount();
      */
     //Adds single building to database
-    public void addBuilding(Building bldg){
+    public void addBuilding(Building bldg) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         //Place values in contentValues
@@ -350,38 +345,43 @@ public class SQLiteDBHandler extends SQLiteOpenHelper{
     }
 
     //Get one specific event based on ID
-    public Building getBuildingByCode(String code){
+    public Building getBuildingByCode(String code) {
         SQLiteDatabase db = this.getReadableDatabase();
         code = "%" + code.replaceAll("[^A-Za-z]", "") + "%";
         Log.d("Searching for: ", code);
         Building bldg = null;
 
         //Select all rows from TABLE_BUILDING where KEY_BLDG_CODE is code
-        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_BUILDINGS + " WHERE " + KEY_BLDG_CODE + " LIKE ? OR " + KEY_BLDG_NAME + " LIKE ?", new String[]{code, code} );;
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_BUILDINGS + " WHERE " + KEY_BLDG_CODE + " LIKE ? OR " + KEY_BLDG_NAME + " LIKE ?", new String[]{code, code});
+
         if (cursor.getCount() != 0) {
             cursor.moveToFirst();
             bldg = new Building(cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5));
         }
+        cursor.close();
         return bldg;
     }
 
-    public Building getBuildingByID(int ID){
+    public Building getBuildingByID(int ID) {
         SQLiteDatabase db = this.getReadableDatabase();
 
         Building bldg = null;
 
         //Select all rows from TABLE_BUILDING where KEY_BLDG_ID is ID
-        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_BUILDINGS + " WHERE " + KEY_BLDG_ID + " = ? ", new String[]{String.valueOf(ID)});;
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_BUILDINGS + " WHERE " + KEY_BLDG_ID + " = ? ", new String[]{String.valueOf(ID)});
+
         if (cursor.getCount() != 0) {
             cursor.moveToFirst();
             bldg = new Building(cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5));
         }
+        cursor.close();
         return bldg;
     }
 
-    public int getBuildingCount(){
+    public int getBuildingCount() {
         return (this.buildingNum + 1);
     }
+
     public List<Building> getAllBuildings() {
         List<Building> bldgs = new ArrayList<Building>();
 
