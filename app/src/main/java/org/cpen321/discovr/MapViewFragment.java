@@ -42,11 +42,13 @@ import com.mapbox.services.directions.v5.models.DirectionsRoute;
 
 import org.cpen321.discovr.model.Building;
 import org.cpen321.discovr.model.EventInfo;
+import org.cpen321.discovr.model.MapPolygon;
 import org.cpen321.discovr.model.MapTransitStation;
 import org.cpen321.discovr.utility.PolygonUtil;
 
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -68,6 +70,7 @@ public class MapViewFragment extends Fragment {
     Polyline routeLine;
     List<Building> buildings;
     List<MapTransitStation> stations;
+    List<MapPolygon> constructions;
 
     public MapViewFragment() {
         // Required empty public constructor
@@ -136,6 +139,15 @@ public class MapViewFragment extends Fragment {
                             .title("["+station.stationNumber+"]"+station.name)
                     );
                 }
+
+                for(MapPolygon constructionZone : constructions){
+                    map.addPolygon(new PolygonOptions()
+                            .addAll(constructionZone.vertices)
+                            .alpha(0.35f)
+                            .fillColor(Color.parseColor("#FEDA7A"))
+                    );
+                }
+
                 map.setOnMarkerClickListener(new MapboxMap.OnMarkerClickListener() {
                     @Override
                     public boolean onMarkerClick(@NonNull Marker marker) {
@@ -199,6 +211,10 @@ public class MapViewFragment extends Fragment {
 
     public void setTransitStation(List<MapTransitStation> stations) {
         this.stations = stations;
+    }
+
+    public  void setConstructionZones(List<MapPolygon> constructions){
+        this.constructions = constructions;
     }
 
     public void displayTransitStation(){
