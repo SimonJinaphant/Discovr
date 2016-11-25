@@ -26,9 +26,7 @@ import org.cpen321.discovr.utility.AlertUtil;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.Vector;
 
 import static android.text.Spanned.SPAN_INCLUSIVE_INCLUSIVE;
 import static org.cpen321.discovr.R.dimen.button_margin;
@@ -91,7 +89,7 @@ public class CoursesFragment extends Fragment {
         List<Course> courseTerm1 = new ArrayList<>();
         List<Course> courseTerm2 = new ArrayList<>();
         List<Course> courseTerm3 = new ArrayList<>();
-        List<Course> coursePrinted = new ArrayList<>();
+        List<Course> courseSelected = new ArrayList<>();
 
 
         try {
@@ -108,20 +106,10 @@ public class CoursesFragment extends Fragment {
                 }
             }
 
-            Calendar c = Calendar.getInstance();
-            int month = c.get(Calendar.MONTH);
-            Log.d("Get Current Month:  ", String.valueOf(month));
-
-            if ( 0 <= month && month <= 4){
-                coursePrinted = courseTerm2;
-            }else if( 8 <= month || month <= 11 ){
-                coursePrinted = courseTerm1;
-            }else{
-                coursePrinted = courseTerm3;
-            }
+            courseSelected = courseSelector(courseTerm1, courseTerm2, courseTerm3);
 
             //Add new button for each course in DB
-            for (final Course course : coursePrinted) {
+            for (final Course course : courseSelected) {
                 //formats button to be the same as the format we want in the fragment
                 final Button button = createCourseButton(course);
                 //Add this button to the layout
@@ -158,7 +146,7 @@ public class CoursesFragment extends Fragment {
 
         try {
             //check if there is any class in 10 mins
-            if (AlertUtil.courseAlert(coursePrinted) != null) {
+            if (AlertUtil.courseAlert(courseSelected) != null) {
                 //get the course if there is any
                 Course currCourse = AlertUtil.courseAlert(courseList);
                 //show the alert message
@@ -174,6 +162,23 @@ public class CoursesFragment extends Fragment {
             e.printStackTrace();
         }
         return fm;
+    }
+
+    private List<Course> courseSelector(List<Course> courseTerm1, List<Course> courseTerm2, List<Course> courseTerm3) {
+        List<Course> result = new ArrayList<>();
+
+        Calendar c = Calendar.getInstance();
+        int month = c.get(Calendar.MONTH);
+        Log.d("Get Current Month:  ", String.valueOf(month));
+
+        if ( 0 <= month && month <= 4){
+            result = courseTerm2;
+        }else if( 8 <= month || month <= 11 ){
+            result = courseTerm1;
+        }else{
+            result = courseTerm3;
+        }
+        return result;
     }
 
     private Button createCourseButton(Course course) {

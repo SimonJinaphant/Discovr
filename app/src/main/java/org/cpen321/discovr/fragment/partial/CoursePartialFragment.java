@@ -77,7 +77,6 @@ public class CoursePartialFragment extends Fragment {
         LinearLayout ll = (LinearLayout) inflater.inflate(R.layout.fragment_single_course, container, false);
 
         //get location from the local db
-        //Building bldg = dbh.getBuildingByCode(course.getBuilding());
         Building bldg = dbh.getBuildingByCode(course.getBuilding());
 
         if (bldg != null)
@@ -89,17 +88,25 @@ public class CoursePartialFragment extends Fragment {
             loc = GeojsonFileParser.getCoordinates(bldg.getAllCoordinates());
             ((MainActivity) this.getActivity()).moveMap(loc);
         }
+        setTitle(ll);
+        setTime(ll);
+        setLocation(ll);
 
-        //set course title
-        SpannableString courseTitle = new SpannableString(course.getCategory() + " "
-                                        + course.getNumber() + " "
-                                        + course.getSection() + "\n");
-        courseTitle.setSpan(new RelativeSizeSpan(2f), 0, courseTitle.length(), 0);
-        courseTitle.setSpan(new ForegroundColorSpan(Color.WHITE), 0, courseTitle.length(), 0);
+        return ll;
+    }
+
+    private void setLocation(LinearLayout ll) {
+        //set location
+        SpannableString courseLocation = new SpannableString(course.getBuilding() + " "
+                                        + course.getRoom());
+        courseLocation.setSpan(new RelativeSizeSpan(1.2f), 0, courseLocation.length(), 0);
+        courseLocation.setSpan(new ForegroundColorSpan(Color.WHITE), 0, courseLocation.length(), 0);
         //get the textview
-        TextView tv0 = (TextView)ll.getChildAt(0);
-        tv0.setText(courseTitle);
+        TextView tv2 = (TextView)ll.getChildAt(2);
+        tv2.setText(courseLocation);
+    }
 
+    private void setTime(LinearLayout ll) {
         //set time
         String st = timeFormatter(course.getStartTime());
         String et = timeFormatter(course.getEndTime());
@@ -110,16 +117,18 @@ public class CoursePartialFragment extends Fragment {
         //get the textview
         TextView tv1 = (TextView)ll.getChildAt(1);
         tv1.setText(coursePeriod);
-
-        //set location
-        SpannableString courseLocation = new SpannableString(course.getBuilding() + " "
-                                        + course.getRoom());
-        courseLocation.setSpan(new RelativeSizeSpan(1.2f), 0, courseLocation.length(), 0);
-        courseLocation.setSpan(new ForegroundColorSpan(Color.WHITE), 0, courseLocation.length(), 0);
-        //get the textview
-        TextView tv2 = (TextView)ll.getChildAt(2);
-        tv2.setText(courseLocation);
-
-        return ll;
     }
+
+    private void setTitle(LinearLayout ll) {
+        //set course title
+        SpannableString courseTitle = new SpannableString(course.getCategory() + " "
+                                        + course.getNumber() + " "
+                                        + course.getSection() + "\n");
+        courseTitle.setSpan(new RelativeSizeSpan(2f), 0, courseTitle.length(), 0);
+        courseTitle.setSpan(new ForegroundColorSpan(Color.WHITE), 0, courseTitle.length(), 0);
+        //get the textview
+        TextView tv0 = (TextView)ll.getChildAt(0);
+        tv0.setText(courseTitle);
+    }
+
 }
