@@ -8,6 +8,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.text.SpannableString;
 import android.text.style.RelativeSizeSpan;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +25,10 @@ import org.cpen321.discovr.utility.AlertUtil;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Vector;
 
 import static android.text.Spanned.SPAN_INCLUSIVE_INCLUSIVE;
 import static org.cpen321.discovr.R.dimen.button_margin;
@@ -84,12 +88,40 @@ public class CoursesFragment extends Fragment {
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
         List<Course> courseList = null;
+        List<Course> courseTerm1 = new ArrayList<>();
+        List<Course> courseTerm2 = new ArrayList<>();
+        List<Course> courseTerm3 = new ArrayList<>();
+
+
         try {
             //get course object from local database
             courseList = dbh.getAllCourses();
 
+            for(final Course course : courseList){
+                if(course.getEndDate().contains("Nov") || course.getEndDate().contains("Dec")) {
+                    courseTerm1.add(course);
+                }else if(course.getEndDate().contains("Apr") || course.getEndDate().contains("May")){
+                    courseTerm2.add(course);
+                }else{
+                    courseTerm3.add(course);
+                }
+            }
+
+            Calendar c = Calendar.getInstance();
+            int month = c.get(Calendar.MONTH);
+            Log.d("Get Current Month:  ", String.valueOf(month));
+
+            List<Course> coursePrinted = new ArrayList<>();
+            if ( 0 <= month && month <= 4){
+                coursePrinted = courseTerm2;
+            }else if( 8 <= month || month <= 11 ){
+                coursePrinted = courseTerm1;
+            }else{
+                coursePrinted = courseTerm3;
+            }
+
             //Add new button for each course in DB
-            for (final Course course : courseList) {
+            for (final Course course : coursePrinted) {
                 //formats button to be the same as the format we want in the fragment
                 final Button button = createCourseButton(course);
                 //Add this button to the layout
@@ -116,6 +148,8 @@ public class CoursesFragment extends Fragment {
                         transaction.commit();
                     }
                 });
+
+                Log.d("Get End Date:  ", course.getEndDate());
 
             }
         } catch (ParseException e) {
