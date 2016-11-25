@@ -3,6 +3,8 @@ package org.cpen321.discovr.fragment;
 import android.app.AlertDialog;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.text.SpannableString;
 import android.text.style.RelativeSizeSpan;
@@ -16,6 +18,7 @@ import android.widget.ScrollView;
 
 import org.cpen321.discovr.R;
 import org.cpen321.discovr.SQLiteDBHandler;
+import org.cpen321.discovr.fragment.partial.CoursePartialFragment;
 import org.cpen321.discovr.model.Course;
 import org.cpen321.discovr.utility.AlertUtil;
 
@@ -33,12 +36,13 @@ import static org.cpen321.discovr.parser.CalendarFileParser.loadUserCourses;
  */
 
 public class CoursesFragment extends Fragment {
+    private static final int LISTALLCOURSES = 1;
+
     public CoursesFragment() {
         // Required empty public constructor
     }
 
     //for course time only
-    //i got this worked on my phone... but i have no idea why- -
     private static String timeFormatter(long startTime) {
         String time = String.valueOf(startTime);
         String[] timeArray = time.split("");
@@ -51,15 +55,20 @@ public class CoursesFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
         //Get DBHandler for this activity
         SQLiteDBHandler dbh = new SQLiteDBHandler(this.getActivity());
+
         try {
+            //check if the ical file is already loaded to the app
             List<Course> flag = dbh.getAllCourses();
+            //if nothing in it, then load ical file from the download folder
             if (flag.isEmpty()) {
                 //load from local ical files
                 List<Course> rawCourses = loadUserCourses();
                 //Deal with the course duplicates here
                 List<Course> myCourses = removeDuplicates(rawCourses);
+                //add courses to the local database
                 dbh.addCourses(myCourses);
             }
         } catch (ParseException e) {
@@ -80,11 +89,33 @@ public class CoursesFragment extends Fragment {
             courseList = dbh.getAllCourses();
 
             //Add new button for each course in DB
-            for (Course course : courseList) {
+            for (final Course course : courseList) {
                 //formats button to be the same as the format we want in the fragment
                 final Button button = createCourseButton(course);
                 //Add this button to the layout
                 ll.addView(button, lp);
+
+                //add button listener for each course button
+                button.setOnClickListener(new View.OnClickListener(){
+                    @Override
+                    public void onClick(View v) {
+                        CoursePartialFragment fragment = new  CoursePartialFragment();
+                        FragmentManager fm = getActivity().getSupportFragmentManager();
+                        Fragment currentFrag = fm.findFragmentById(R.id.fragment_container);
+                        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                        fragment.setCourse(course);
+                        fragment.setPrevFragment(LISTALLCOURSES);
+
+                        //hide the current fragment
+                        transaction.setCustomAnimations(R.anim.slide_in_up, R.anim.slide_out_left);
+                        transaction.remove(currentFrag);
+                        transaction.add(R.id.fragment_container, fragment, String.valueOf(button.getId()));
+
+                        //reopen the list all courses fragment when back key is pressed
+                        transaction.addToBackStack(null);
+                        transaction.commit();
+                    }
+                });
 
             }
         } catch (ParseException e) {
@@ -123,10 +154,13 @@ public class CoursesFragment extends Fragment {
         bt.setTextColor(ContextCompat.getColor(getContext(), R.color.primaryTextColor));
         String startTime = timeFormatter(course.getStartTime());
         String endTime = timeFormatter(course.getEndTime());
-        SpannableString buttonText = new SpannableString(course.getCategory() + " " + course.getNumber() + " " + course.getSection() + "\n" + course.getBuilding() + "\n" + (startTime + " - " + endTime) + " " + course.getRoom());
+        SpannableString buttonText = new SpannableString(course.getCategory() + " "
+                                        + course.getNumber() + " "
+                                        + course.getSection() + "\n"
+                                        + course.getBuilding() + " "
+                                        + course.getRoom() + "\n"
+                                        + (startTime + " - " + endTime) );
 
-        //should i add startDate and endDate as well?
-        //when it reaches the endDate ,then the course button automatically disappear
         int index = buttonText.toString().indexOf("\n");
         buttonText.setSpan(new RelativeSizeSpan(2), 0, index, SPAN_INCLUSIVE_INCLUSIVE);
         buttonText.setSpan(new RelativeSizeSpan((float) 1.5), index, buttonText.length(), SPAN_INCLUSIVE_INCLUSIVE);
