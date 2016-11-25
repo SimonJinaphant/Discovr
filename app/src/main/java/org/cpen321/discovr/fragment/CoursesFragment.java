@@ -91,6 +91,7 @@ public class CoursesFragment extends Fragment {
         List<Course> courseTerm1 = new ArrayList<>();
         List<Course> courseTerm2 = new ArrayList<>();
         List<Course> courseTerm3 = new ArrayList<>();
+        List<Course> coursePrinted = new ArrayList<>();
 
 
         try {
@@ -111,7 +112,6 @@ public class CoursesFragment extends Fragment {
             int month = c.get(Calendar.MONTH);
             Log.d("Get Current Month:  ", String.valueOf(month));
 
-            List<Course> coursePrinted = new ArrayList<>();
             if ( 0 <= month && month <= 4){
                 coursePrinted = courseTerm2;
             }else if( 8 <= month || month <= 11 ){
@@ -158,7 +158,7 @@ public class CoursesFragment extends Fragment {
 
         try {
             //check if there is any class in 10 mins
-            if (AlertUtil.courseAlert(courseList) != null) {
+            if (AlertUtil.courseAlert(coursePrinted) != null) {
                 //get the course if there is any
                 Course currCourse = AlertUtil.courseAlert(courseList);
                 //show the alert message
