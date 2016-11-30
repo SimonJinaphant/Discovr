@@ -369,6 +369,7 @@ public class MapViewFragment extends Fragment {
      * it if it doesn't exist
      *
      * @param loc the location to place the marker
+     * @param type The type of marker being placed
      */
     public void movePointOfInterestMarker(LatLng loc, IconUtil.MarkerType type) {
         Log.d("map", "Point of interest marker to: " + loc);
@@ -395,7 +396,8 @@ public class MapViewFragment extends Fragment {
     /**
      * Adds a marker to the map
      *
-     * @param loc
+     * @param loc the location the marker is being placed
+     * @param type the type of marker being placed
      */
     public Marker addMarker(LatLng loc, IconUtil.MarkerType type) {
         Icon icon;
