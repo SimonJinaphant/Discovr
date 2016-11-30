@@ -352,11 +352,16 @@ public class SQLiteDBHandler extends SQLiteOpenHelper {
         Building bldg = null;
 
         //Select all rows from TABLE_BUILDING where KEY_BLDG_CODE is code
-        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_BUILDINGS + " WHERE " + KEY_BLDG_CODE + " LIKE ? OR " + KEY_BLDG_NAME + " LIKE ?", new String[]{code, code});
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_BUILDINGS + " WHERE " + KEY_BLDG_CODE + " LIKE ?", new String[]{code});
 
         if (cursor.getCount() != 0) {
             cursor.moveToFirst();
             bldg = new Building(cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5));
+        } else{
+            cursor = db.rawQuery("SELECT * FROM " + TABLE_BUILDINGS + " WHERE " + KEY_BLDG_NAME + " LIKE ?", new String[]{code});
+            if (cursor.getCount() != 0) {
+            cursor.moveToFirst();
+            bldg = new Building(cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5));}
         }
         cursor.close();
         return bldg;

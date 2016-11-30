@@ -127,6 +127,7 @@ public class CoursesFragment extends Fragment {
         SpannableString buttonText = new SpannableString(course.getCategory() + " "
                                         + course.getNumber() + " "
                                         + course.getSection() + "\n"
+                                        + course.getDayOfWeek() + "\n"
                                         + course.getBuilding() + " "
                                         + course.getRoom() + "\n"
                                         + (startTime + " - " + endTime) );

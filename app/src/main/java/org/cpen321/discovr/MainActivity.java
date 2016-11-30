@@ -319,7 +319,6 @@ public class MainActivity extends AppCompatActivity
         List<Course> courseTerm2 = new ArrayList<>();
         List<Course> courseTerm3 = new ArrayList<>();
 
-
         for(final Course course : myList){
             if(course.getEndDate().contains("Nov") || course.getEndDate().contains("Dec")) {
                 courseTerm1.add(course);

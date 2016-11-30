@@ -1476,7 +1476,7 @@
     {
       "type": "Feature",
       "properties": {
-        "Name": "Institute For Computing, Informatino And Cognitive Systems / Computer Science",
+        "Name": "Institute For Computing, Information And Cognitive Systems / Computer Science",
         "Code": "ICICS/CS",
         "Address": "2366 Main Mall",
         "Hours": "Monday-Friday 07:00-19:00 Saturday/Sunday/Holidays - Closed"
@@ -3862,7 +3862,7 @@
     {
       "type": "Feature",
       "properties": {
-        "Name": "TRIUMF iSAC 1 Building"
+        "Name": "TRIUMF ISAC 1 Building"
       },
       "geometry": {
         "coordinates": [
@@ -4265,7 +4265,7 @@
     {
       "type": "Feature",
       "properties": {
-        "Name": "Environmental Services Facility - Chemical Waste Procesing"
+        "Name": "Environmental Services Facility - Chemical Waste Processing"
       },
       "geometry": {
         "coordinates": [
@@ -4513,7 +4513,7 @@
     {
       "type": "Feature",
       "properties": {
-        "Name": "Donald Rix Buiding"
+        "Name": "Donald Rix Building"
       },
       "geometry": {
         "coordinates": [
@@ -11816,7 +11816,7 @@
     {
       "type": "Feature",
       "properties": {
-        "Name": "Building A  South"
+        "Name": "Building A South"
       },
       "geometry": {
         "coordinates": [
@@ -12378,7 +12378,7 @@
     {
       "type": "Feature",
       "properties": {
-        "Name": "Thunderbird Statdium"
+        "Name": "Thunderbird Stadium"
       },
       "geometry": {
         "coordinates": [
@@ -12695,7 +12695,7 @@
     {
       "type": "Feature",
       "properties": {
-        "Name": "Macleod Buliding",
+        "Name": "Macleod Building",
         "Code": "MCLD",
         "Hours": "Monday-Friday 07:00-18:00, Saturday/Sunday/Holidays - Closed",
         "Address": "2356 Main Mall"
