@@ -41,16 +41,19 @@ public class MyCustomSuggestionProvider extends ContentProvider {
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
 
         SQLiteQueryBuilder qBuilder = new SQLiteQueryBuilder();
-        for (int i = 0; i < selectionArgs.length; i++) {
-            selectionArgs[i] = "%" + selectionArgs[i] + "%";
-        }
-        for (String s : selectionArgs) {
-            s = "%" + s + "%";
-        }
-        Log.d("Querying: ", selection + selectionArgs[0]);
+        String bldgCode = selectionArgs[0].replaceAll("[^A-Za-z]", "");
+        String[] args = new String[2];
+        args[0] = selectionArgs[0];
+        args[1] = bldgCode;
+
+        for(int i = 0; i < args.length; i++){
+            args[i] = "%" + args[i] + "%";
+            }
+        sortOrder = "(CASE buildingCode WHEN '" + bldgCode.toUpperCase() + "' THEN 1 ELSE 100 END) ASC, buildingName ASC";
+
         qBuilder.setTables("Buildings");
         qBuilder.setProjectionMap(PROJECTION_MAP);
-        return qBuilder.query(dbh.getReadableDatabase(), projection, selection, selectionArgs, null, null, sortOrder);
+        return qBuilder.query(dbh.getReadableDatabase(), projection, selection, args, null, null, sortOrder);
     }
 
     @Nullable
