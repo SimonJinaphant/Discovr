@@ -152,19 +152,7 @@ public class MapViewFragment extends Fragment {
                     );
                 }
 
-                map.setOnMarkerClickListener(new MapboxMap.OnMarkerClickListener() {
-                    @Override
-                    public boolean onMarkerClick(@NonNull Marker marker) {
-                        if (marker.getTitle().startsWith("[")) {
-                            String station = marker.getTitle().split("]")[0];
-                            station = station.split("\\[")[1];
-                            createTransitPanel(station);
-
-                            return true;
-                        }
-                        return false;
-                    }
-                });
+                displayTransitStation();
             }
         });
 
@@ -236,7 +224,7 @@ public class MapViewFragment extends Fragment {
                 map.setOnMarkerClickListener(new MapboxMap.OnMarkerClickListener() {
                     @Override
                     public boolean onMarkerClick(@NonNull Marker marker) {
-                        if (marker.getTitle().startsWith("[")) {
+                        if (marker.getTitle() != null && marker.getTitle().startsWith("[")) {
                             String station = marker.getTitle().split("]")[0];
                             station = station.split("\\[")[1];
                             createTransitPanel(station);
