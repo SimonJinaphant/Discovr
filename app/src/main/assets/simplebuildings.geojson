@@ -705,7 +705,7 @@
     {
       "type": "Feature",
       "properties": {
-        "Name": "Dorothy Mawdsley House"
+        "Name": "Building A South"
       },
       "geometry": {
         "coordinates": [
@@ -1476,7 +1476,7 @@
     {
       "type": "Feature",
       "properties": {
-        "Name": "Aldyen Hamber House",
+        "Name": "Institute For Computing, Information And Cognitive Systems / Computer Science",
         "Code": "ICICS/CS",
         "Address": "2366 Main Mall",
         "Hours": "Monday-Friday 07:00-19:00 Saturday/Sunday/Holidays - Closed"
@@ -6160,7 +6160,7 @@
     {
       "type": "Feature",
       "properties": {
-        "Name": "Fraser Hall"
+        "Name": "Beaty Biodiversity Research Centre"
       },
       "geometry": {
         "coordinates": [
