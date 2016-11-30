@@ -208,7 +208,7 @@ public class MainActivity extends AppCompatActivity
 
     private void initializeTransitStation() {
         try {
-            List<MapTransitStation> stations = GeojsonFileParser.parseTransitStations(getResources().getAssets().open("busloop.geojson"));
+            List<MapTransitStation> stations = GeojsonFileParser.parseTransitStations(getResources().getAssets().open("transitstations.geojson"));
             mapFragment.setTransitStation(stations);
         } catch (Exception e) {
             e.printStackTrace();

@@ -154,18 +154,10 @@ public class GeojsonFileParser {
             // Get the bus stop's number; we use this to query the transit API for the schedule.
             String busStop = jsonFeatures.getJSONObject(i).getJSONObject("properties").getString("BusStop");
 
-            // Get a list of all possible buses which stop at this station.
-            List<String> buses = new ArrayList<>();
-            JSONArray jsonBuses = jsonFeatures.getJSONObject(i).getJSONObject("properties").getJSONArray("Bus");
-
-            for (int b = 0; b < jsonBuses.length(); b++) {
-                buses.add(String.valueOf(jsonBuses.get(b)));
-            }
-
             JSONArray jsonCoordinate = jsonFeatures.getJSONObject(i).getJSONObject("geometry").getJSONArray("coordinates");
             LatLng coordinate = new LatLng(jsonCoordinate.getDouble(1), jsonCoordinate.getDouble(0));
 
-            stations.add(new MapTransitStation(busStop, coordinate, buses, name));
+            stations.add(new MapTransitStation(busStop, coordinate, name));
         }
         return stations;
     }
