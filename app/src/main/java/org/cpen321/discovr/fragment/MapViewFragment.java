@@ -128,15 +128,6 @@ public class MapViewFragment extends Fragment {
                     }
                 });
 
-                for (Building building : buildings) {
-                    map.addPolygon(new PolygonOptions()
-                            .addAll(building.getAllCoordinates())
-                            .alpha(0.35f)
-                            .strokeColor(Color.parseColor("#000000"))
-                            .fillColor(Color.parseColor("#3bb2d0"))
-                    );
-                }
-
                 for (MapTransitStation station : stations) {
                     map.addMarker(new MarkerViewOptions()
                             .position(station.location)
@@ -185,7 +176,15 @@ public class MapViewFragment extends Fragment {
 
     /**
      * Callback for a long click on the map, creates a building fragment if
-     * the point clicked is a building
+     * the point clicked is a building* Remove debugging map polygon overlay
+                for (Building building : buildings) {
+                    map.addPolygon(new PolygonOptions()
+                            .addAll(building.getAllCoordinates())
+                            .alpha(0.35f)
+                            .strokeColor(Color.parseColor("#000000"))
+                            .fillColor(Color.parseColor("#3bb2d0"))
+                    );
+                }
      *
      * @param point the point clicked on the map
      */
