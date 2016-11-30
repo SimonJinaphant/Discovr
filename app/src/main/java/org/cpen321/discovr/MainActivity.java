@@ -14,6 +14,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -28,6 +29,8 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
 import com.mapbox.mapboxsdk.MapboxAccountManager;
+import com.mapbox.mapboxsdk.annotations.Icon;
+import com.mapbox.mapboxsdk.annotations.IconFactory;
 import com.mapbox.mapboxsdk.annotations.Marker;
 import com.mapbox.mapboxsdk.exceptions.InvalidAccessTokenException;
 import com.mapbox.mapboxsdk.geometry.LatLng;
@@ -45,6 +48,7 @@ import org.cpen321.discovr.fragment.EventsSubscribedFragment;
 import org.cpen321.discovr.fragment.MapViewFragment;
 import org.cpen321.discovr.fragment.partial.BuildingPartialFragment;
 import org.cpen321.discovr.parser.GeojsonFileParser;
+import org.cpen321.discovr.utility.IconUtil;
 import org.cpen321.discovr.utility.PolygonUtil;
 
 import java.util.ArrayList;
@@ -279,7 +283,7 @@ public class MainActivity extends AppCompatActivity
                             }
 
                             Log.d("search", loc.toString());
-                            moveMap(loc);
+                            moveMap(loc, IconUtil.MarkerType.BUILDING);
 
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -292,9 +296,9 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    public void moveMap(LatLng loc) {
+    public void moveMap(LatLng loc, IconUtil.MarkerType type) {
         //Creates a marker on the queried location
-        mapFragment.movePointOfInterestMarker(loc);
+        mapFragment.movePointOfInterestMarker(loc, type);
 
         //Moves the camera to focus on queried location
         mapFragment.moveMapToLocation(loc);
@@ -351,9 +355,13 @@ public class MainActivity extends AppCompatActivity
      */
     private void plotUpcomingEventsOnMap() {
         // TODO: Replace getRawEvents() with getUpcomingEvents()
-        List<EventInfo> upcomingEvents = ecm.getUpcomingEvents();
+        List<EventInfo> upcomingEvents = ecm.getRawEvents();
         ListIterator<EventInfo> li = upcomingEvents.listIterator();
         List<LatLng> markerLoc = new ArrayList<>();
+
+        // Get icon type for events
+        Icon icon = IconFactory.getInstance(this).fromDrawable(ContextCompat.getDrawable(this, R.drawable.event_icon));
+
         while (li.hasNext()) {
             EventInfo event = li.next();
             Building bldg = dbh.getBuildingByCode(event.getBuildingName());
@@ -364,7 +372,7 @@ public class MainActivity extends AppCompatActivity
                     loc = PolygonUtil.fuzzLatLng(loc);
                 }
                 markerLoc.add(loc);
-                mapFragment.addMarker(loc).setTitle(String.valueOf(event.getID()));
+                mapFragment.addMarker(loc, IconUtil.MarkerType.EVENT).setTitle(String.valueOf(event.getID()));
                 //Pass the creation of the event fragment to mapFragment (possible refactor)
                 mapFragment.getMap().setOnMarkerClickListener(new MapboxMap.OnMarkerClickListener() {
                     @Override
@@ -468,7 +476,7 @@ public class MainActivity extends AppCompatActivity
 
             //Check for null loc
             if (loc != null) {
-                moveMap(loc);
+                moveMap(loc, IconUtil.MarkerType.BUILDING);
             }
 
             //Open new singleBuilding fragment

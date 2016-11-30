@@ -22,6 +22,7 @@ import org.cpen321.discovr.SQLiteDBHandler;
 import org.cpen321.discovr.model.Building;
 import org.cpen321.discovr.model.EventInfo;
 import org.cpen321.discovr.parser.GeojsonFileParser;
+import org.cpen321.discovr.utility.IconUtil;
 
 import static android.text.Spanned.SPAN_INCLUSIVE_INCLUSIVE;
 
@@ -61,7 +62,7 @@ public class EventPartialFragment extends Fragment {
         LatLng loc;
         if (bldg != null) {
             loc = GeojsonFileParser.getCoordinates(bldg.getAllCoordinates());
-            ((MainActivity) this.getActivity()).moveMap(loc);
+            ((MainActivity) this.getActivity()).moveMap(loc, IconUtil.MarkerType.EVENT);
         }
 
         //Get textView inside of linearlayout and set text
