@@ -151,7 +151,6 @@ public class MapViewFragment extends Fragment {
                     );
                 }
 
-
             }
         });
 
@@ -221,17 +220,15 @@ public class MapViewFragment extends Fragment {
                     @Override
                     public boolean onMarkerClick(@NonNull Marker marker) {
                         if (marker.getTitle() != null && marker.getTitle().startsWith("[")) {
-                                String station = marker.getTitle().split("]")[0];
-                                station = station.split("\\[")[1];
-                                createTransitPanel(station);
 
-                                return true;
-                            }
-                        return false;
+                            String station = marker.getTitle().split("]")[0];
+                            station = station.split("\\[")[1];
+                            createTransitPanel(station);
+                            return true;
                         }
-
+                        return false;
                     }
-                );
+                });
             }
         });
 

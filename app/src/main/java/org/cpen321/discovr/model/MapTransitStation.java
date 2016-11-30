@@ -19,13 +19,9 @@ public class MapTransitStation {
     // The Latitude/Longitude of the station on the map.
     public final LatLng location;
 
-    // All vehicle which departs from this station.
-    public final List<String> vehicles;
-
-    public MapTransitStation(String identifier, LatLng location, List<String> vehicles, String name) {
+    public MapTransitStation(String identifier, LatLng location, String name) {
         this.identifier = identifier;
         this.location = location;
-        this.vehicles = vehicles;
         this.name = name;
     }
 
