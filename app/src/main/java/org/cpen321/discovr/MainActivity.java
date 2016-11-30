@@ -197,8 +197,10 @@ public class MainActivity extends AppCompatActivity
         try {
             List<Building> buildings = GeojsonFileParser.parseBuildings(getResources().getAssets().open("simplebuildings.geojson"));
             mapFragment.setBuildings(buildings);
-            for (Building bldg : buildings) {
-                dbh.addBuilding(bldg);
+            if(dbh.getBuildingCount() == 0){
+                for (Building bldg : buildings) {
+                    dbh.addBuilding(bldg);
+                }
             }
 
         } catch (Exception e) {

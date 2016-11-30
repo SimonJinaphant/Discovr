@@ -384,7 +384,14 @@ public class SQLiteDBHandler extends SQLiteOpenHelper {
     }
 
     public int getBuildingCount() {
-        return (this.buildingNum + 1);
+        String query = "SELECT * FROM " + TABLE_BUILDINGS;
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.rawQuery(query, null);
+        int count = cursor.getCount();
+        cursor.close();
+
+        return count;
     }
 
     public List<Building> getAllBuildings() {
