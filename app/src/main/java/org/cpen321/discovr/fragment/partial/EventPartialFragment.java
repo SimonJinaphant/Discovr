@@ -80,7 +80,7 @@ public class EventPartialFragment extends Fragment {
         //Get second linear layout and change button background and textView w eventDetails
         LinearLayout ll2 = (LinearLayout) ll.getChildAt(1);
         final Button subscribedButton = (Button) ll2.getChildAt(0);
-        ScrollView sv = (ScrollView) ll2.getChildAt(1);
+        ScrollView sv = (ScrollView) ll2.getChildAt(2);
         TextView eventDetails = (TextView) sv.getChildAt(0);
 
         eventDetails.setText(
