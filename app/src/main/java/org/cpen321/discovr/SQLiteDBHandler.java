@@ -276,7 +276,6 @@ public class SQLiteDBHandler extends SQLiteOpenHelper {
             values.put(KEY_END_DATE, myCourse.getEndDate());
             values.put(KEY_DAY_OF_WEEK, myCourse.getDayOfWeek());
 
-
             //Insert new row
             if (db.insert(TABLE_SUBSCRIBED_COURSES, null, values) == -1) {
                 Log.d("sql", "Failed to insert the entry");
@@ -285,6 +284,34 @@ public class SQLiteDBHandler extends SQLiteOpenHelper {
         //close database connection
         db.close();
     }
+
+    //implement an method to add single course for tests
+    public void addSingleCourse(Course course){
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        //place values in contentValues
+        ContentValues values = new ContentValues();
+
+        values.put(KEY_CATEGORY, course.getCategory());
+        values.put(KEY_NUMBER, course.getNumber());
+        values.put(KEY_SECTION, course.getSection());
+        values.put(KEY_BUILDING, course.getBuilding());
+        values.put(KEY_ROOM, course.getRoom());
+        values.put(KEY_STARTTIME, course.getStartTime());
+        values.put(KEY_ENDTIME, course.getEndTime());
+        values.put(KEY_START_DATE, course.getStartDate());
+        values.put(KEY_END_DATE,course.getEndDate());
+        values.put(KEY_DAY_OF_WEEK, course.getDayOfWeek());
+
+        //Insert new row
+        if (db.insert(TABLE_SUBSCRIBED_COURSES, null, values) == -1) {
+            Log.d("sql", "Failed to insert the entry");
+        }
+
+        //close database connection
+        db.close();
+    }
+
 
     //get all courses ---> should be divided to two cases: term1 & term2
     public List<Course> getAllCourses() throws ParseException {
