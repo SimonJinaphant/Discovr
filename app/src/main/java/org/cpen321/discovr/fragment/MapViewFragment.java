@@ -1,7 +1,9 @@
 package org.cpen321.discovr.fragment;
 
 
+import android.content.Context;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -10,6 +12,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +20,8 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
+import com.mapbox.mapboxsdk.annotations.Icon;
+import com.mapbox.mapboxsdk.annotations.IconFactory;
 import com.mapbox.mapboxsdk.annotations.Marker;
 import com.mapbox.mapboxsdk.annotations.MarkerViewOptions;
 import com.mapbox.mapboxsdk.annotations.PolygonOptions;
@@ -49,6 +54,7 @@ import org.cpen321.discovr.model.MapTransitStation;
 import org.cpen321.discovr.fragment.partial.BuildingPartialFragment;
 import org.cpen321.discovr.fragment.partial.EventPartialFragment;
 import org.cpen321.discovr.fragment.partial.TransitPartialFragment;
+import org.cpen321.discovr.utility.IconUtil;
 import org.cpen321.discovr.utility.PolygonUtil;
 
 import java.util.List;
@@ -137,13 +143,6 @@ public class MapViewFragment extends Fragment {
                     );
                 }
 
-                for (MapTransitStation station : stations) {
-                    map.addMarker(new MarkerViewOptions()
-                            .position(station.location)
-                            .title("[" + station.identifier + "]" + station.name)
-                    );
-                }
-
                 for (MapPolygon constructionZone : constructions) {
                     map.addPolygon(new PolygonOptions()
                             .addAll(constructionZone.vertices)
@@ -152,7 +151,6 @@ public class MapViewFragment extends Fragment {
                     );
                 }
 
-                displayTransitStation();
             }
         });
 
@@ -216,19 +214,16 @@ public class MapViewFragment extends Fragment {
             @Override
             public void onMapReady(MapboxMap mapboxMap) {
                 for (MapTransitStation station : stations) {
-                    map.addMarker(new MarkerViewOptions()
-                            .position(station.location)
-                            .title("[" + station.identifier + "]" + station.name)
-                    );
+                    addMarker(station.location, IconUtil.MarkerType.TRANSIT).setTitle("[" + station.identifier + "]" + station.name);
                 }
                 map.setOnMarkerClickListener(new MapboxMap.OnMarkerClickListener() {
                     @Override
                     public boolean onMarkerClick(@NonNull Marker marker) {
                         if (marker.getTitle() != null && marker.getTitle().startsWith("[")) {
+
                             String station = marker.getTitle().split("]")[0];
                             station = station.split("\\[")[1];
                             createTransitPanel(station);
-
                             return true;
                         }
                         return false;
@@ -374,17 +369,15 @@ public class MapViewFragment extends Fragment {
      * it if it doesn't exist
      *
      * @param loc the location to place the marker
+     * @param type The type of marker being placed
      */
-    public void movePointOfInterestMarker(LatLng loc) {
+    public void movePointOfInterestMarker(LatLng loc, IconUtil.MarkerType type) {
         Log.d("map", "Point of interest marker to: " + loc);
+        removePointOfInterestMarker();
         if (loc != null) {
             if (pointOfInterestMarker == null) {
                 Log.d("map", "Creating point of interest marker at " + loc);
-                MarkerViewOptions marker = new MarkerViewOptions().position(loc);
-                pointOfInterestMarker = map.addMarker(marker);
-            } else {
-                Log.d("map", "Moving point of interest marker to " + loc);
-                pointOfInterestMarker.setPosition(loc);
+                pointOfInterestMarker = addMarker(loc, type);
             }
         }
     }
@@ -403,10 +396,23 @@ public class MapViewFragment extends Fragment {
     /**
      * Adds a marker to the map
      *
-     * @param loc
+     * @param loc the location the marker is being placed
+     * @param type the type of marker being placed
      */
-    public Marker addMarker(LatLng loc) {
-        MarkerViewOptions marker = new MarkerViewOptions().position(loc);
+    public Marker addMarker(LatLng loc, IconUtil.MarkerType type) {
+        Icon icon;
+        IconFactory iconFactory = IconFactory.getInstance(getActivity());
+        if (type == IconUtil.MarkerType.EVENT){
+            Drawable iconDrawable = ContextCompat.getDrawable(getActivity(), R.drawable.event_icon);
+            icon = iconFactory.fromDrawable(iconDrawable);
+        } else if (type == IconUtil.MarkerType.TRANSIT) {
+            Drawable iconDrawable = ContextCompat.getDrawable(getActivity(), R.drawable.transit_icon);
+            icon = iconFactory.fromDrawable(iconDrawable);
+        } else {
+            Drawable iconDrawable = ContextCompat.getDrawable(getActivity(), R.drawable.building_icon);
+            icon = iconFactory.fromDrawable(iconDrawable);
+        }
+        MarkerViewOptions marker = new MarkerViewOptions().position(loc).icon(icon);
         return map.addMarker(marker);
     }
 

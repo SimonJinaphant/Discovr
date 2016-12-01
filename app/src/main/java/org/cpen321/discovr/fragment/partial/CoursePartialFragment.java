@@ -21,6 +21,7 @@ import org.cpen321.discovr.SQLiteDBHandler;
 import org.cpen321.discovr.model.Building;
 import org.cpen321.discovr.model.Course;
 import org.cpen321.discovr.parser.GeojsonFileParser;
+import org.cpen321.discovr.utility.IconUtil;
 
 /**
  * Created by zhangyueyue on 2016-11-24.
@@ -86,7 +87,7 @@ public class CoursePartialFragment extends Fragment {
         if (bldg != null){
             //move to the location on the map
             loc = GeojsonFileParser.getCoordinates(bldg.getAllCoordinates());
-            ((MainActivity) this.getActivity()).moveMap(loc);
+            ((MainActivity) this.getActivity()).moveMap(loc, IconUtil.MarkerType.BUILDING);
         }
         setTitle(ll);
         setTime(ll);
