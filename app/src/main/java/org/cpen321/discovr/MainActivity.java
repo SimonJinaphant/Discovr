@@ -37,6 +37,7 @@ import com.mapbox.services.commons.models.Position;
 
 import org.cpen321.discovr.fragment.EventsFragment;
 import org.cpen321.discovr.model.Building;
+import org.cpen321.discovr.model.Course;
 import org.cpen321.discovr.model.EventInfo;
 import org.cpen321.discovr.model.MapPolygon;
 import org.cpen321.discovr.model.MapTransitStation;
@@ -45,12 +46,16 @@ import org.cpen321.discovr.fragment.EventsSubscribedFragment;
 import org.cpen321.discovr.fragment.MapViewFragment;
 import org.cpen321.discovr.fragment.partial.BuildingPartialFragment;
 import org.cpen321.discovr.parser.GeojsonFileParser;
+import org.cpen321.discovr.utility.AlertUtil;
 import org.cpen321.discovr.utility.PolygonUtil;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.ListIterator;
+
+import static org.cpen321.discovr.parser.CalendarFileParser.loadUserCourses;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -61,6 +66,7 @@ public class MainActivity extends AppCompatActivity
     MapViewFragment mapFragment;
     EventClientManager ecm;
     private List<EventInfo> AllEventsList = new ArrayList<EventInfo>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {// Get the SearchView and set the searchable configuration
@@ -119,32 +125,27 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        Calendar c = Calendar.getInstance();
-        //get current month: 0~11 -> Jan~Dec
-        int month = c.get(Calendar.MONTH);
-        //get current hour
-        int hour = c.get(Calendar.HOUR_OF_DAY);
-        //standard time
-        if (month >= 10 || month < 2) {
-            //after 21:00 pm
-            if (hour >= 21) {
-                new AlertDialog.Builder(this)
-                        .setTitle("Don't walk alone after dark")
-                        .setMessage("Call safewalk @ 604-822-5355")
-                        .show();
-            }
+        //bring up safewalk notification
+        safewalkNotifier();
+        List<Course> cl = new ArrayList<>();
+        List<Course> courseSelected = new ArrayList<>();
 
-            //daylight saving time
-        } else {
-            //after 20:00 pm
-            if (hour >= 20) {
-                new AlertDialog.Builder(this)
-                        .setTitle("Don't walk alone after dark")
-                        .setMessage("Call safewalk @ 604-822-5355")
-                        .show();
-            }
+        //read from local ical file
+        try {
+            cl = readCourses();
+        } catch (ParseException e) {
+            e.printStackTrace();
         }
 
+        //select courses for the current term
+        courseSelected = courseSelector(cl);
+
+        //bring up the course notification
+        try {
+            courseNotifier(courseSelected);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -224,6 +225,139 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * Check current time and show up the safewalk notification if necessary
+     */
+    private void safewalkNotifier() {
+        Calendar c = Calendar.getInstance();
+        //get current month: 0~11 -> Jan~Dec
+        int month = c.get(Calendar.MONTH);
+        //get current hour
+        int hour = c.get(Calendar.HOUR_OF_DAY);
+        //standard time
+        if (month >= 10 || month < 2) {
+            //after 21:00 pm
+            if (hour >= 21) {
+                new AlertDialog.Builder(this)
+                        .setTitle("Don't walk alone after dark")
+                        .setMessage("Call safewalk @ 604-822-5355")
+                        .show();
+            }
+
+            //daylight saving time
+        } else {
+            //after 20:00 pm
+            if (hour >= 20) {
+                new AlertDialog.Builder(this)
+                        .setTitle("Don't walk alone after dark")
+                        .setMessage("Call safewalk @ 604-822-5355")
+                        .show();
+            }
+        }
+    }
+
+    /**
+     * Read from local ical files if no courses have ever been loaded to the local database
+     */
+    private List<Course> readCourses() throws ParseException {
+        SQLiteDBHandler dbh = new SQLiteDBHandler(this);
+        List<Course> courses = new ArrayList<>();
+
+        try {
+            //check if the ical file is already loaded to the app
+            List<Course> flag = dbh.getAllCourses();
+            //if nothing in it, then load ical file from the download folder
+            if (flag.isEmpty()) {
+                //load from local ical files
+                List<Course> rawCourses = loadUserCourses();
+                //Deal with the course duplicates here
+                List<Course> myCourses = removeDuplicates(rawCourses);
+                //add courses to the local database
+                dbh.addCourses(myCourses);
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        courses = dbh.getAllCourses();
+
+        return courses;
+    }
+
+    /**
+     * Remove the duplicates before storing courses to the local database
+     */
+    private List<Course> removeDuplicates(List<Course> rawCourses) {
+
+        List<Course> result = new ArrayList<>();
+
+        for (int i = 0; i < rawCourses.size(); i++) {
+            String rTitle = rawCourses.get(i).getCategory() + rawCourses.get(i).getNumber() + rawCourses.get(i).getSection();
+            label:
+            if (result.isEmpty()) {
+                result.add(rawCourses.get(i));
+                //myStrings.add(rTitle);
+            } else {
+                for (int j = 0; j < result.size(); j++) {
+                    String nTitle = result.get(j).getCategory() + result.get(j).getNumber() + result.get(j).getSection();
+                    if (rTitle.equals(nTitle)) {
+                        result.get(j).setDayOfWeek(result.get(j).getDayOfWeek() + "/" + rawCourses.get(i).getDayOfWeek());
+                        break label;
+                    }
+                }
+                result.add(rawCourses.get(i));
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Select courses for the current term
+     */
+    public static List<Course> courseSelector(List<Course> myList) {
+        List<Course> result = new ArrayList<>();
+        List<Course> courseTerm1 = new ArrayList<>();
+        List<Course> courseTerm2 = new ArrayList<>();
+        List<Course> courseTerm3 = new ArrayList<>();
+
+        for(final Course course : myList){
+            if(course.getEndDate().contains("Nov") || course.getEndDate().contains("Dec")) {
+                courseTerm1.add(course);
+            }else if(course.getEndDate().contains("Apr") || course.getEndDate().contains("May")){
+                courseTerm2.add(course);
+            }else{
+                courseTerm3.add(course);
+            }
+        }
+
+        Calendar c = Calendar.getInstance();
+        int month = c.get(Calendar.MONTH);
+        Log.d("Get Current Month:  ", String.valueOf(month));
+
+        if ( 0 <= month && month <= 4){
+            result = courseTerm2;
+        }else if( 8 <= month || month <= 11 ){
+            result = courseTerm1;
+        }else{
+            result = courseTerm3;
+        }
+        return result;
+    }
+
+    private void courseNotifier(List<Course> courseSelected) throws ParseException {
+        //check if there is any class in 10 mins
+        if (AlertUtil.courseAlert(courseSelected) != null) {
+            //get the course if there is any
+            Course currCourse = AlertUtil.courseAlert(courseSelected);
+            //show the alert message
+            new AlertDialog.Builder(this)
+                    //set alert title with the course name
+                    .setTitle(currCourse.getCategory() + " " + currCourse.getNumber() + " " + currCourse.getSection() + " will start in 10 mins")
+                    //set the message with the location
+                    .setMessage(currCourse.getBuilding() + " " + currCourse.getRoom())
+                    //show the alert
+                    .show();
+        }
+    }
 
     @Override
     protected void onStart() {
