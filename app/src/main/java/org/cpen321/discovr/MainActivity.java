@@ -581,6 +581,7 @@ public class MainActivity extends AppCompatActivity
             case R.id.transit_display:
                 mapFragment.removeAllMarkers();
                 mapFragment.displayTransitStation();
+                getSupportActionBar().setTitle(getResources().getString(R.string.transit));
                 break;
             case R.id.courses_frag:
                 ft.add(R.id.fragment_container, new CoursesFragment(), getResources().getString(R.string.courses));
