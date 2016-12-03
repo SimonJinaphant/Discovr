@@ -17,8 +17,10 @@ import org.cpen321.discovr.parser.TransitParser;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 
 /**
@@ -74,8 +76,16 @@ public class TransitPartialFragment extends Fragment {
 
         @Override
         protected String doInBackground(Void... params) {
-            for (Map.Entry<String, List<TransitEstimateSchedule>> entry :
-                    TransitParser.httpGetTransitSchedule(stationNumber).entrySet()) {
+
+            Set<Map.Entry<String, List<TransitEstimateSchedule>>> result =
+                    TransitParser.httpGetTransitSchedule(stationNumber).entrySet();
+
+            if (result.size() == 0){
+                publishProgress("This bus route is not in service today");
+                return "No items gathered";
+            }
+
+            for (Map.Entry<String, List<TransitEstimateSchedule>> entry : result) {
                 String busNo = entry.getKey();
                 publishProgress(busNo);
 
