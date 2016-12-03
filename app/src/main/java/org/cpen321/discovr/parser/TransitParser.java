@@ -98,6 +98,10 @@ public class TransitParser {
 
                     @Override
                     public void onFailure(int statusCode, Header[] headers, Throwable e, JSONObject errorResponse) {
+                        if(statusCode == 404){
+                            Log.d("Transit", "There is no schedule for this bus route today");
+                        }
+
                         Log.d("Transit", "Failed to retrieve schedules: " + statusCode);
                         Log.d("Transit", e.toString());
                     }
