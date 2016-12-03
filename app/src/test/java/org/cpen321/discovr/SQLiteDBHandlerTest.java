@@ -1,5 +1,8 @@
 package org.cpen321.discovr;
 
+import com.mapbox.mapboxsdk.geometry.LatLng;
+
+import org.cpen321.discovr.model.Building;
 import org.cpen321.discovr.model.Course;
 import org.cpen321.discovr.model.EventInfo;
 import org.junit.Before;
@@ -12,8 +15,11 @@ import org.robolectric.annotation.Config;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+
+import edu.emory.mathcs.backport.java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -48,11 +54,20 @@ public class SQLiteDBHandlerTest {
     Date[] courseEndDate = {fmt.parse("2016-12-26"),fmt.parse("2016-12-20"), fmt.parse("2015-11-26")};
     String[] courseDayOfWeek = {"Day1", "Day2", "Day3"};
 
+    int buildingSize = 4;
+    String[] buildingName = {"MacLeod", "Neville Scarfe", "Buchanan", "Asian Centre"};
+    String[] buildingCode = {"MacLeod", "NevilleScarfe", "Buchanan", "AsianCentre"};
+    String[] buildingAdrress = {"Addr1","Addr2","Addr3","Addr4"};
+    String[] buildingHours = {"9:00-11:00","8:00-12:00","13:00-20:00","10:00-21:00"};
+    String[] buildingCoordinates = {"-123, 321","11111, -12345", "77463, 23746", "-6444,7654"};
+
     SQLiteDBHandler dbh;
 
     List<EventInfo> events;
 
     List<Course> courses;
+
+    List<Building> buildings;
 
     public SQLiteDBHandlerTest() throws ParseException {
     }
@@ -86,6 +101,14 @@ public class SQLiteDBHandlerTest {
                                    courseDayOfWeek[j]));
         }
 
+        buildings = new ArrayList<>();
+        for(int k = 0; k < buildingSize; k++){
+            buildings.add(new Building( buildingName[k],
+                                        buildingCode[k],
+                                        buildingAdrress[k],
+                                        buildingHours[k],
+                                        buildingCoordinates[k]));
+        }
     }
 
     @Test
@@ -188,33 +211,62 @@ public class SQLiteDBHandlerTest {
 
     @Test
     public void testAddBuilding() {
-
+        assertEquals(0, dbh.getAllBuildings().size());
+        dbh.addBuilding(buildings.get(0));
+        assertEquals(1, dbh.getAllBuildings().size());
     }
 
     @Test
     public void testGetBuildingByCode() {
-
+        assertEquals(0, dbh.getAllBuildings().size());
+        dbh.addBuilding(buildings.get(0));
+        assertEquals(1, dbh.getAllBuildings().size());
+        String code = "MacLeod";
+        Building result = dbh.getBuildingByCode(code);
+        assertTrue(buildings.get(0).name.contains(result.name));
+        assertTrue(buildings.get(0).address.contains(result.address));
+        assertTrue(buildings.get(0).hours.contains(result.hours));
+        assertTrue(buildings.get(0).code.contains(result.code));
+        assertTrue(buildings.get(0).getCoordinatesAsString().contains(result.getCoordinatesAsString()));
     }
 
     @Test
     public void testGetBuildingCount() {
-
+        assertEquals(0, dbh.getAllBuildings().size());
+        for (int i = 0; i < buildingSize; i++){
+            dbh.addBuilding(buildings.get(i));
+        }
+        assertEquals(4, dbh.getBuildingCount());
     }
 
     @Test
     public void testGetBuildingByID() {
-
+        assertEquals(0, dbh.getAllBuildings().size());
+        dbh.addBuilding(buildings.get(0));
+        assertEquals(1, dbh.getAllBuildings().size());
+        Building result = dbh.getBuildingByID(0);
+        assertTrue(buildings.get(0).name.contains(result.name));
+        assertTrue(buildings.get(0).address.contains(result.address));
+        assertTrue(buildings.get(0).hours.contains(result.hours));
+        assertTrue(buildings.get(0).code.contains(result.code));
+        assertTrue(buildings.get(0).getCoordinatesAsString().contains(result.getCoordinatesAsString()));
     }
 
     @Test
     public void testGetAllBuildings() {
-
-    }
-
-    @Test
-    public void deleteEvent() {
-        addEventsToDatabase();
-
+        assertEquals(0, dbh.getAllBuildings().size());
+        for (int i = 0; i < buildingSize; i++){
+            dbh.addBuilding(buildings.get(i));
+        }
+        List<Building> allBuildings = dbh.getAllBuildings();
+        assertEquals(buildingSize, allBuildings.size());
+        for (int i = 0; i < buildingSize; i ++){
+            assertTrue(buildings.get(i).name.contains(allBuildings.get(i).name));
+            assertTrue(buildings.get(i).code.contains(allBuildings.get(i).code));
+            assertTrue(buildings.get(i).address.contains(allBuildings.get(i).address));
+            assertTrue(buildings.get(i).hours.contains(allBuildings.get(i).hours));
+            assertTrue(buildings.get(i).getCoordinatesAsString().contains(allBuildings.get(i).getCoordinatesAsString()));
+        }
     }
 
     public void addEventsToDatabase() {

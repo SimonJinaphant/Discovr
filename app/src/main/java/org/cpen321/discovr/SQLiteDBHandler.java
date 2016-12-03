@@ -66,6 +66,7 @@ public class SQLiteDBHandler extends SQLiteOpenHelper {
             KEY_START_DATE + " TEXT," +
             KEY_END_DATE + " TEXT," +
             KEY_DAY_OF_WEEK + " TEXT" + ")";
+    //addded column names in table "buildings"
     private static final String KEY_BLDG_ID = "BuildingID";
     private static final String KEY_BLDG_NAME = "BuildingName";
     private static final String KEY_BLDG_CODE = "BuildingCode";
@@ -87,7 +88,7 @@ public class SQLiteDBHandler extends SQLiteOpenHelper {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
-    //Creates table when getReadableDatabase or getWritableDatabase is called and no DB exists
+    //Creates table when ReadableDatabase or getWritableDatabase is called and no DB exists
     @Override
 
     public void onCreate(SQLiteDatabase db) {
@@ -371,7 +372,7 @@ public class SQLiteDBHandler extends SQLiteOpenHelper {
         db.close();
     }
 
-    //Get one specific event based on ID
+
     public Building getBuildingByCode(String code) {
         SQLiteDatabase db = this.getReadableDatabase();
         code = "%" + code.replaceAll("[^A-Za-z]", "") + "%";
@@ -394,6 +395,7 @@ public class SQLiteDBHandler extends SQLiteOpenHelper {
         return bldg;
     }
 
+    //Get one specific event based on ID
     public Building getBuildingByID(int ID) {
         SQLiteDatabase db = this.getReadableDatabase();
 
