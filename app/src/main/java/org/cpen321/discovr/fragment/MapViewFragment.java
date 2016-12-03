@@ -444,12 +444,17 @@ public class MapViewFragment extends Fragment {
      */
     public void createTransitPanel(String stationNumber) {
         TransitPartialFragment fragment = new TransitPartialFragment();
-        fragment.setStation(stationNumber);
-
+        Fragment currFrag = getActivity().getSupportFragmentManager().findFragmentById(R.id.fragment_container);
         FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-
-        //hide current fragment, will reopen when back key pressed
         transaction.add(R.id.fragment_container, fragment);
+        fragment.setStation(stationNumber);
+        /*if (!(currFrag instanceof MapViewFragment)){
+             Log.d("buses", "deleting fragment: " + currFrag);
+             transaction.remove(currFrag);
+        } else {
+            Log.d("buses", "adding transaction to backstack");
+            transaction.addToBackStack(null);
+        }*/
         transaction.addToBackStack(null);
         transaction.commit();
     }
