@@ -8,7 +8,7 @@
     android:id="@+id/singleEventLL"
     android:layout_height="match_parent"
     android:gravity="top"
-    android:layout_marginTop="450dp"
+    android:layout_marginTop="400dp"
     android:background="@color/colorPrimaryDark"
     android:layout_gravity="bottom">
 
@@ -18,10 +18,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="@color/primaryTextColor"
-        android:gravity="left|center_vertical"
+        android:gravity="top|center_horizontal"
         android:textAllCaps="false"
         android:paddingTop="5dp"
-        android:textSize="30sp" />
+        android:textSize="25dp" />
 
     <ScrollView
         android:layout_width="match_parent"
@@ -35,7 +35,7 @@
             android:gravity="left|center_vertical"
             android:id="@+id/buildingdetails"
             android:textAllCaps="false"
-            android:textSize="18sp"
+            android:textSize="20dp"
             android:scrollbars="horizontal"
             android:isScrollContainer="false"
             android:fadeScrollbars="true"

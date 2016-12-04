@@ -9,10 +9,10 @@
     android:id="@+id/singleEventLL"
     android:layout_height="match_parent"
     android:gravity="top"
-    android:layout_marginTop="475dp"
+    android:layout_marginTop="400dp"
     android:layout_marginLeft="10dp"
     android:layout_marginRight="10dp"
-    android:layout_marginBottom="10dp                            "
+    android:layout_marginBottom="10dp"
     android:background="@drawable/shape"
     android:layout_gravity="bottom">
 
@@ -26,7 +26,7 @@
         android:id="@+id/textView_event_name"
         android:textAllCaps="false"
         android:padding="5dp"
-        android:textSize="30sp" />
+        android:textSize="25dp" />
 
     <LinearLayout
         android:orientation="horizontal"
@@ -55,7 +55,7 @@
                 android:gravity="left|center_vertical"
                 android:id="@+id/textView_event_info"
                 android:textAllCaps="false"
-                android:textSize="18sp"
+                android:textSize="20dp"
                 android:scrollbars="horizontal"
                 android:isScrollContainer="false"
                 android:fadeScrollbars="true"
