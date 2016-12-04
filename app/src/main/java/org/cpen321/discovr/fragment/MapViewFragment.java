@@ -433,6 +433,9 @@ public class MapViewFragment extends Fragment {
         fragment.setEvent(event);
         //hide current fragment, will reopen when back key pressed
         transaction.add(R.id.fragment_container, fragment, String.valueOf(eventID));
+        if (fm.getBackStackEntryCount() > 0){
+            fm.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        }
         transaction.addToBackStack(null);
         transaction.commit();
     }
@@ -445,7 +448,8 @@ public class MapViewFragment extends Fragment {
     public void createTransitPanel(String stationNumber) {
         TransitPartialFragment fragment = new TransitPartialFragment();
         Fragment currFrag = getActivity().getSupportFragmentManager().findFragmentById(R.id.fragment_container);
-        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+        FragmentManager fm = getActivity().getSupportFragmentManager();
+        FragmentTransaction transaction = fm.beginTransaction();
         transaction.add(R.id.fragment_container, fragment);
         fragment.setStation(stationNumber);
         /*if (!(currFrag instanceof MapViewFragment)){
@@ -455,6 +459,9 @@ public class MapViewFragment extends Fragment {
             Log.d("buses", "adding transaction to backstack");
             transaction.addToBackStack(null);
         }*/
+        if (fm.getBackStackEntryCount() > 0){
+            fm.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        }
         transaction.addToBackStack(null);
         transaction.commit();
     }
