@@ -64,7 +64,6 @@ public class EventsFragment extends Fragment {
                     //hide current fragment, will reopen when back key pressed
                     fragment.setEvent(event);
                     fragment.setPrevFragment(ALLEVENTS);
-
                     transaction.setCustomAnimations(R.anim.slide_in_up, R.anim.slide_out_left);
                     transaction.remove(currentFrag);
                     transaction.add(R.id.fragment_container, fragment, String.valueOf(button.getId()));

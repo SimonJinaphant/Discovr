@@ -469,11 +469,6 @@ public class MainActivity extends AppCompatActivity
         } else if ((currentFragment instanceof MapViewFragment) && mapFragment.isMapDirty()) {
             mapFragment.removeRoute();
             mapFragment.removeAllMarkers();
-        } else if (manager.getBackStackEntryCount() > 1){
-            // Destroy stacks of fragments
-            Log.d("backstack", "Destroying backstack of size: " + manager.getBackStackEntryCount());
-            manager.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-            Log.d("backstack", "Backstack size: " + manager.getBackStackEntryCount());
         } else {
             super.onBackPressed();
         }
