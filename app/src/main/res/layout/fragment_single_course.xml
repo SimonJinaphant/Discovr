@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:id="@+id/singleCourseLL"
     android:background="@color/colorPrimary"
-    android:layout_marginTop="450dp">
+    android:layout_marginTop="400dp">
 
     <TextView
         android:text="TextView"

@@ -245,8 +245,8 @@ public class MainActivity extends AppCompatActivity
             //after 21:00 pm
             if (hour >= 21) {
                 new AlertDialog.Builder(this)
-                        .setTitle("Don't walk alone after dark")
-                        .setMessage("Call safewalk @ 604-822-5355")
+                        .setTitle("Don't walk alone after dark!")
+                        .setMessage("Call Safewalk at (604) 822-5355")
                         .show();
             }
 
@@ -255,8 +255,8 @@ public class MainActivity extends AppCompatActivity
             //after 20:00 pm
             if (hour >= 20) {
                 new AlertDialog.Builder(this)
-                        .setTitle("Don't walk alone after dark")
-                        .setMessage("Call safewalk @ 604-822-5355")
+                        .setTitle("Don't walk alone after dark!")
+                        .setMessage("Call Safewalk at (604) 822-5355")
                         .show();
             }
         }
