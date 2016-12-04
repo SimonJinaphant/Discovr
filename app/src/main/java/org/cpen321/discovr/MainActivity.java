@@ -294,6 +294,8 @@ public class MainActivity extends AppCompatActivity
      */
     private List<Course> removeDuplicates(List<Course> rawCourses) {
 
+        if (rawCourses == null) return null;
+
         List<Course> result = new ArrayList<>();
 
         for (int i = 0; i < rawCourses.size(); i++) {
