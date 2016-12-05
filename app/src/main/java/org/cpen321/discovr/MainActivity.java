@@ -421,7 +421,7 @@ public class MainActivity extends AppCompatActivity
                             }
 
                             Log.d("search", loc.toString());
-                            moveMap(loc, IconUtil.MarkerType.BUILDING);
+                            moveMapWithUniqueMarker(loc, IconUtil.MarkerType.BUILDING);
 
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -434,7 +434,7 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    public void moveMap(LatLng loc, IconUtil.MarkerType type) {
+    public void moveMapWithUniqueMarker(LatLng loc, IconUtil.MarkerType type) {
         //Creates a marker on the queried location
         mapFragment.movePointOfInterestMarker(loc, type);
 
@@ -616,7 +616,7 @@ public class MainActivity extends AppCompatActivity
 
             //Check for null loc
             if (loc != null) {
-                moveMap(loc, IconUtil.MarkerType.BUILDING);
+                moveMapWithUniqueMarker(loc, IconUtil.MarkerType.BUILDING);
             }
 
             //Open new singleBuilding fragment

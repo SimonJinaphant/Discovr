@@ -18,10 +18,16 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
+import com.mapbox.mapboxsdk.geometry.LatLng;
+
+import org.cpen321.discovr.MainActivity;
 import org.cpen321.discovr.R;
 import org.cpen321.discovr.SQLiteDBHandler;
+import org.cpen321.discovr.model.Building;
 import org.cpen321.discovr.model.EventInfo;
 import org.cpen321.discovr.fragment.partial.EventPartialFragment;
+import org.cpen321.discovr.parser.GeojsonFileParser;
+import org.cpen321.discovr.utility.IconUtil;
 
 import java.util.List;
 
@@ -45,7 +51,7 @@ public class EventsSubscribedFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         //Get DBHandler for this activity
-        SQLiteDBHandler dbh = new SQLiteDBHandler(this.getActivity());
+        final SQLiteDBHandler dbh = new SQLiteDBHandler(this.getActivity());
 
         //Get List of all events stored in DB
         List<EventInfo> allEvents = dbh.getAllEvents();
@@ -77,6 +83,13 @@ public class EventsSubscribedFragment extends Fragment {
                     fragment.setEvent(event);
                     fragment.setPrevFragment(SUBSCRIBEDEVENTS);
 
+                    Building bldg = dbh.getBuildingByCode(event.getBuildingName());
+                    LatLng loc;
+
+                    if (bldg != null) {
+                        loc = GeojsonFileParser.getCoordinates(bldg.getAllCoordinates());
+                        ((MainActivity) getActivity()).moveMapWithUniqueMarker(loc, IconUtil.MarkerType.EVENT);
+                    }
 
                     //hide current fragment, will reopen when back key pressed
                     transaction.setCustomAnimations(R.anim.slide_in_up, R.anim.slide_out_left);
