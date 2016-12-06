@@ -29,5 +29,9 @@ If you ran into problem with gradle try the following fix:
 5. Click `Install (n) Package(s)`
 6. Restart Android studio  
 
+# Additional repositories
+* [Discovr-Backend](https://github.com/SimonJinaphant/Discovr-Backend) contains all of our code for the backend web service which serves as a middleman for managing user events between this app and the remote database.
+* [Discovr-Crawler](https://github.com/SimonJinaphant/Discovr-Crawler) contains the code for the web crawler which scrapes the UBC events calendar and stores the result into our remote database.
+
 ### Branching and Pull Request
 Reminder! If implementing a feature, create a branch from master and develop the feature on that branch. Once the feature is completed, merge it to master through a pull request. Afterwards, delete the branch to clean up the repository. If modifying your feature, create a new branch from master instead of reviving the old feature branch.
