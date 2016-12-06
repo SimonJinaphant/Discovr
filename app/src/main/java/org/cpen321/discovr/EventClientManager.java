@@ -154,7 +154,7 @@ public class EventClientManager {
      */
     private void setUpEventsClient() {
         AsyncHttpClient client = new AsyncHttpClient();
-        client.get("http://discovrweb2.azurewebsites.net/api/Events", new AsyncHttpResponseHandler() {
+        client.get("http://discovrbackend.azurewebsites.net/api/Events", new AsyncHttpResponseHandler() {
             @Override
             public void onStart() {
                 // called before request is started
