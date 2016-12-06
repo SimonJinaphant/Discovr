@@ -254,7 +254,7 @@ public class SQLiteDBHandler extends SQLiteOpenHelper {
     public void addCourses(List<Course> courses) {
 
         //Check for empty size
-        if (courses.size() < 1) {
+        if ((courses == null) || (courses.size() == 0)) {
             return;
         }
 

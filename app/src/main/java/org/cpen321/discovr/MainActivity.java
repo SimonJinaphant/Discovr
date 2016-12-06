@@ -245,8 +245,8 @@ public class MainActivity extends AppCompatActivity
             //after 21:00 pm
             if (hour >= 21) {
                 new AlertDialog.Builder(this)
-                        .setTitle("Don't walk alone after dark")
-                        .setMessage("Call safewalk @ 604-822-5355")
+                        .setTitle("Don't walk alone after dark!")
+                        .setMessage("Call Safewalk at (604) 822-5355")
                         .show();
             }
 
@@ -255,8 +255,8 @@ public class MainActivity extends AppCompatActivity
             //after 20:00 pm
             if (hour >= 20) {
                 new AlertDialog.Builder(this)
-                        .setTitle("Don't walk alone after dark")
-                        .setMessage("Call safewalk @ 604-822-5355")
+                        .setTitle("Don't walk alone after dark!")
+                        .setMessage("Call Safewalk at (604) 822-5355")
                         .show();
             }
         }
@@ -293,6 +293,8 @@ public class MainActivity extends AppCompatActivity
      * Remove the duplicates before storing courses to the local database
      */
     private List<Course> removeDuplicates(List<Course> rawCourses) {
+
+        if (rawCourses == null) return null;
 
         List<Course> result = new ArrayList<>();
 
@@ -419,7 +421,7 @@ public class MainActivity extends AppCompatActivity
                             }
 
                             Log.d("search", loc.toString());
-                            moveMap(loc, IconUtil.MarkerType.BUILDING);
+                            moveMapWithUniqueMarker(loc, IconUtil.MarkerType.BUILDING);
 
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -432,7 +434,7 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    public void moveMap(LatLng loc, IconUtil.MarkerType type) {
+    public void moveMapWithUniqueMarker(LatLng loc, IconUtil.MarkerType type) {
         //Creates a marker on the queried location
         mapFragment.movePointOfInterestMarker(loc, type);
 
@@ -469,11 +471,6 @@ public class MainActivity extends AppCompatActivity
         } else if ((currentFragment instanceof MapViewFragment) && mapFragment.isMapDirty()) {
             mapFragment.removeRoute();
             mapFragment.removeAllMarkers();
-        } else if (manager.getBackStackEntryCount() > 1){
-            // Destroy stacks of fragments
-            Log.d("backstack", "Destroying backstack of size: " + manager.getBackStackEntryCount());
-            manager.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-            Log.d("backstack", "Backstack size: " + manager.getBackStackEntryCount());
         } else {
             super.onBackPressed();
         }
@@ -619,7 +616,7 @@ public class MainActivity extends AppCompatActivity
 
             //Check for null loc
             if (loc != null) {
-                moveMap(loc, IconUtil.MarkerType.BUILDING);
+                moveMapWithUniqueMarker(loc, IconUtil.MarkerType.BUILDING);
             }
 
             //Open new singleBuilding fragment

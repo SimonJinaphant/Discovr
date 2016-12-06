@@ -87,7 +87,7 @@ public class CoursePartialFragment extends Fragment {
         if (bldg != null){
             //move to the location on the map
             loc = GeojsonFileParser.getCoordinates(bldg.getAllCoordinates());
-            ((MainActivity) this.getActivity()).moveMap(loc, IconUtil.MarkerType.BUILDING);
+            ((MainActivity) this.getActivity()).moveMapWithUniqueMarker(loc, IconUtil.MarkerType.BUILDING);
         }
         setTitle(ll);
         setTime(ll);

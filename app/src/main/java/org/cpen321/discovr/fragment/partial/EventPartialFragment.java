@@ -58,13 +58,6 @@ public class EventPartialFragment extends Fragment {
         //Inflate fragment from xml file
         LinearLayout ll = (LinearLayout) inflater.inflate(R.layout.fragment_single_event, container, false);
 
-        Building bldg = dbh.getBuildingByCode(event.getBuildingName());
-        LatLng loc;
-        if (bldg != null) {
-            loc = GeojsonFileParser.getCoordinates(bldg.getAllCoordinates());
-            ((MainActivity) this.getActivity()).moveMap(loc, IconUtil.MarkerType.EVENT);
-        }
-
         //Get textView inside of linearlayout and set text
         TextView tv = (TextView) ll.getChildAt(0);
 

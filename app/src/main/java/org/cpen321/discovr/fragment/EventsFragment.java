@@ -17,11 +17,16 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
+import com.mapbox.mapboxsdk.geometry.LatLng;
+
 import org.cpen321.discovr.MainActivity;
 import org.cpen321.discovr.R;
 import org.cpen321.discovr.SQLiteDBHandler;
+import org.cpen321.discovr.model.Building;
 import org.cpen321.discovr.model.EventInfo;
 import org.cpen321.discovr.fragment.partial.EventPartialFragment;
+import org.cpen321.discovr.parser.GeojsonFileParser;
+import org.cpen321.discovr.utility.IconUtil;
 
 import static android.text.Spanned.SPAN_INCLUSIVE_INCLUSIVE;
 import static org.cpen321.discovr.R.dimen.button_margin;
@@ -48,7 +53,7 @@ public class EventsFragment extends Fragment {
         final LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
 
-        SQLiteDBHandler dbh = new SQLiteDBHandler(this.getActivity());
+        final SQLiteDBHandler dbh = new SQLiteDBHandler(this.getActivity());
 
         for (final EventInfo event : ((MainActivity) this.getActivity()).getAllEvents()) {
             final Button button = createButton(event);
@@ -61,10 +66,19 @@ public class EventsFragment extends Fragment {
                     FragmentManager fm = getActivity().getSupportFragmentManager();
                     Fragment currentFrag = fm.findFragmentById(R.id.fragment_container);
                     FragmentTransaction transaction = getFragmentManager().beginTransaction();
+
+                    //Move map and add marker point
+                    Building bldg = dbh.getBuildingByCode(event.getBuildingName());
+                    LatLng loc;
+
+                    if (bldg != null) {
+                        loc = GeojsonFileParser.getCoordinates(bldg.getAllCoordinates());
+                        ((MainActivity) getActivity()).moveMapWithUniqueMarker(loc, IconUtil.MarkerType.EVENT);
+                    }
+
                     //hide current fragment, will reopen when back key pressed
                     fragment.setEvent(event);
                     fragment.setPrevFragment(ALLEVENTS);
-
                     transaction.setCustomAnimations(R.anim.slide_in_up, R.anim.slide_out_left);
                     transaction.remove(currentFrag);
                     transaction.add(R.id.fragment_container, fragment, String.valueOf(button.getId()));
