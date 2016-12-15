@@ -493,7 +493,7 @@ public class MainActivity extends AppCompatActivity
      */
     private void plotUpcomingEventsOnMap() {
         // TODO: Replace getRawEvents() with getUpcomingEvents()
-        List<EventInfo> upcomingEvents = ecm.getRawEvents();
+        List<EventInfo> upcomingEvents = ecm.getUpcomingEvents();
         ListIterator<EventInfo> li = upcomingEvents.listIterator();
         List<LatLng> markerLoc = new ArrayList<>();
 

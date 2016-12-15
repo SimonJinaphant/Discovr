@@ -133,7 +133,7 @@ public class MapViewFragment extends Fragment {
                         onLongClickMapCallback(point);
                     }
                 });
-
+                /*
                 for (Building building : buildings) {
                     map.addPolygon(new PolygonOptions()
                             .addAll(building.getAllCoordinates())
@@ -142,7 +142,7 @@ public class MapViewFragment extends Fragment {
                             .fillColor(Color.parseColor("#3bb2d0"))
                     );
                 }
-
+                */
                 for (MapPolygon constructionZone : constructions) {
                     map.addPolygon(new PolygonOptions()
                             .addAll(constructionZone.vertices)

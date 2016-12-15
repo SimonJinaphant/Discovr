@@ -375,7 +375,7 @@ public class SQLiteDBHandler extends SQLiteOpenHelper {
 
     public Building getBuildingByCode(String code) {
         SQLiteDatabase db = this.getReadableDatabase();
-        code = "%" + code.replaceAll("[^A-Za-z]", "") + "%";
+        code = code.replaceAll("[^A-Za-z]", "");
         Log.d("Searching for: ", code);
         Building bldg = null;
 
@@ -386,7 +386,7 @@ public class SQLiteDBHandler extends SQLiteOpenHelper {
             cursor.moveToFirst();
             bldg = new Building(cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5));
         } else{
-            cursor = db.rawQuery("SELECT * FROM " + TABLE_BUILDINGS + " WHERE " + KEY_BLDG_NAME + " LIKE ?", new String[]{code});
+            cursor = db.rawQuery("SELECT * FROM " + TABLE_BUILDINGS + " WHERE " + KEY_BLDG_NAME + " LIKE ?", new String[]{"%" + code + "%"});
             if (cursor.getCount() != 0) {
             cursor.moveToFirst();
             bldg = new Building(cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5));}
